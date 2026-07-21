@@ -21,7 +21,7 @@ export default {
     const url = new URL(request.url);
     if (url.pathname === "/api/health") {
       return request.method === "GET"
-        ? Response.json({ ok: true }, { headers: { "cache-control": "no-store" } })
+        ? Response.json({ ok: true }, { headers: { "cache-control": "no-store", "x-content-type-options": "nosniff" } })
         : publicResponse(request, 405, { ok: false, code: "method_not_allowed", requestId: crypto.randomUUID() });
     }
     if (url.pathname !== "/api/feedback" || request.method !== "POST") {
@@ -43,8 +43,8 @@ export default {
     if (!validated.ok && validated.code === "trap") return publicResponse(request, 200, { ok: true, requestId: id }, locale);
     if (!validated.ok) return publicResponse(request, 400, { ok: false, code: "validation_error", requestId: id }, locale);
 
-    const rendered = buildFeedbackEmail({ requestId: id, submittedAt: new Date().toISOString(), feedback: validated.value });
     try {
+      const rendered = buildFeedbackEmail({ requestId: id, submittedAt: new Date().toISOString(), feedback: validated.value });
       await env.EMAIL.send({ to: env.FEEDBACK_DESTINATION, from: env.FEEDBACK_SENDER, ...rendered });
       console.log(JSON.stringify({ requestId: id, status: 200, outcome: "sent" }));
       return publicResponse(request, 200, { ok: true, requestId: id }, locale);

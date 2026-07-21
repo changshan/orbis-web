@@ -8,8 +8,8 @@ for (const form of forms) {
   const message = form.querySelector<HTMLTextAreaElement>('textarea[name="message"]');
   if (!button || !status || !message) continue;
   const idleLabel = button.textContent ?? "";
-  const textFor = (state: FeedbackUiState): string =>
-    state === "rateLimited" ? form.dataset.rateLimited ?? "" : form.dataset[state] ?? "";
+  // dataset camelCases data-rate-limited -> rateLimited, so the state key indexes directly.
+  const textFor = (state: FeedbackUiState): string => form.dataset[state] ?? "";
   const tones: Record<FeedbackUiState, string> = {
     success: "success", validation: "error", rateLimited: "neutral", unavailable: "error", uncertain: "neutral"
   };

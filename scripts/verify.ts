@@ -1,4 +1,4 @@
-import { readdirSync, readFileSync, statSync } from "node:fs";
+import { readdirSync, readFileSync } from "node:fs";
 import { extname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 import { gzipSync } from "node:zlib";
@@ -30,9 +30,13 @@ for (const file of files) {
   if (ext === ".js") jsGzip += gzipSync(readFileSync(file)).byteLength;
   if (ext === ".html") {
     const html = readFileSync(file, "utf8");
-    if (/<script(?![^>]*\bsrc=)/i.test(html)) fail(`inline script in ${rel(file)}`);
-    if (/<style/i.test(html)) fail(`inline style in ${rel(file)}`);
-    if (/(?:src|href)="https?:\/\//i.test(html.replace(/rel="(?:canonical|alternate)"[^>]*/g, ""))) fail(`external resource in ${rel(file)}`);
+    // `\ssrc=` (whitespace before src) avoids matching `data-src=`, whose `-src` a `\b` would wrongly accept.
+    if (/<script(?![^>]*\ssrc=)/i.test(html)) fail(`inline script in ${rel(file)}`);
+    // Both an inline <style> element and a style="…" attribute violate style-src 'self'.
+    if (/<style/i.test(html) || /\sstyle\s*=["']/i.test(html)) fail(`inline style in ${rel(file)}`);
+    // Strip the only allowed absolute URLs (canonical/hreflang), then reject any other external src/href in either quote style.
+    const withoutMeta = html.replace(/rel=["'](?:canonical|alternate)["'][^>]*/gi, "");
+    if (/(?:src|href)=["']https?:\/\//i.test(withoutMeta)) fail(`external resource in ${rel(file)}`);
   }
   if (ext === ".css" && /url\(["']?https?:/i.test(readFileSync(file, "utf8"))) fail(`external url() in ${rel(file)}`);
 }

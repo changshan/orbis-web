@@ -7,7 +7,7 @@ export async function parseFeedbackRequest(request: Request): Promise<unknown> {
   if (declared > MAX_BODY_BYTES) throw new Error("body_too_large");
   const text = await request.text();
   if (new TextEncoder().encode(text).byteLength > MAX_BODY_BYTES) throw new Error("body_too_large");
-  const type = request.headers.get("content-type")?.split(";", 1)[0];
+  const type = request.headers.get("content-type")?.split(";", 1)[0]?.trim();
   if (type === "application/json") return JSON.parse(text);
   if (type === "application/x-www-form-urlencoded") return Object.fromEntries(new URLSearchParams(text));
   throw new Error("unsupported_content_type");

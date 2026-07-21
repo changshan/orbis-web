@@ -19,12 +19,18 @@ describe("renderHome", () => {
   });
   it("六段结构与表单契约齐全", () => {
     for (const id of ['id="why"', 'id="principles"', 'id="boundary"', 'id="feedback"']) expect(zh).toContain(id);
-    expect(zh).toContain("data-feedback-form");
-    expect(zh).toContain('action="/api/feedback"');
-    expect(zh).toContain('name="website"');
-    expect(zh).toContain('name="locale"');
-    expect(zh).toContain("data-feedback-status");
-    expect(zh).toContain('maxlength="2000"');
+    // Full form DOM contract — Task 6 (client) and Task 8 (e2e) depend on every one of these byte-for-byte.
+    for (const attr of [
+      "data-feedback-form",
+      'method="post"', 'action="/api/feedback"',
+      "data-sending", "data-success", "data-validation",
+      "data-rate-limited", "data-unavailable", "data-uncertain",
+      'name="locale"',
+      'name="website"', "honeypot", 'tabindex="-1"',
+      'name="message"', 'maxlength="2000"', "required",
+      'name="contact"', 'maxlength="200"',
+      'role="status"', "data-feedback-status"
+    ]) expect(zh, attr).toContain(attr);
   });
   it("canonical 与 hreflang 成对", () => {
     expect(zh).toContain('rel="canonical" href="http://localhost:8788/zh/"');
