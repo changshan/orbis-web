@@ -21,11 +21,15 @@
 | ④ | Email 送达 | `{"ok":true}` 且邮箱收到 | **503 `send_failed`**;日志:`email from gmail.com not allowed because domain was not found` | ❌(配置,非架构) |
 | ⑤ | 预览通道 | 可访问的 preview URL | `https://f446421a-orbis-spike.lics0613.workers.dev` | ✅ |
 
-## 结论
+## 结论(2026-07-21 终审修正 — 此前过度乐观)
 
-- [x] **Email Service 可用,API 形状符合** `send({to,from,subject,text,html})`。
-  依据:④ 的失败发生在 binding **内部的发件域名校验**(`domain was not found`),而非 "unknown method / 参数不符" —— 说明 `send_email` binding 存在、接受了我们生产用的入参形状(`to/from/subject/text/html`,与 Task 4 `buildFeedbackEmail` 输出一致)。**无需回退 MIME,Task 5 按现有假设开工。**
-- [ ] ~~Email Service 不可用 / 形状不符~~ —— 不适用。
+- [x] **托管架构成立、`send_email` binding 存在**:①②③⑤ 通过;④ 到达了 binding 的发件域名校验(`domain was not found`)。
+- [ ] **⚠️ API 入参形状未证实**:④ **两次都没成功发出**。`domain was not found` 是域名校验错误,可能发生在 MIME 解析**之前**,因此它**证明不了** `send({to,from,subject,text,html})` 这个对象形状正确。`send_email` binding 的**文档 API 是 `new EmailMessage(from, to, rawMime)`(来自 `cloudflare:email`),不是对象**。所以:
+  - 反馈投递路径**从未成功送达过一封邮件**,单测全 mock,测不到这个缝。
+  - 代码里 `web/src/worker/index.ts` 的 `EMAIL.send({...})` 已加 UNVERIFIED 注释。
+  - **判定推迟到域名激活后的一次真实成功发送**:`myorbis.xyz` 变 active + 开 Email Routing + 验证收件箱 + `SPIKE_FROM=xxx@myorbis.xyz`,重跑 ④。
+    - 若 `ok:true` 且收到邮件 → 对象形状确实可用,保持现状。
+    - 若因形状/MIME 失败 → 按 plan 预授权回退,改 `email.ts` + `index.ts` 为 `EmailMessage` + 手工 MIME(仅这两处)。
 
 ## 唯一遗留:发件域名接入(操作项,非代码)
 
