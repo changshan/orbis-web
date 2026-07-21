@@ -24,33 +24,37 @@ export function pageDocument(
 </head>
 <body>
 <a class="skip-link" href="#main">${esc(content.nav.skip)}</a>
-${renderHeader(locale, content)}
+${renderHeader(locale, page, content)}
 <main id="main">
 ${main}
 </main>
-${renderFooter(locale, content)}
+${renderFooter(locale, page, content)}
 ${scripts.map((s) => `<script src="${s}" defer></script>`).join("\n")}
 </body>
 </html>`;
 }
 
-export function renderHeader(locale: Locale, content: WebsiteContent): string {
+function sectionHref(locale: Locale, page: LocalizedPage, section: "why" | "principles" | "feedback"): string {
+  return page === "home" ? `#${section}` : `${localizedPath(locale, "home")}#${section}`;
+}
+
+export function renderHeader(locale: Locale, page: LocalizedPage, content: WebsiteContent): string {
   const alt: Locale = locale === "zh" ? "en" : "zh";
   return `<header class="site-header">
 <a class="brand" href="${localizedPath(locale, "home")}" aria-label="Orbis home"><span class="brand-mark" aria-hidden="true"></span><span>ORBIS</span></a>
 <nav class="site-nav" aria-label="Primary">
-<a href="#why">${esc(content.nav.why)}</a>
-<a href="#principles">${esc(content.nav.principles)}</a>
-<a href="#feedback">${esc(content.nav.feedback)}</a>
+<a href="${sectionHref(locale, page, "why")}">${esc(content.nav.why)}</a>
+<a href="${sectionHref(locale, page, "principles")}">${esc(content.nav.principles)}</a>
+<a href="${sectionHref(locale, page, "feedback")}">${esc(content.nav.feedback)}</a>
 <a href="${localizedPath(locale, "privacy")}">${esc(content.nav.privacy)}</a>
-<a class="lang-switch" href="${localizedPath(alt, "home")}" hreflang="${alt === "zh" ? "zh-CN" : "en"}">${esc(content.nav.langLabel)}</a>
+<a class="lang-switch" href="${localizedPath(alt, page)}" hreflang="${alt === "zh" ? "zh-CN" : "en"}">${esc(content.nav.langLabel)}</a>
 </nav>
 </header>`;
 }
 
-export function renderFooter(locale: Locale, content: WebsiteContent): string {
+export function renderFooter(locale: Locale, page: LocalizedPage, content: WebsiteContent): string {
   return `<footer>
 <p>${esc(content.footer.boundary)}</p>
-<p><a href="#feedback">${esc(content.nav.feedback)}</a> · <a href="${localizedPath(locale, "privacy")}">${esc(content.nav.privacy)}</a> · ${esc(content.footer.copyright)}</p>
+<p><a href="${sectionHref(locale, page, "feedback")}">${esc(content.nav.feedback)}</a> · <a href="${localizedPath(locale, "privacy")}">${esc(content.nav.privacy)}</a> · ${esc(content.footer.copyright)}</p>
 </footer>`;
 }

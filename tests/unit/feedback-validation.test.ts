@@ -28,6 +28,11 @@ describe("validateFeedback", () => {
     expect(validateFeedback({ locale: "en", message: "x", website: "spam" }, now)).toEqual({ ok: false, code: "trap" });
     expect(validateFeedback({ locale: "en", message: "x", startedAt: now - 1000 }, now)).toEqual({ ok: false, code: "trap" });
   });
+  it("蜜罐优先于可见字段校验", () => {
+    expect(validateFeedback({ locale: "en", message: "", website: "spam" }, now)).toEqual({ ok: false, code: "trap" });
+    expect(validateFeedback({ locale: "en", message: "x", contact: "c".repeat(201), website: "spam" }, now))
+      .toEqual({ ok: false, code: "trap" });
+  });
   it("无 startedAt 的无脚本提交放行", () => {
     expect(validateFeedback({ locale: "en", message: "x" }, now).ok).toBe(true);
   });

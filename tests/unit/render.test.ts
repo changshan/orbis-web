@@ -51,6 +51,14 @@ describe("其余页面", () => {
     expect(renderPrivacy("zh").match(/<h2/g)!.length).toBeGreaterThanOrEqual(4);
     expect(renderPrivacy("en")).toContain("Privacy notice");
   });
+  it("隐私页导航返回本语言首页锚点且语言切换保留当前页面", () => {
+    const privacy = renderPrivacy("zh");
+    for (const section of ["why", "principles", "feedback"]) {
+      expect(privacy).toContain(`href="/zh/#${section}"`);
+      expect(privacy).not.toContain(`href="#${section}"`);
+    }
+    expect(privacy).toContain('class="lang-switch" href="/en/privacy/"');
+  });
   it("语言入口含双语链接与外链脚本", () => {
     const entry = renderEntry();
     expect(entry).toContain('href="/zh/"');

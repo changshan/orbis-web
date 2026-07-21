@@ -2,11 +2,40 @@ import type { FeedbackLocale, PublicErrorCode } from "./types";
 
 const MAX_BODY_BYTES = 8 * 1024;
 
+async function readBoundedText(request: Request): Promise<string> {
+  if (!request.body) return "";
+
+  const reader = request.body.getReader();
+  const chunks: Uint8Array[] = [];
+  let total = 0;
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      total += value.byteLength;
+      if (total > MAX_BODY_BYTES) {
+        await reader.cancel("body_too_large");
+        throw new Error("body_too_large");
+      }
+      chunks.push(value);
+    }
+  } finally {
+    reader.releaseLock();
+  }
+
+  const bytes = new Uint8Array(total);
+  let offset = 0;
+  for (const chunk of chunks) {
+    bytes.set(chunk, offset);
+    offset += chunk.byteLength;
+  }
+  return new TextDecoder().decode(bytes);
+}
+
 export async function parseFeedbackRequest(request: Request): Promise<unknown> {
   const declared = Number(request.headers.get("content-length") ?? "0");
   if (declared > MAX_BODY_BYTES) throw new Error("body_too_large");
-  const text = await request.text();
-  if (new TextEncoder().encode(text).byteLength > MAX_BODY_BYTES) throw new Error("body_too_large");
+  const text = await readBoundedText(request);
   const type = request.headers.get("content-type")?.split(";", 1)[0]?.trim();
   if (type === "application/json") return JSON.parse(text);
   if (type === "application/x-www-form-urlencoded") return Object.fromEntries(new URLSearchParams(text));
