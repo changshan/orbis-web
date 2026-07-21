@@ -3,6 +3,9 @@
   "name": "orbis-web",
   "main": "src/worker/index.ts",
   "compatibility_date": "2026-07-20",
+  // 正式入口为 apex 自定义域名;`wrangler deploy`(生产)会绑定它,
+  // 预览用的 `wrangler versions upload` 不受影响(仍走 workers.dev 版本预览 URL)。
+  "routes": [{ "pattern": "myorbis.xyz", "custom_domain": true }],
   "assets": {
     "directory": "./dist",
     "not_found_handling": "404-page",
