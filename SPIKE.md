@@ -27,7 +27,8 @@
 - [x] **✅ API 入参形状经真实成功发送证实**:前置就位后(`myorbis.xyz` **active** + Email Routing **ready** + `lics0613@gmail.com` 已验证 + `SPIKE_FROM=spike@myorbis.xyz`),`POST /api/spike-mail` **连续 4 次返回 `{"ok":true}` HTTP 200**(requestId 各不同)。
   - `send({to,from,subject,text,html})` 对象形状**可用,无需 MIME 回退**;Task 5 代码保持现状,`index.ts` 注释已更新为 VERIFIED。
   - 此前 ④ 的 503 均为发件域名未接入 / secret 刚设的传播延迟,非形状问题。
-  - 剩余确认:请在 `lics0613@gmail.com` 收件箱肉眼确认收到测试邮件(`ok:true` = Cloudflare 已受理投递到已验证目标,收件箱可见是最终地面真值)。
+  - ✅ 已在 `lics0613@gmail.com` 收件箱肉眼确认收到测试邮件 — 端到端投递闭环。
+  - 清理:`orbis-spike` Worker 已删除,`web/spike/` 脚手架已从分支移除。
 
 ## 唯一遗留:发件域名接入(操作项,非代码)
 
