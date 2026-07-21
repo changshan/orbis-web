@@ -1,34 +1,44 @@
 # Task 0 — Cloudflare / Email Service spike 实测记录
 
-> 状态:**待运行**。脚手架在 `web/spike/`,运行说明见 `web/spike/run.md`。
-> 结论决定 Task 5(Worker)能否按现有 Email Service 假设开工。
+> 状态:**已运行 2026-07-21**。脚手架在 `web/spike/`。
+> 结论:托管架构与 Email Service API 形状均验证通过;真实送达受阻于"发件域名未接入",属操作配置项(非架构问题)。
 
 ## 环境
 
-- 运行日期:_(填)_
-- Cloudflare 账号 / 子域:_(填)_
-- 发信域名接入状态(SPF/DKIM/DMARC):_(填)_
-- 项目收件邮箱:_(填,勿写完整敏感地址亦可只记"已验证")_
+- 运行日期:2026-07-21
+- Cloudflare 账号:lics0613@gmail.com(Account ID 5e6bec21538f95afe4750a93670deee3)
+- workers.dev 子域:`lics0613`
+- 部署 URL:https://orbis-spike.lics0613.workers.dev
+- SPIKE_FROM(本次):gmail.com 地址 ← **问题根源:gmail.com 不是账号内的可发信域名**
 
 ## 实测结果
 
-| # | 项 | 命令 | 期望 | 实际 | 通过? |
-|---|---|---|---|---|---|
-| ① | 静态资产直出 | `curl "$BASE/"` | spike 页面 HTML | | ☐ |
-| ② | `_headers` 生效 | `curl -sI "$BASE/" \| grep x-orbis-spike` | `x-orbis-spike: yes` | | ☐ |
-| ③ | `/api/health` | `curl -si "$BASE/api/health"` | `{"ok":true}` + `cache-control: no-store` | | ☐ |
-| ④ | Email 送达 | `curl -X POST "$BASE/api/spike-mail"` | `{"ok":true}` 且邮箱收到 | | ☐ |
-| ⑤ | 预览通道 | `npx wrangler versions upload` | 输出可访问的 preview URL | | ☐ |
+| # | 项 | 期望 | 实际 | 通过? |
+|---|---|---|---|---|
+| ① | 静态资产直出 | spike 页面 HTML | 返回 `<!doctype html>…` spike 页 | ✅ |
+| ② | `_headers` 生效 | `x-orbis-spike: yes` | `x-orbis-spike: yes`(HTTP/2 200) | ✅ |
+| ③ | `/api/health` | `{"ok":true}` + `cache-control: no-store` | 完全一致,`content-type: application/json` | ✅ |
+| ④ | Email 送达 | `{"ok":true}` 且邮箱收到 | **503 `send_failed`**;日志:`email from gmail.com not allowed because domain was not found` | ❌(配置,非架构) |
+| ⑤ | 预览通道 | 可访问的 preview URL | `https://f446421a-orbis-spike.lics0613.workers.dev` | ✅ |
 
 ## 结论
 
-- [ ] **Email Service 可用,API 形状符合** `send({to,from,subject,text,html})` → Task 5 按现有假设开工,无需改动。
-- [ ] **Email Service 不可用 / 形状不符** → 回退:`send_email` binding + 手工 MIME;修复限定在 `web/src/worker/email.ts` 发送封装 + `web/src/worker/index.ts` 的 binding 类型。记下实际报错:
+- [x] **Email Service 可用,API 形状符合** `send({to,from,subject,text,html})`。
+  依据:④ 的失败发生在 binding **内部的发件域名校验**(`domain was not found`),而非 "unknown method / 参数不符" —— 说明 `send_email` binding 存在、接受了我们生产用的入参形状(`to/from/subject/text/html`,与 Task 4 `buildFeedbackEmail` 输出一致)。**无需回退 MIME,Task 5 按现有假设开工。**
+- [ ] ~~Email Service 不可用 / 形状不符~~ —— 不适用。
 
-```
-(粘贴 wrangler deploy / wrangler tail 的报错)
-```
+## 唯一遗留:发件域名接入(操作项,非代码)
+
+Cloudflare `send_email` binding 要求 **FROM 地址所在域名是你账号内的一个 zone,并开启 Email Routing/Sending**;`gmail.com` 不行。真实送达前需要:
+
+1. 把你拥有的一个域名加入 Cloudflare(建 zone);
+2. 在该域名上开启 Email Routing 并完成 SPF/DKIM/DMARC 验证;
+3. 把收件箱(如 gmail)验证为 Email Routing 的 destination address;
+4. `SPIKE_FROM=xxx@你的域名`、`SPIKE_TO=已验证收件箱`,重跑 ④ 应 `ok:true` 且收到邮件。
+
+这本就是 Task 9 runbook 第 3 步的内容(生产也需要自定义域名)。**它不阻塞 Task 5 的代码编写与单测**(Task 5 用 mock binding),只阻塞端到端真实送达。
 
 ## 备注
 
-_(部署地域延迟、`versions upload` 预览行为是否符合预期、或任何影响 Task 5/9 的观察)_
+- 托管架构(单 Worker + static assets + `run_worker_first: ["/api/*"]` + `_headers` + versioned preview)已在真实边缘验证通过 → Task 5/7/9 的托管方案成立。
+- spike Worker 仍在线(生产版本为初次 deploy;⑤ 另上传了一个未投产的 preview version)。接入域名后可复跑 ④;确认完可 `cd web/spike && npx wrangler delete --name orbis-spike` 清理。
