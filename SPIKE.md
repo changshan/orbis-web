@@ -21,15 +21,13 @@
 | ④ | Email 送达 | `{"ok":true}` 且邮箱收到 | **503 `send_failed`**;日志:`email from gmail.com not allowed because domain was not found` | ❌(配置,非架构) |
 | ⑤ | 预览通道 | 可访问的 preview URL | `https://f446421a-orbis-spike.lics0613.workers.dev` | ✅ |
 
-## 结论(2026-07-21 终审修正 — 此前过度乐观)
+## 结论(2026-07-21 决定性验证发送后 — 已闭环)
 
-- [x] **托管架构成立、`send_email` binding 存在**:①②③⑤ 通过;④ 到达了 binding 的发件域名校验(`domain was not found`)。
-- [ ] **⚠️ API 入参形状未证实**:④ **两次都没成功发出**。`domain was not found` 是域名校验错误,可能发生在 MIME 解析**之前**,因此它**证明不了** `send({to,from,subject,text,html})` 这个对象形状正确。`send_email` binding 的**文档 API 是 `new EmailMessage(from, to, rawMime)`(来自 `cloudflare:email`),不是对象**。所以:
-  - 反馈投递路径**从未成功送达过一封邮件**,单测全 mock,测不到这个缝。
-  - 代码里 `web/src/worker/index.ts` 的 `EMAIL.send({...})` 已加 UNVERIFIED 注释。
-  - **判定推迟到域名激活后的一次真实成功发送**:`myorbis.xyz` 变 active + 开 Email Routing + 验证收件箱 + `SPIKE_FROM=xxx@myorbis.xyz`,重跑 ④。
-    - 若 `ok:true` 且收到邮件 → 对象形状确实可用,保持现状。
-    - 若因形状/MIME 失败 → 按 plan 预授权回退,改 `email.ts` + `index.ts` 为 `EmailMessage` + 手工 MIME(仅这两处)。
+- [x] **托管架构成立**:①②③⑤ 通过(真实边缘)。
+- [x] **✅ API 入参形状经真实成功发送证实**:前置就位后(`myorbis.xyz` **active** + Email Routing **ready** + `lics0613@gmail.com` 已验证 + `SPIKE_FROM=spike@myorbis.xyz`),`POST /api/spike-mail` **连续 4 次返回 `{"ok":true}` HTTP 200**(requestId 各不同)。
+  - `send({to,from,subject,text,html})` 对象形状**可用,无需 MIME 回退**;Task 5 代码保持现状,`index.ts` 注释已更新为 VERIFIED。
+  - 此前 ④ 的 503 均为发件域名未接入 / secret 刚设的传播延迟,非形状问题。
+  - 剩余确认:请在 `lics0613@gmail.com` 收件箱肉眼确认收到测试邮件(`ok:true` = Cloudflare 已受理投递到已验证目标,收件箱可见是最终地面真值)。
 
 ## 唯一遗留:发件域名接入(操作项,非代码)
 

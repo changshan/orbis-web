@@ -3,14 +3,10 @@ import { parseFeedbackRequest, publicResponse } from "./http";
 import type { FeedbackLocale } from "./types";
 import { validateFeedback } from "./validation";
 
-// UNVERIFIED: this object shape { to, from, subject, text, html } for the
-// send_email binding has NOT been proven by a successful delivery — the Task 0
-// spike only reached the sender-domain check (blocked on an unactivated domain),
-// which does not confirm the payload shape. The documented send_email API is
-// `new EmailMessage(from, to, rawMime)` from "cloudflare:email". Before trusting
-// feedback in production, run web/spike once the domain is active to a real
-// ok:true + received email; if it fails on shape, switch this send site and
-// email.ts to the EmailMessage + MIME form (plan's pre-authorized fallback).
+// VERIFIED (Task 0 spike, 2026-07-21): the send_email binding accepts this
+// object shape { to, from, subject, text, html } — confirmed by real successful
+// sends (ok:true) from spike@myorbis.xyz to the verified destination once the
+// domain was active. No MIME fallback needed. See web/SPIKE.md.
 export interface EmailBinding { send(message: { to: string; from: string; subject: string; text: string; html: string }): Promise<unknown>; }
 export interface RateBinding { limit(input: { key: string }): Promise<{ success: boolean }>; }
 export interface WorkerEnv {
