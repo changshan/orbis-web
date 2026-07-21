@@ -7,6 +7,7 @@
     "noUncheckedIndexedAccess": true,
     "skipLibCheck": true,
     "noEmit": true,
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
     "types": ["@cloudflare/workers-types", "node"]
   },
   "include": ["src/**/*.ts", "scripts/**/*.ts", "tests/**/*.ts"]
