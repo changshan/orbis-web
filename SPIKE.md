@@ -42,3 +42,14 @@ Cloudflare `send_email` binding 要求 **FROM 地址所在域名是你账号内�
 
 - 托管架构(单 Worker + static assets + `run_worker_first: ["/api/*"]` + `_headers` + versioned preview)已在真实边缘验证通过 → Task 5/7/9 的托管方案成立。
 - spike Worker 仍在线(生产版本为初次 deploy;⑤ 另上传了一个未投产的 preview version)。接入域名后可复跑 ④;确认完可 `cd web/spike && npx wrangler delete --name orbis-spike` 清理。
+
+## 2026-07-21 复跑 ④ 仍失败 — 账号邮件配置实况
+
+查 Cloudflare API 得到具体阻塞状态(需你在面板/registrar 侧完成):
+- 域名 `myorbis.xyz`:status = **pending**(NS 未激活)→ 需变 active
+- `myorbis.xyz` Email Routing:enabled=false / unconfigured → 需开启
+- 已验证收件地址:**0 个** → 需加并验证 ≥1 个
+- `SPIKE_FROM`:仍为 gmail 地址 → 需改为 `xxx@myorbis.xyz`
+
+四项就位后重设 SPIKE_FROM/SPIKE_TO secret,重跑 `POST /api/spike-mail` 应 ok:true。
+API 形状结论不变(已确认),此为纯操作项,不影响代码。
