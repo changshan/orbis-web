@@ -1,0 +1,14 @@
+{
+  // Task 0 spike 配置。与生产 web/wrangler.jsonc 的关键项一致:
+  //   assets.run_worker_first 只让 /api/* 进 Worker,静态资产直出;
+  //   send_email 声明 EMAIL binding。
+  // 静态目录用 ./site(生产用 ./dist);dist/ 被 .gitignore 忽略,site/ 入库便于复跑。
+  "name": "orbis-spike",
+  "main": "worker.ts",
+  "compatibility_date": "2026-07-20",
+  "assets": {
+    "directory": "./site",
+    "run_worker_first": ["/api/*"]
+  },
+  "send_email": [{ "name": "EMAIL" }]
+}
