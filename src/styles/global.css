@@ -38,17 +38,6 @@ h1 .lamp-dot{color:var(--lamp-bright)}
 .place-note{position:absolute;right:1.5rem;bottom:1.5rem;border:1px solid var(--night-line);background:rgba(22,36,47,.82);padding:.95rem 1.15rem}
 .place-note strong{display:block;font-family:var(--font-display);font-weight:500;font-size:1.15rem;margin-top:.4rem;letter-spacing:.02em}
 .you-note{position:absolute;left:12%;bottom:14%;line-height:1.8}
-.questions{padding:var(--pad-y) var(--pad-x);border-top:1px solid var(--night-line)}
-.questions h2{font-family:var(--font-display);font-weight:500;font-size:clamp(1.5rem,3vw,2.2rem);letter-spacing:.005em;margin:.4rem 0 2.6rem;max-width:24ch}
-.qlist{list-style:none;margin:0;padding:0;max-width:44rem}
-.qlist li{display:flex;gap:1.4rem;align-items:baseline;padding:1.15rem 0;border-top:1px solid var(--night-line);font-family:var(--font-display);font-size:clamp(1.25rem,2.6vw,1.9rem);font-weight:500}
-.qlist li:last-child{border-bottom:1px solid var(--night-line)}
-.qlist .qn{font-family:var(--font-mono);font-size:.67rem;letter-spacing:.16em;color:var(--lamp);flex:none;transform:translateY(-.2em)}
-.qlist li:nth-child(1){color:rgba(237,234,227,.45)}
-.qlist li:nth-child(2){color:rgba(237,234,227,.7)}
-.qlist li:nth-child(3){color:var(--night-text)}
-.q-outro{margin:2.4rem 0 0;color:var(--night-muted);max-width:44ch}
-.q-outro strong{color:var(--lamp-bright);font-weight:600}
 .dawn{height:6rem;background:linear-gradient(var(--ink),var(--paper))}
 section.day,.boundary{padding:var(--pad-y) var(--pad-x)}
 .section-code{margin:0 0 1.3rem;color:var(--muted)}

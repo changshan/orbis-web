@@ -9,11 +9,6 @@ export const en = {
     action: "Explore our principles", watchLabel: "KEEPING WATCH",
     youLabel: "YOU", placeLabel: "A place you care about", placeName: "Geneva"
   },
-  why: {
-    title: "More information does not always mean more certainty.",
-    questions: ["What happened?", "Is it relevant to you?", "What deserves attention next?"],
-    outroPlain: "Those three questions are what matter.", outroStrong: "Orbis begins there."
-  },
   principles: {
     title: "Three principles",
     items: [

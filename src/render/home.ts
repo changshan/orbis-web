@@ -1,4 +1,4 @@
-import type { Locale } from "../config/site";
+import { localizedPath, type Locale } from "../config/site";
 import { getContent } from "../content";
 import { escapeHtml as esc } from "./html";
 import { renderFeedbackSection } from "./feedback";
@@ -27,7 +27,7 @@ export function renderHome(locale: Locale): string {
 <p class="eyebrow mono">${esc(c.hero.eyebrow)}</p>
 <h1 id="hero-title"><span class="phrase">${esc(c.hero.titleLead)}</span><wbr /><span class="phrase">${esc(c.hero.titleMain)}<span class="lamp-dot">${esc(c.hero.titleDot)}</span></span></h1>
 <p class="lede">${esc(c.hero.body)}</p>
-<a class="text-link" href="#why">${esc(c.hero.action)}</a>
+<a class="text-link" href="${localizedPath(locale, "product")}">${esc(c.hero.action)}</a>
 <p class="mono watch-label">${esc(c.hero.watchLabel)}</p>
 </div>
 <div class="night-field" aria-hidden="true">
@@ -36,14 +36,6 @@ ${NIGHT_FIELD_SVG}
 <p class="you-note mono">${esc(c.hero.youLabel)}</p>
 <div class="place-note"><span class="mono">${esc(c.hero.placeLabel)}</span><strong>${esc(c.hero.placeName)}</strong></div>
 </div>
-</section>
-<section class="questions" id="why" aria-labelledby="why-title">
-<p class="section-code mono">01 · WHY ORBIS</p>
-<h2 id="why-title">${esc(c.why.title)}</h2>
-<ol class="qlist">
-${c.why.questions.map((q, i) => `<li><span class="qn">Q${i + 1}</span><span>${esc(q)}</span></li>`).join("\n")}
-</ol>
-<p class="q-outro">${esc(c.why.outroPlain)}<strong>${esc(c.why.outroStrong)}</strong></p>
 </section>
 </div>
 <div class="dawn" aria-hidden="true"></div>`;

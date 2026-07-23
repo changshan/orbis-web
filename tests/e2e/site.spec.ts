@@ -38,3 +38,11 @@ test("产品页 320px 无横向滚动", async ({ page }) => {
   await page.goto("/zh/product/");
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(true);
 });
+
+test("首页为何 Orbis 进入能力页且只有一个导航定位", async ({ page }) => {
+  await page.goto("/zh/");
+  await page.getByRole("navigation").getByRole("link", { name: "为何 Orbis" }).click();
+  await expect(page).toHaveURL(/\/zh\/product\/$/);
+  await expect(page.getByRole("navigation").getByRole("link", { name: "为何 Orbis" })).toHaveAttribute("aria-current", "page");
+  await expect(page.getByRole("navigation").getByRole("link", { name: "产品", exact: true })).toHaveCount(0);
+});

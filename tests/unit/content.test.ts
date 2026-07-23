@@ -13,9 +13,9 @@ describe("双语内容", () => {
     expect(getContent("zh").boundary.body).toContain("不替代当地官方预警");
     expect(getContent("en").boundary.body).toContain("does not replace official local alerts");
   });
-  it("三个问题齐全", () => {
-    expect(getContent("zh").why.questions).toHaveLength(3);
-    expect(getContent("en").why.questions[0]).toBe("What happened?");
+  it("旧为何 Orbis 内容模型已移除", () => {
+    expect("why" in getContent("zh")).toBe(false);
+    expect("why" in getContent("en")).toBe(false);
   });
   it("产品页双语内容和六类风险齐全", () => {
     expect(getContent("zh").nav.why).toBe("为何 Orbis");

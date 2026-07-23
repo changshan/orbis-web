@@ -18,8 +18,11 @@ describe("renderHome", () => {
     expect(en).toContain("Keeping watch,");
     expect(en).toContain("whenever it matters");
   });
-  it("六段结构与表单契约齐全", () => {
-    for (const id of ['id="why"', 'id="principles"', 'id="boundary"', 'id="feedback"']) expect(zh).toContain(id);
+  it("旧为何 Orbis 区块移除，其余结构与表单契约齐全", () => {
+    expect(zh).not.toContain('id="why"');
+    expect(zh).not.toContain("01 · WHY ORBIS");
+    expect(zh).toContain('<a class="text-link" href="/zh/product/">');
+    for (const id of ['id="principles"', 'id="boundary"', 'id="feedback"']) expect(zh).toContain(id);
     // Full form DOM contract — Task 6 (client) and Task 8 (e2e) depend on every one of these byte-for-byte.
     for (const attr of [
       "data-feedback-form",

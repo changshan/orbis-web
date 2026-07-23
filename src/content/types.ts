@@ -30,7 +30,6 @@ export interface WebsiteContent {
     body: string; action: string; watchLabel: string;
     youLabel: string; placeLabel: string; placeName: string;
   };
-  why: { title: string; questions: readonly [string, string, string]; outroPlain: string; outroStrong: string };
   principles: { title: string; items: ReadonlyArray<{ tag: "RELEVANT" | "CLEAR" | "TRUSTED"; title: string; body: string }> };
   boundary: { title: string; body: string };
   feedback: {

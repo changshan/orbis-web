@@ -9,11 +9,6 @@ export const zh = {
     action: "了解我们的理念", watchLabel: "KEEPING WATCH / 守护",
     youLabel: "你 / YOU", placeLabel: "你在意的地方", placeName: "Geneva"
   },
-  why: {
-    title: "更多信息，不一定带来更多安全感。",
-    questions: ["发生了什么？", "是否与你相关？", "接下来该关注什么？"],
-    outroPlain: "真正重要的是这三个问题。", outroStrong: "Orbis 从这里出发。"
-  },
   principles: {
     title: "三条原则",
     items: [
