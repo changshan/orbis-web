@@ -10,5 +10,5 @@ export function renderPrivacy(locale: Locale): string {
 <p>${esc(c.privacy.intro)}</p>
 ${c.privacy.sections.map((s) => `<section><h2>${esc(s.title)}</h2><p>${esc(s.body)}</p></section>`).join("\n")}
 </article>`;
-  return pageDocument(locale, "privacy", c, main);
+  return pageDocument(locale, "privacy", c, main, [], c.privacy.meta);
 }

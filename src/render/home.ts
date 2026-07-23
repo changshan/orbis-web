@@ -21,7 +21,7 @@ export function renderHome(locale: Locale): string {
     ? { hero: "hero-radar.en.svg", relevance: "relevance.en.svg", clarity: "clarity.en.svg" }
     : { hero: "hero-radar.png", relevance: "relevance.png", clarity: "clarity.png" };
   const risks = c.risks.items.map((item) => `<article class="risk-card">
-<img src="/assets/home/risk-${item.key}.svg" alt="" width="360" height="260" />
+<img src="/assets/home/risk-${item.key}.svg" alt="" loading="lazy" decoding="async" width="360" height="260" />
 <div class="risk-card-copy">
 <h3>${esc(item.name)}</h3>
 <p>${esc(item.body)}</p>
@@ -45,7 +45,7 @@ ${c.hero.metrics.map((metric) => `<li>${esc(metric)}</li>`).join("")}
 </ul>
 </div>
 <figure class="home-hero-figure">
-<img src="/assets/home/${visuals.hero}" alt="" width="656" height="704" />
+<img src="/assets/home/${visuals.hero}" alt="" fetchpriority="high" decoding="async" width="656" height="704" />
 </figure>
 </section>
 <section class="home-risks" id="risks" aria-labelledby="risks-title">
@@ -68,7 +68,7 @@ ${risks}
 <p>${esc(c.relevance.body)}</p>
 </div>
 <figure class="home-relevance-figure">
-<img src="/assets/home/${visuals.relevance}" alt="" width="770" height="584" />
+<img src="/assets/home/${visuals.relevance}" alt="" loading="lazy" decoding="async" width="770" height="584" />
 </figure>
 </section>
 <section class="home-clarity" id="clarity" aria-labelledby="clarity-title">
@@ -78,7 +78,7 @@ ${risks}
 <p>${esc(c.clarity.body)}</p>
 </header>
 <div class="home-clarity-stage">
-<img class="home-clarity-figure" src="/assets/home/${visuals.clarity}" alt="" width="1240" height="630" />
+<img class="home-clarity-figure" src="/assets/home/${visuals.clarity}" alt="" loading="lazy" decoding="async" width="1240" height="630" />
 <ol class="home-clarity-list">${clarity}</ol>
 </div>
 </section>

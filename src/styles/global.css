@@ -1,10 +1,10 @@
-:root{--ink:#0F1B24;--ink-2:#16242F;--night-text:#EDEAE3;--night-muted:#8FA0AB;--night-line:rgba(237,234,227,.12);--paper:#F6F6F2;--text:#1C2A33;--muted:#5D6B74;--hairline:#D9DAD3;--lamp:#E2A144;--lamp-bright:#F0B45C;--ok:#2E7D5B;--error:#A6402F;--font-body:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;--font-display:Georgia,"Songti SC","STSong","Source Han Serif SC","Noto Serif CJK SC",serif;--font-mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;--pad-x:clamp(1.25rem,6vw,5.5rem);--pad-y:clamp(3.5rem,8vw,7.5rem)}
+:root{--ink:#0F1B24;--ink-2:#16242F;--night-text:#EDEAE3;--night-muted:#8FA0AB;--night-line:rgba(237,234,227,.12);--paper:#F6F6F2;--text:#1C2A33;--muted:#5D6B74;--hairline:#D9DAD3;--control-border:#7F8A91;--lamp:#E2A144;--lamp-bright:#F0B45C;--ok:#2E7D5B;--error:#A6402F;--font-body:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;--font-display:Georgia,"Songti SC","STSong","Source Han Serif SC","Noto Serif CJK SC",serif;--font-mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;--pad-x:clamp(1.25rem,6vw,5.5rem);--pad-y:clamp(3.5rem,8vw,7.5rem)}
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
 body{margin:0;background:var(--paper);color:var(--text);font-family:var(--font-body);line-height:1.75;-webkit-font-smoothing:antialiased}
 a{color:inherit}
 img,svg{display:block;max-width:100%}
-:focus-visible{outline:3px solid var(--lamp);outline-offset:3px}
+:focus-visible{outline:2px solid #fff;outline-offset:2px;box-shadow:0 0 0 4px var(--text)}
 .skip-link{position:absolute;left:1rem;top:-5rem;background:var(--lamp);color:var(--ink);padding:.7rem 1rem;z-index:20;text-decoration:none;font-weight:600}
 .skip-link:focus{top:1rem}
 .mono{font-family:var(--font-mono);font-size:.67rem;letter-spacing:.16em;text-transform:uppercase}
@@ -32,7 +32,7 @@ h2.day-title{font-family:var(--font-display);font-weight:500;font-size:clamp(1.6
 #feedback form{max-width:34rem}
 .fb-body{color:var(--muted);max-width:26rem}
 label{display:block;font-size:.85rem;font-weight:580;margin:1.15rem 0 .45rem}
-textarea,input[type=text]{width:100%;font:inherit;font-size:.95rem;color:inherit;background:#fff;border:1px solid var(--hairline);padding:.9rem 1rem;transition:border-color .15s}
+textarea,input[type=text]{width:100%;font:inherit;font-size:.95rem;color:inherit;background:#fff;border:1px solid var(--control-border);padding:.9rem 1rem;transition:border-color .15s}
 textarea:hover,input[type=text]:hover{border-color:var(--muted)}
 textarea{min-height:9.5rem;resize:vertical}
 .field-hint{font-size:.8rem;color:var(--muted);margin:.95rem 0 0;line-height:1.65}

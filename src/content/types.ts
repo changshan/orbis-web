@@ -50,6 +50,7 @@ export interface FeedbackContent {
 }
 
 export interface PrivacyContent {
+  meta: { title: string; description: string };
   title: string;
   intro: string;
   sections: ReadonlyArray<{ title: string; body: string }>;

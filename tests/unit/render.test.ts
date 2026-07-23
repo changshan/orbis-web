@@ -86,6 +86,35 @@ describe("renderHome", () => {
     }
   });
 
+  it("首屏视觉优先加载，后续视觉延迟并异步解码", () => {
+    const imageTag = (src: string): string => {
+      const source = zh.indexOf(`src="${src}"`);
+      const start = zh.lastIndexOf("<img", source);
+      const end = zh.indexOf("/>", start);
+      expect(source, src).toBeGreaterThanOrEqual(0);
+      return zh.slice(start, end + 2);
+    };
+    const hero = imageTag("/assets/home/hero-radar.png");
+    expect(hero).toContain('fetchpriority="high"');
+    expect(hero).toContain('decoding="async"');
+    expect(hero).not.toContain('loading="lazy"');
+
+    for (const src of [
+      "/assets/home/risk-earthquake.svg",
+      "/assets/home/risk-rain.svg",
+      "/assets/home/risk-heatwave.svg",
+      "/assets/home/risk-flood.svg",
+      "/assets/home/risk-wildfire.svg",
+      "/assets/home/risk-tornado.svg",
+      "/assets/home/relevance.png",
+      "/assets/home/clarity.png"
+    ]) {
+      const tag = imageTag(src);
+      expect(tag, src).toContain('loading="lazy"');
+      expect(tag, src).toContain('decoding="async"');
+    }
+  });
+
   it("英文首页使用独立的英文视觉素材", () => {
     const englishAssets = ["hero-radar.en.svg", "relevance.en.svg", "clarity.en.svg"];
     for (const asset of englishAssets) {
@@ -126,8 +155,13 @@ describe("renderHome", () => {
 describe("其余页面", () => {
   it("隐私页含四个分节并从导航返回首页锚点", () => {
     const privacy = renderPrivacy("zh");
+    const englishPrivacy = renderPrivacy("en");
     expect(privacy.match(/<h2/g)!.length).toBeGreaterThanOrEqual(4);
-    expect(renderPrivacy("en")).toContain("Privacy notice");
+    expect(englishPrivacy).toContain("Privacy notice");
+    expect(privacy).toContain("<title>隐私说明 | Orbis</title>");
+    expect(privacy).toContain('name="description" content="了解 Orbis 在反馈过程中处理哪些信息、如何使用以及保留期限。"');
+    expect(englishPrivacy).toContain("<title>Privacy notice | Orbis</title>");
+    expect(englishPrivacy).toContain('name="description" content="Learn what information Orbis processes for feedback, how it is used, and how long it is retained."');
     expect(privacy).toContain('href="/zh/">为何 Orbis</a>');
     for (const section of ["principles", "feedback"]) {
       expect(privacy).toContain(`href="/zh/#${section}"`);

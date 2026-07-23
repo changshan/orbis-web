@@ -73,6 +73,10 @@ export const en = {
     uncertain: "We cannot confirm delivery. Retrying may send a duplicate email."
   },
   privacy: {
+    meta: {
+      title: "Privacy notice | Orbis",
+      description: "Learn what information Orbis processes for feedback, how it is used, and how long it is retained."
+    },
     title: "Privacy notice", intro: "Orbis processes only the minimum information needed for this feedback.",
     sections: [
       { title: "What we process", body: "The feedback message, contact details you choose to provide, page language, and submission time." },

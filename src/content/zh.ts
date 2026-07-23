@@ -72,6 +72,10 @@ export const zh = {
     uncertain: "暂时无法确认是否送达；重试可能产生重复邮件。"
   },
   privacy: {
+    meta: {
+      title: "隐私说明 | Orbis",
+      description: "了解 Orbis 在反馈过程中处理哪些信息、如何使用以及保留期限。"
+    },
     title: "隐私说明", intro: "Orbis 只处理完成本次反馈所需的最少信息。",
     sections: [
       { title: "我们处理什么", body: "反馈正文、你主动留下的联系方式、页面语言和提交时间。" },

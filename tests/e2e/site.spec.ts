@@ -70,6 +70,16 @@ test("320px 无横向滚动", async ({ page }) => {
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(true);
 });
 
+test("反馈控件具有双层高对比度焦点指示", async ({ page }) => {
+  await page.goto("/zh/");
+  const message = page.locator('textarea[name="message"]');
+  await message.focus();
+  await expect(message).toHaveCSS("outline-color", "rgb(255, 255, 255)");
+  await expect(message).toHaveCSS("outline-width", "2px");
+  await expect(message).toHaveCSS("outline-offset", "2px");
+  await expect(message).toHaveCSS("box-shadow", /rgb\(28, 42, 51\)/);
+});
+
 test("首页为何 Orbis 保持当前首页且只有一个导航定位", async ({ page }) => {
   await page.goto("/zh/");
   const why = page.getByRole("navigation").getByRole("link", { name: "为何 Orbis" });
