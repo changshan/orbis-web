@@ -17,4 +17,19 @@ describe("双语内容", () => {
     expect(getContent("zh").why.questions).toHaveLength(3);
     expect(getContent("en").why.questions[0]).toBe("What happened?");
   });
+  it("产品页双语内容和六类风险齐全", () => {
+    expect(getContent("zh").nav.product).toBe("产品");
+    expect(getContent("en").nav.product).toBe("How it works");
+    expect(getContent("zh").product.hero.title).toBe("你的安全，时刻守护。");
+    expect(getContent("en").product.hero.title).toBe("Keeping watch over your safety.");
+    expect(getContent("zh").product.risks.items.map((item) => item.name)).toEqual([
+      "地震", "暴雨", "热浪", "洪水", "山火", "龙卷风"
+    ]);
+    expect(getContent("en").product.risks.items.map((item) => item.name)).toEqual([
+      "Earthquake", "Heavy rain", "Heatwave", "Flood", "Wildfire", "Tornado"
+    ]);
+    expect(getContent("zh").product.risks.note).toContain("实际可用类型取决于当地信息源与服务范围");
+    expect(getContent("en").product.risks.note).toContain("Availability depends on local information sources and service coverage");
+    expect(JSON.stringify(CONTENT)).not.toMatch(/强风|HIGH WIND/i);
+  });
 });

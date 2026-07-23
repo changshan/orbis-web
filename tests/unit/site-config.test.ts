@@ -8,6 +8,8 @@ describe("site config", () => {
   });
   it("生成稳定的本地化路径", () => {
     expect(localizedPath("zh", "home")).toBe("/zh/");
+    expect(localizedPath("zh", "product")).toBe("/zh/product/");
+    expect(localizedPath("en", "product")).toBe("/en/product/");
     expect(localizedPath("en", "privacy")).toBe("/en/privacy/");
   });
   it("origin 可用环境变量覆盖", () => {
