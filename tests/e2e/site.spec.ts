@@ -47,6 +47,21 @@ test("Hero 使用重新生成的 1.1 倍雷达图且不依赖 CSS 缩放", async
     .toEqual([656, 704]);
 });
 
+test("深浅背景通过装饰层平滑过渡", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/zh/");
+  const transition = page.locator(".home-color-transition");
+  await expect(transition).toHaveAttribute("aria-hidden", "true");
+  await expect(transition).toHaveCSS("height", "144px");
+  await expect(transition).toHaveCSS("background-image", /linear-gradient/);
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  await expect(transition).toHaveCSS("height", "96px");
+  expect(await page.evaluate(() =>
+    document.documentElement.scrollWidth <= document.documentElement.clientWidth
+  )).toBe(true);
+});
+
 test("320px 无横向滚动", async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 800 });
   await page.goto("/zh/");

@@ -68,6 +68,9 @@ footer a{color:inherit}
 .home-hero-figure{min-width:0;margin:0;padding:0;display:grid;place-items:center;background:transparent;overflow:hidden}
 .home-hero-figure img{width:min(100%,656px);height:auto;max-height:704px;object-fit:contain}
 .home-risks{background:var(--ink);color:var(--night-text);padding:84px 64px 128px}
+.home-color-transition{position:relative;height:144px;overflow:hidden;background:linear-gradient(to bottom,var(--ink) 0%,#31404a 34%,#879197 68%,var(--paper) 100%)}
+.home-color-transition::before{content:"";position:absolute;inset:0 0 45%;background-image:linear-gradient(rgba(143,160,171,.16) 1px,transparent 1px),linear-gradient(90deg,rgba(143,160,171,.16) 1px,transparent 1px);background-position:0 16px;background-size:144px 32px;mask-image:linear-gradient(to bottom,#000,transparent);-webkit-mask-image:linear-gradient(to bottom,#000,transparent)}
+.home-color-transition::after{content:"";position:absolute;left:50%;top:38%;width:6px;height:6px;border-radius:50%;background:var(--lamp-bright);transform:translate(-50%,-50%);box-shadow:0 0 20px 10px rgba(240,180,92,.18)}
 .home-section-head{max-width:1312px;margin:0 auto 44px;display:flex;align-items:flex-end;justify-content:space-between;gap:48px}
 .home-section-head h2,.home-relevance h2,.home-clarity h2,.home-boundary h2{font-family:var(--font-display);font-weight:500;letter-spacing:.005em}
 .home-section-head h2{font-size:clamp(2.3rem,3.7vw,3.25rem);line-height:1.25;margin:16px 0 0}
@@ -121,6 +124,9 @@ footer a{color:inherit}
 .home-hero-figure{padding:0;min-height:26rem}
 .home-risks,.home-relevance,.home-clarity,.home-boundary{padding-left:var(--pad-x);padding-right:var(--pad-x)}
 .home-risks{padding-top:64px;padding-bottom:80px}
+.home-color-transition{height:96px}
+.home-color-transition::before{background-position:0 12px;background-size:64px 24px}
+.home-color-transition::after{width:5px;height:5px;box-shadow:0 0 16px 8px rgba(240,180,92,.16)}
 .home-section-head{align-items:flex-start;flex-direction:column;gap:24px}
 .home-risk-grid{grid-template-columns:1fr}
 .risk-card{width:100%;height:auto;min-height:430px}

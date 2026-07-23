@@ -32,7 +32,11 @@ describe("build output", () => {
       expect(html.match(/class="risk-card"/g)).toHaveLength(6);
       expect(html).toContain('id="principles"');
       expect(html).toContain("data-feedback-form");
+      expect(html).toContain('<div class="home-color-transition" aria-hidden="true"></div>');
     }
+    const css = readFileSync("dist/assets/global.css", "utf8");
+    expect(css).toContain(".home-color-transition");
+    expect(css).toContain("linear-gradient");
     expect(en).toContain('/assets/home/hero-radar.en.svg');
     expect(en).toContain('/assets/home/relevance.en.svg');
     expect(en).toContain('/assets/home/clarity.en.svg');

@@ -60,6 +60,7 @@ ${c.hero.metrics.map((metric) => `<li>${esc(metric)}</li>`).join("")}
 ${risks}
 </div>
 </section>
+<div class="home-color-transition" aria-hidden="true"></div>
 <section class="home-relevance" id="relevance" aria-labelledby="relevance-title">
 <div class="home-relevance-copy">
 <p class="mono">${esc(c.relevance.eyebrow)}</p>

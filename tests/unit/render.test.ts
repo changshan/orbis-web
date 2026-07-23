@@ -31,6 +31,17 @@ describe("renderHome", () => {
     expect(zh).not.toMatch(/强风|HIGH WIND/i);
   });
 
+  it("在风险与相关性之间渲染纯装饰背景过渡", () => {
+    for (const html of [zh, en]) {
+      expect(html).toContain('<div class="home-color-transition" aria-hidden="true"></div>');
+      const risksEnd = html.indexOf("</section>", html.indexOf('id="risks"'));
+      const transition = html.indexOf('class="home-color-transition"');
+      const relevance = html.indexOf('id="relevance"');
+      expect(risksEnd).toBeLessThan(transition);
+      expect(transition).toBeLessThan(relevance);
+    }
+  });
+
   it("保留完整反馈表单契约", () => {
     expect(zh.match(/data-feedback-form/g)).toHaveLength(1);
     for (const attr of [
