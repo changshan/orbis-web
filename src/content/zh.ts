@@ -40,15 +40,15 @@ export const zh = {
     },
     hero: {
       eyebrow: "QUIET PROTECTION / 清晰判断",
-      title: "你的安全，时刻守护。",
-      titleLines: ["你的安全，", "时刻守护。"],
+      title: "你的安全，时刻守护",
+      titleLines: ["你的安全，", "时刻守护"],
       body: "Orbis 围绕你选择的地点，理解不同风险是否相关，并在重要变化发生时，提供简洁、可信的信息。",
       action: "了解 Orbis 如何判断",
       metrics: ["1  守护地点", "6  风险类型", "4  关键信息"]
     },
     risks: {
       eyebrow: "01 · WHAT WE WATCH",
-      title: "多种风险，持续关注。",
+      title: "各种风险，全面感知",
       note: "展示可纳入 Orbis 判断框架的风险类型；实际可用类型取决于当地信息源与服务范围。",
       items: [
         { key: "earthquake", name: "地震", body: "了解震级、位置、时间，以及与守护地点的距离。" },
@@ -61,12 +61,12 @@ export const zh = {
     },
     relevance: {
       eyebrow: "02 · RELEVANCE",
-      title: "保留真正必要的提醒。",
+      title: "保留真正必要的提醒",
       body: "Orbis 结合守护地点、影响范围和风险程度，过滤与你无关的信息。"
     },
     clarity: {
       eyebrow: "03 · ONE CLEAR ALERT",
-      title: "重要信息，优先呈现。",
+      title: "重要信息，永不遗漏",
       body: "灾害类型、影响地点、关键时间和首要行动，按照重要程度呈现。",
       items: [
         { tag: "01 · WHAT", title: "发生了什么", body: "灾害类型与风险程度" },

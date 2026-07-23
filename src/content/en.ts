@@ -49,7 +49,7 @@ export const en = {
     },
     risks: {
       eyebrow: "01 · WHAT WE WATCH",
-      title: "Multiple risks, kept in view.",
+      title: "Comprehensive awareness across risks.",
       note: "Examples of risks that can fit the Orbis relevance framework. Availability depends on local information sources and service coverage.",
       items: [
         { key: "earthquake", name: "Earthquake", body: "Understand magnitude, location, timing, and distance from a place you care about." },
@@ -67,7 +67,7 @@ export const en = {
     },
     clarity: {
       eyebrow: "03 · ONE CLEAR ALERT",
-      title: "Important information, presented first.",
+      title: "Important information, never missed.",
       body: "Risk type, affected place, key timing, and the first action are presented in order of importance.",
       items: [
         { tag: "01 · WHAT", title: "What happened", body: "Risk type and severity" },

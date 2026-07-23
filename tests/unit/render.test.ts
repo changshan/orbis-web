@@ -90,7 +90,7 @@ describe("renderProduct", () => {
   });
 
   it("Hero 保留设计稿的两行标题结构", () => {
-    expect(zh).toContain("<span>你的安全，</span><span>时刻守护。</span>");
+    expect(zh).toContain("<span>你的安全，</span><span>时刻守护</span>");
     expect(en).toContain("<span>Keeping watch over</span><span>your safety.</span>");
   });
 
@@ -114,7 +114,8 @@ describe("renderProduct", () => {
       "risk-flood.svg", "risk-wildfire.svg", "risk-tornado.svg", "relevance.png", "clarity.png"
     ]) expect(zh, asset).toContain(`/assets/product/${asset}`);
     expect(zh).toContain("实际可用类型取决于当地信息源与服务范围");
-    expect(zh).toContain("重要信息，优先呈现。");
+    expect(zh).toContain("各种风险，全面感知");
+    expect(zh).toContain("重要信息，永不遗漏");
     expect(en).toContain("Availability depends on local information sources and service coverage");
     for (const html of [zh, en]) {
       expect(html).not.toMatch(/强风|HIGH WIND/i);

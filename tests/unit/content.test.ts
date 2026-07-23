@@ -20,8 +20,11 @@ describe("双语内容", () => {
   it("产品页双语内容和六类风险齐全", () => {
     expect(getContent("zh").nav.product).toBe("产品");
     expect(getContent("en").nav.product).toBe("How it works");
-    expect(getContent("zh").product.hero.title).toBe("你的安全，时刻守护。");
+    expect(getContent("zh").product.hero.title).toBe("你的安全，时刻守护");
     expect(getContent("en").product.hero.title).toBe("Keeping watch over your safety.");
+    expect(getContent("zh").product.risks.title).toBe("各种风险，全面感知");
+    expect(getContent("zh").product.relevance.title).toBe("保留真正必要的提醒");
+    expect(getContent("zh").product.clarity.title).toBe("重要信息，永不遗漏");
     expect(getContent("zh").product.risks.items.map((item) => item.name)).toEqual([
       "地震", "暴雨", "热浪", "洪水", "山火", "龙卷风"
     ]);
