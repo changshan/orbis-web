@@ -14,17 +14,29 @@ describe("build output", () => {
     for (const f of [
       "dist/index.html", "dist/404.html",
       "dist/zh/index.html", "dist/en/index.html",
-      "dist/zh/product/index.html", "dist/en/product/index.html",
       "dist/zh/privacy/index.html", "dist/en/privacy/index.html",
       "dist/assets/global.css", "dist/assets/lang.js", "dist/assets/feedback.js",
       "dist/sitemap.xml", "dist/robots.txt", "dist/_headers", "dist/favicon.svg"
     ]) expect(existsSync(f), f).toBe(true);
+    expect(existsSync("dist/zh/product/index.html")).toBe(false);
+    expect(existsSync("dist/en/product/index.html")).toBe(false);
   });
-  it("sitemap 与 robots 使用构建 origin", () => {
+  it("中英文首页是新的唯一能力页面", () => {
+    const zh = readFileSync("dist/zh/index.html", "utf8");
+    const en = readFileSync("dist/en/index.html", "utf8");
+    expect(zh).toContain("<title>Orbis 产品能力｜你的安全，时刻守护</title>");
+    expect(en).toContain("<title>How Orbis works | Keeping watch over your safety</title>");
+    for (const html of [zh, en]) {
+      expect(html.match(/class="risk-card"/g)).toHaveLength(6);
+      expect(html).toContain('id="principles"');
+      expect(html).toContain("data-feedback-form");
+    }
+  });
+  it("sitemap 与 robots 使用构建 origin且不包含旧产品页", () => {
     const sitemap = readFileSync("dist/sitemap.xml", "utf8");
     expect(sitemap).toContain("https://orbis.example/zh/");
-    expect(sitemap).toContain("https://orbis.example/zh/product/");
-    expect(sitemap).toContain("https://orbis.example/en/product/");
+    expect(sitemap).toContain("https://orbis.example/en/");
+    expect(sitemap).not.toContain("/product/");
     expect(readFileSync("dist/robots.txt", "utf8")).toContain("Sitemap: https://orbis.example/sitemap.xml");
   });
   it("_headers 含 CSP 与安全头", () => {

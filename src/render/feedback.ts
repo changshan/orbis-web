@@ -6,7 +6,7 @@ export function renderFeedbackSection(locale: Locale, content: WebsiteContent): 
   const c = content.feedback;
   return `<section class="day" id="feedback" aria-labelledby="feedback-title">
 <div class="fb-intro">
-<p class="section-code mono">04 · FEEDBACK</p>
+<p class="section-code mono">06 · FEEDBACK</p>
 <h2 class="day-title" id="feedback-title">${esc(c.title)}</h2>
 <p class="fb-body">${esc(c.body)}</p>
 </div>

@@ -44,7 +44,7 @@ export function renderHeader(locale: Locale, page: LocalizedPage, content: Websi
   return `<header class="site-header">
 <a class="brand" href="${localizedPath(locale, "home")}" aria-label="Orbis home"><span class="brand-mark" aria-hidden="true"></span><span>ORBIS</span></a>
 <nav class="site-nav" aria-label="Primary">
-<a href="${localizedPath(locale, "product")}"${page === "product" ? ' aria-current="page"' : ""}>${esc(content.nav.why)}</a>
+<a href="${localizedPath(locale, "home")}"${page === "home" ? ' aria-current="page"' : ""}>${esc(content.nav.why)}</a>
 <a href="${sectionHref(locale, page, "principles")}">${esc(content.nav.principles)}</a>
 <a href="${sectionHref(locale, page, "feedback")}">${esc(content.nav.feedback)}</a>
 <a href="${localizedPath(locale, "privacy")}">${esc(content.nav.privacy)}</a>
@@ -56,6 +56,6 @@ export function renderHeader(locale: Locale, page: LocalizedPage, content: Websi
 export function renderFooter(locale: Locale, page: LocalizedPage, content: WebsiteContent): string {
   return `<footer>
 <p>${esc(content.footer.boundary)}</p>
-<p><a href="${localizedPath(locale, "product")}">${esc(content.nav.why)}</a> · <a href="${sectionHref(locale, page, "feedback")}">${esc(content.nav.feedback)}</a> · <a href="${localizedPath(locale, "privacy")}">${esc(content.nav.privacy)}</a> · ${esc(content.footer.copyright)}</p>
+<p><a href="${localizedPath(locale, "home")}">${esc(content.nav.why)}</a> · <a href="${sectionHref(locale, page, "feedback")}">${esc(content.nav.feedback)}</a> · <a href="${localizedPath(locale, "privacy")}">${esc(content.nav.privacy)}</a> · ${esc(content.footer.copyright)}</p>
 </footer>`;
 }

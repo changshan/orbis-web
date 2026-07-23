@@ -13,13 +13,15 @@ test("原生表单提交并收到本地化 HTML 回执", async ({ page }) => {
 
 test("无 JS 时品牌内容完整可读", async ({ page }) => {
   await page.goto("/zh/");
-  await expect(page.locator("h1")).toContainText("任何时候");
-  await expect(page.locator("#boundary")).toContainText("不替代当地官方预警");
+  await expect(page.locator("h1")).toContainText("你的安全");
+  await expect(page.locator(".home-risks")).toContainText("龙卷风");
+  await expect(page.locator("#principles li")).toHaveCount(3);
+  await expect(page.locator("#boundary")).toContainText("Orbis 不替代");
 });
 
-test("无 JS 时产品能力与反馈表单完整可用", async ({ page }) => {
-  await page.goto("/zh/product/");
-  await expect(page.locator(".product-risks")).toContainText("龙卷风");
-  await expect(page.locator("#product-boundary")).toContainText("不替代当地官方预警");
+test("无 JS 时首页能力与反馈表单完整可用", async ({ page }) => {
+  await page.goto("/zh/");
+  await expect(page.locator("#relevance")).toBeVisible();
+  await expect(page.locator("#clarity")).toBeVisible();
   await expect(page.getByLabel("你的反馈")).toBeVisible();
 });

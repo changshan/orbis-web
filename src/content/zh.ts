@@ -1,13 +1,47 @@
 import type { WebsiteContent } from "./types";
 
 export const zh = {
-  meta: { title: "Orbis｜任何时候，为你守护", description: "Orbis 为你在意的地点带来安静、相关、可信的风险理解。" },
+  meta: {
+    title: "Orbis 产品能力｜你的安全，时刻守护",
+    description: "了解 Orbis 如何围绕守护地点判断风险相关性，并清晰呈现真正必要的提醒。"
+  },
   nav: { why: "为何 Orbis", principles: "我们的原则", feedback: "反馈", privacy: "隐私", skip: "跳到主要内容", langLabel: "English" },
   hero: {
-    eyebrow: "安静守护 / 清晰判断", titleLead: "任何时候，", titleMain: "为你守护", titleDot: "。",
-    body: "Orbis 为你在意的地点带来安静、相关、可信的风险理解，让下一步更清楚。",
-    action: "了解我们的理念", watchLabel: "KEEPING WATCH / 守护",
-    youLabel: "你 / YOU", placeLabel: "你在意的地方", placeName: "Geneva"
+    eyebrow: "QUIET PROTECTION / 清晰判断",
+    title: "你的安全，时刻守护",
+    titleLines: ["你的安全，", "时刻守护"],
+    body: "Orbis 围绕你选择的地点，理解不同风险是否相关，并在重要变化发生时，提供简洁、可信的信息。",
+    action: "了解 Orbis 如何判断",
+    metrics: ["1  守护地点", "6  风险类型", "4  关键信息"]
+  },
+  risks: {
+    eyebrow: "01 · WHAT WE WATCH",
+    title: "各种风险，全面感知",
+    note: "展示可纳入 Orbis 判断框架的风险类型；实际可用类型取决于当地信息源与服务范围。",
+    items: [
+      { key: "earthquake", name: "地震", body: "了解震级、位置、时间，以及与守护地点的距离。" },
+      { key: "rain", name: "暴雨", body: "了解影响区域、持续时间和风险程度。" },
+      { key: "heatwave", name: "热浪", body: "在高温到来前，了解影响时间和注意事项。" },
+      { key: "flood", name: "洪水", body: "了解水位变化、影响范围和官方行动信息。" },
+      { key: "wildfire", name: "山火", body: "了解火情位置、蔓延范围和相关限制。" },
+      { key: "tornado", name: "龙卷风", body: "了解发生位置、影响范围和紧急避险信息。" }
+    ]
+  },
+  relevance: {
+    eyebrow: "02 · RELEVANCE",
+    title: "保留真正必要的提醒",
+    body: "Orbis 结合守护地点、影响范围和风险程度，过滤与你无关的信息。"
+  },
+  clarity: {
+    eyebrow: "03 · ONE CLEAR ALERT",
+    title: "重要信息，永不遗漏",
+    body: "灾害类型、影响地点、关键时间和首要行动，按照重要程度呈现。",
+    items: [
+      { tag: "01 · WHAT", title: "发生了什么", body: "灾害类型与风险程度" },
+      { tag: "02 · WHERE", title: "影响哪里", body: "与你选择地点的关系" },
+      { tag: "03 · WHEN", title: "关键时间", body: "发生、开始或更新时间" },
+      { tag: "04 · ACTION", title: "首先关注什么", body: "审核后的固定行动表达" }
+    ]
   },
   principles: {
     title: "三条原则",
@@ -17,7 +51,12 @@ export const zh = {
       { tag: "TRUSTED", title: "可信", body: "保持克制，诚实表达来源、边界与不确定性。" }
     ]
   },
-  boundary: { title: "清楚理解边界", body: "Orbis 帮助你理解风险，但不替代当地官方预警、政府指令或紧急服务。遇到紧急情况，请立即联系当地紧急服务。" },
+  boundary: {
+    eyebrow: "05 · CLEAR BOUNDARIES",
+    title: "可信，也包括明确边界。",
+    body: "Orbis 对信息来源、不确定性和能力范围保持透明。Orbis 不替代当地官方预警、政府指令或紧急服务；遇到紧急情况，请立即联系当地紧急服务。",
+    rules: ["来源可见 · 保留官方入口", "不确定性可见 · 不包装成确定", "行动保持克制 · 不预测、不保证"]
+  },
   feedback: {
     title: "直接告诉我们", body: "建议、问题，或任何你希望 Orbis 知道的事。",
     messageLabel: "你的反馈", messagePlaceholder: "写下你的建议或问题",
@@ -27,55 +66,6 @@ export const zh = {
     validation: "请填写反馈内容，最多 2000 个字符。",
     rateLimited: "提交较频繁，请一分钟后再试。", unavailable: "暂时无法发送，请稍后重试。",
     uncertain: "暂时无法确认是否送达；重试可能产生重复邮件。"
-  },
-  product: {
-    meta: {
-      title: "Orbis 产品能力｜你的安全，时刻守护",
-      description: "了解 Orbis 如何围绕守护地点判断风险相关性，并清晰呈现真正必要的提醒。"
-    },
-    hero: {
-      eyebrow: "QUIET PROTECTION / 清晰判断",
-      title: "你的安全，时刻守护",
-      titleLines: ["你的安全，", "时刻守护"],
-      body: "Orbis 围绕你选择的地点，理解不同风险是否相关，并在重要变化发生时，提供简洁、可信的信息。",
-      action: "了解 Orbis 如何判断",
-      metrics: ["1  守护地点", "6  风险类型", "4  关键信息"]
-    },
-    risks: {
-      eyebrow: "01 · WHAT WE WATCH",
-      title: "各种风险，全面感知",
-      note: "展示可纳入 Orbis 判断框架的风险类型；实际可用类型取决于当地信息源与服务范围。",
-      items: [
-        { key: "earthquake", name: "地震", body: "了解震级、位置、时间，以及与守护地点的距离。" },
-        { key: "rain", name: "暴雨", body: "了解影响区域、持续时间和风险程度。" },
-        { key: "heatwave", name: "热浪", body: "在高温到来前，了解影响时间和注意事项。" },
-        { key: "flood", name: "洪水", body: "了解水位变化、影响范围和官方行动信息。" },
-        { key: "wildfire", name: "山火", body: "了解火情位置、蔓延范围和相关限制。" },
-        { key: "tornado", name: "龙卷风", body: "了解发生位置、影响范围和紧急避险信息。" }
-      ]
-    },
-    relevance: {
-      eyebrow: "02 · RELEVANCE",
-      title: "保留真正必要的提醒",
-      body: "Orbis 结合守护地点、影响范围和风险程度，过滤与你无关的信息。"
-    },
-    clarity: {
-      eyebrow: "03 · ONE CLEAR ALERT",
-      title: "重要信息，永不遗漏",
-      body: "灾害类型、影响地点、关键时间和首要行动，按照重要程度呈现。",
-      items: [
-        { tag: "01 · WHAT", title: "发生了什么", body: "灾害类型与风险程度" },
-        { tag: "02 · WHERE", title: "影响哪里", body: "与你选择地点的关系" },
-        { tag: "03 · WHEN", title: "关键时间", body: "发生、开始或更新时间" },
-        { tag: "04 · ACTION", title: "首先关注什么", body: "审核后的固定行动表达" }
-      ]
-    },
-    boundary: {
-      eyebrow: "04 · CLEAR BOUNDARIES",
-      title: "可信，也包括明确边界。",
-      body: "Orbis 对信息来源、不确定性和能力范围保持透明。产品不替代当地官方预警、政府指令或紧急服务；遇到紧急情况，请立即联系当地紧急服务。",
-      rules: ["来源可见 · 保留官方入口", "不确定性可见 · 不包装成确定", "行动保持克制 · 不预测、不保证"]
-    }
   },
   privacy: {
     title: "隐私说明", intro: "Orbis 只处理完成本次反馈所需的最少信息。",
