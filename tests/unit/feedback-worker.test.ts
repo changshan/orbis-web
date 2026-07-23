@@ -17,6 +17,15 @@ const jsonRequest = (body: unknown) => new Request("https://orbis.example/api/fe
 });
 
 describe("Feedback Worker", () => {
+  it("根域名按浏览器语言直达新版为何 Orbis 能力页", async () => {
+    const res = await worker.fetch(new Request("https://myorbis.xyz/", {
+      headers: { "accept-language": "zh-CN,zh;q=0.9,en;q=0.8" }
+    }), env());
+    expect(res.status).toBe(302);
+    expect(res.headers.get("location")).toBe("https://myorbis.xyz/zh/product/");
+    expect(res.headers.get("cache-control")).toBe("no-store");
+    expect(res.headers.get("vary")).toBe("accept-language");
+  });
   it("health 返回 no-store 且不发信", async () => {
     const e = env();
     const res = await worker.fetch(new Request("https://orbis.example/api/health"), e);

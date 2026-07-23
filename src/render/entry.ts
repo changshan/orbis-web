@@ -11,7 +11,7 @@ export function renderEntry(): string {
 <body class="entry">
 <main>
 <h1>ORBIS</h1>
-<p><a href="/zh/">中文</a> · <a href="/en/">English</a></p>
+<p><a href="/zh/product/">中文</a> · <a href="/en/product/">English</a></p>
 </main>
 <script src="/assets/lang.js" defer></script>
 </body>

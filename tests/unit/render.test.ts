@@ -65,10 +65,10 @@ describe("其余页面", () => {
     }
     expect(privacy).toContain('class="lang-switch" href="/en/privacy/"');
   });
-  it("语言入口含双语链接与外链脚本", () => {
+  it("语言入口的无脚本链接直达新版为何 Orbis 能力页", () => {
     const entry = renderEntry();
-    expect(entry).toContain('href="/zh/"');
-    expect(entry).toContain('href="/en/"');
+    expect(entry).toContain('href="/zh/product/"');
+    expect(entry).toContain('href="/en/product/"');
     expect(entry).toContain('src="/assets/lang.js"');
     expect(entry).not.toMatch(/<script(?![^>]*\bsrc=)/i);
   });

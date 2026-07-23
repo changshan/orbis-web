@@ -19,6 +19,17 @@ export interface WorkerEnv {
 export default {
   async fetch(request: Request, env: WorkerEnv): Promise<Response> {
     const url = new URL(request.url);
+    if (url.pathname === "/" && request.method === "GET") {
+      const locale = request.headers.get("accept-language")?.toLowerCase().startsWith("zh") ? "zh" : "en";
+      return new Response(null, {
+        status: 302,
+        headers: {
+          location: new URL(`/${locale}/product/`, url).toString(),
+          "cache-control": "no-store",
+          vary: "accept-language"
+        }
+      });
+    }
     if (url.pathname === "/api/health") {
       return request.method === "GET"
         ? Response.json({ ok: true }, { headers: { "cache-control": "no-store", "x-content-type-options": "nosniff" } })

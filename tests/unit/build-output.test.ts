@@ -3,10 +3,10 @@ import { existsSync, readFileSync } from "node:fs";
 import { beforeAll, describe, expect, it } from "vitest";
 
 beforeAll(() => {
-  execFileSync("npx", ["tsx", "scripts/build.ts"], {
+  execFileSync(process.execPath, ["--import", "tsx", "scripts/build.ts"], {
     env: { ...process.env, PUBLIC_SITE_ORIGIN: "https://orbis.example" }, stdio: "pipe"
   });
-  execFileSync("npx", ["tsx", "scripts/verify.ts"], { stdio: "pipe" });
+  execFileSync(process.execPath, ["--import", "tsx", "scripts/verify.ts"], { stdio: "pipe" });
 }, 120_000);
 
 describe("build output", () => {

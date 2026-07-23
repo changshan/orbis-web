@@ -8,13 +8,15 @@ for (const locale of ["zh", "en"] as const) {
   });
 }
 
-test("浏览器语言自动进入中文并可手动切换", async ({ browser }) => {
+test("根域名自动进入新版为何 Orbis 能力页并可手动切换语言", async ({ browser }) => {
   const context = await browser.newContext({ locale: "zh-CN" });
   const page = await context.newPage();
   await page.goto("/");
-  await expect(page).toHaveURL(/\/zh\/$/);
+  await expect(page).toHaveURL(/\/zh\/product\/$/);
+  await expect(page.getByRole("heading", { level: 1 })).toContainText("你的安全");
+  await expect(page.locator(".risk-card")).toHaveCount(6);
   await page.locator("a.lang-switch").click();
-  await expect(page).toHaveURL(/\/en\/$/);
+  await expect(page).toHaveURL(/\/en\/product\/$/);
   await context.close();
 });
 
