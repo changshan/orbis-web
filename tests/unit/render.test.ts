@@ -3,6 +3,7 @@ import { renderHome } from "../../src/render/home";
 import { renderPrivacy } from "../../src/render/privacy";
 import { renderEntry } from "../../src/render/entry";
 import { renderNotFound } from "../../src/render/notFound";
+import { renderProduct } from "../../src/render/product";
 
 const FORBIDDEN = /\b(waitlist|join beta|app store|download|critical alerts|prediction|guarantee)\b|预测地震|保证安全|不会漏报/i;
 
@@ -70,5 +71,28 @@ describe("其余页面", () => {
     const nf = renderNotFound();
     expect(nf).toContain('href="/zh/"');
     expect(nf).toContain('href="/en/"');
+  });
+});
+
+describe("renderProduct", () => {
+  const zh = renderProduct("zh");
+  const en = renderProduct("en");
+
+  it("导航顺序、当前项与语言切换正确", () => {
+    const nav = zh.match(/<nav[^>]*>([\s\S]*?)<\/nav>/)![1];
+    expect(nav.indexOf("为何 Orbis")).toBeLessThan(nav.indexOf("产品"));
+    expect(nav.indexOf("产品")).toBeLessThan(nav.indexOf("我们的原则"));
+    expect(zh).toContain('href="/zh/product/" aria-current="page"');
+    expect(zh).toContain('class="lang-switch" href="/en/product/"');
+  });
+
+  it("首页与产品页各复用一次完整反馈表单", () => {
+    expect(renderHome("zh").match(/data-feedback-form/g)).toHaveLength(1);
+    expect(zh.match(/data-feedback-form/g)).toHaveLength(1);
+    for (const html of [zh, en]) {
+      expect(html).toContain('action="/api/feedback"');
+      expect(html).toContain('src="/assets/feedback.js"');
+      expect(html).toContain("data-feedback-status");
+    }
   });
 });

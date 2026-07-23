@@ -1,6 +1,7 @@
 import type { Locale } from "../config/site";
 import { getContent } from "../content";
 import { escapeHtml as esc } from "./html";
+import { renderFeedbackSection } from "./feedback";
 import { pageDocument } from "./layout";
 
 const NIGHT_FIELD_SVG = `<svg viewBox="0 0 560 400" aria-hidden="true">
@@ -61,26 +62,7 @@ ${c.principles.items.map((p) => `<li><span class="l-mark" aria-hidden="true"></s
 <p>${esc(c.boundary.body)}</p>
 </div>
 </aside>
-<section class="day" id="feedback" aria-labelledby="feedback-title">
-<div class="fb-intro">
-<p class="section-code mono">04 · FEEDBACK</p>
-<h2 class="day-title" id="feedback-title">${esc(c.feedback.title)}</h2>
-<p class="fb-body">${esc(c.feedback.body)}</p>
-</div>
-<form method="post" action="/api/feedback" novalidate data-feedback-form
- data-sending="${esc(c.feedback.sending)}" data-success="${esc(c.feedback.success)}" data-validation="${esc(c.feedback.validation)}"
- data-rate-limited="${esc(c.feedback.rateLimited)}" data-unavailable="${esc(c.feedback.unavailable)}" data-uncertain="${esc(c.feedback.uncertain)}">
-<input type="hidden" name="locale" value="${locale}" />
-<div class="honeypot" aria-hidden="true"><label for="website-${locale}">Website</label><input id="website-${locale}" type="text" name="website" tabindex="-1" autocomplete="off" /></div>
-<label for="message-${locale}">${esc(c.feedback.messageLabel)}</label>
-<textarea id="message-${locale}" name="message" maxlength="2000" required placeholder="${esc(c.feedback.messagePlaceholder)}" aria-describedby="fb-hint-${locale} fb-status-${locale}"></textarea>
-<label for="contact-${locale}">${esc(c.feedback.contactLabel)}</label>
-<input id="contact-${locale}" type="text" name="contact" maxlength="200" autocomplete="off" placeholder="${esc(c.feedback.contactPlaceholder)}" />
-<p class="field-hint" id="fb-hint-${locale}">${esc(c.feedback.hint)}</p>
-<button class="submit" type="submit">${esc(c.feedback.submit)}</button>
-<p class="status-line" id="fb-status-${locale}" role="status" aria-live="polite" data-feedback-status></p>
-</form>
-</section>`;
+</aside>`;
 
-  return pageDocument(locale, "home", c, hero + "\n" + day, ["/assets/feedback.js"]);
+  return pageDocument(locale, "home", c, hero + "\n" + day + "\n" + renderFeedbackSection(locale, c), ["/assets/feedback.js"]);
 }
