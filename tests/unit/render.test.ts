@@ -52,9 +52,11 @@ describe("其余页面", () => {
     expect(renderPrivacy("zh").match(/<h2/g)!.length).toBeGreaterThanOrEqual(4);
     expect(renderPrivacy("en")).toContain("Privacy notice");
   });
-  it("隐私页导航返回本语言首页锚点且语言切换保留当前页面", () => {
+  it("隐私页导航进入为何 Orbis 能力页，其余锚点返回首页", () => {
     const privacy = renderPrivacy("zh");
-    for (const section of ["why", "principles", "feedback"]) {
+    expect(privacy).toContain('href="/zh/product/">为何 Orbis</a>');
+    expect(privacy).not.toContain('href="/zh/#why"');
+    for (const section of ["principles", "feedback"]) {
       expect(privacy).toContain(`href="/zh/#${section}"`);
       expect(privacy).not.toContain(`href="#${section}"`);
     }
@@ -82,9 +84,12 @@ describe("renderProduct", () => {
     const navMatch = zh.match(/<nav[^>]*>([\s\S]*?)<\/nav>/);
     expect(navMatch).not.toBeNull();
     const nav = navMatch?.[1] ?? "";
-    expect(nav.indexOf("为何 Orbis")).toBeLessThan(nav.indexOf("产品"));
-    expect(nav.indexOf("产品")).toBeLessThan(nav.indexOf("我们的原则"));
-    expect(zh).toContain('href="/zh/product/" aria-current="page"');
+    expect(nav.indexOf("为何 Orbis")).toBeLessThan(nav.indexOf("我们的原则"));
+    expect(nav).not.toContain(">产品</a>");
+    expect(en).not.toContain(">How it works</a>");
+    expect(zh.match(/>为何 Orbis<\/a>/g)).toHaveLength(2);
+    expect(en.match(/>Why Orbis<\/a>/g)).toHaveLength(2);
+    expect(zh).toContain('href="/zh/product/" aria-current="page">为何 Orbis</a>');
     expect(zh).toContain('class="lang-switch" href="/en/product/"');
     expect(zh).toContain('<body class="page-product">');
   });

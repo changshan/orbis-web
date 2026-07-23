@@ -2,7 +2,7 @@ import type { WebsiteContent } from "./types";
 
 export const en = {
   meta: { title: "Orbis | Keeping watch, whenever it matters", description: "Calm, relevant, trustworthy risk understanding for the places you care about." },
-  nav: { why: "Why Orbis", product: "How it works", principles: "Principles", feedback: "Feedback", privacy: "Privacy", skip: "Skip to main content", langLabel: "中文" },
+  nav: { why: "Why Orbis", principles: "Principles", feedback: "Feedback", privacy: "Privacy", skip: "Skip to main content", langLabel: "中文" },
   hero: {
     eyebrow: "Quiet protection / clear judgment", titleLead: "Keeping watch,", titleMain: "whenever it matters", titleDot: ".",
     body: "Orbis brings calm, relevant understanding to the places you care about—so the next step feels clearer.",

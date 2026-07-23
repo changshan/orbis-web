@@ -18,8 +18,10 @@ describe("双语内容", () => {
     expect(getContent("en").why.questions[0]).toBe("What happened?");
   });
   it("产品页双语内容和六类风险齐全", () => {
-    expect(getContent("zh").nav.product).toBe("产品");
-    expect(getContent("en").nav.product).toBe("How it works");
+    expect(getContent("zh").nav.why).toBe("为何 Orbis");
+    expect(getContent("en").nav.why).toBe("Why Orbis");
+    expect("product" in getContent("zh").nav).toBe(false);
+    expect("product" in getContent("en").nav).toBe(false);
     expect(getContent("zh").product.hero.title).toBe("你的安全，时刻守护");
     expect(getContent("en").product.hero.title).toBe("Keeping watch over your safety.");
     expect(getContent("zh").product.risks.title).toBe("各种风险，全面感知");

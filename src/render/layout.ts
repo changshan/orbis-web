@@ -35,7 +35,7 @@ ${scripts.map((s) => `<script src="${s}" defer></script>`).join("\n")}
 </html>`;
 }
 
-function sectionHref(locale: Locale, page: LocalizedPage, section: "why" | "principles" | "feedback"): string {
+function sectionHref(locale: Locale, page: LocalizedPage, section: "principles" | "feedback"): string {
   return page === "home" ? `#${section}` : `${localizedPath(locale, "home")}#${section}`;
 }
 
@@ -44,8 +44,7 @@ export function renderHeader(locale: Locale, page: LocalizedPage, content: Websi
   return `<header class="site-header">
 <a class="brand" href="${localizedPath(locale, "home")}" aria-label="Orbis home"><span class="brand-mark" aria-hidden="true"></span><span>ORBIS</span></a>
 <nav class="site-nav" aria-label="Primary">
-<a href="${sectionHref(locale, page, "why")}">${esc(content.nav.why)}</a>
-<a href="${localizedPath(locale, "product")}"${page === "product" ? ' aria-current="page"' : ""}>${esc(content.nav.product)}</a>
+<a href="${localizedPath(locale, "product")}"${page === "product" ? ' aria-current="page"' : ""}>${esc(content.nav.why)}</a>
 <a href="${sectionHref(locale, page, "principles")}">${esc(content.nav.principles)}</a>
 <a href="${sectionHref(locale, page, "feedback")}">${esc(content.nav.feedback)}</a>
 <a href="${localizedPath(locale, "privacy")}">${esc(content.nav.privacy)}</a>
@@ -57,6 +56,6 @@ export function renderHeader(locale: Locale, page: LocalizedPage, content: Websi
 export function renderFooter(locale: Locale, page: LocalizedPage, content: WebsiteContent): string {
   return `<footer>
 <p>${esc(content.footer.boundary)}</p>
-<p><a href="${localizedPath(locale, "product")}">${esc(content.nav.product)}</a> · <a href="${sectionHref(locale, page, "feedback")}">${esc(content.nav.feedback)}</a> · <a href="${localizedPath(locale, "privacy")}">${esc(content.nav.privacy)}</a> · ${esc(content.footer.copyright)}</p>
+<p><a href="${localizedPath(locale, "product")}">${esc(content.nav.why)}</a> · <a href="${sectionHref(locale, page, "feedback")}">${esc(content.nav.feedback)}</a> · <a href="${localizedPath(locale, "privacy")}">${esc(content.nav.privacy)}</a> · ${esc(content.footer.copyright)}</p>
 </footer>`;
 }

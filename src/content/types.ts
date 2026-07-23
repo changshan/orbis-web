@@ -24,7 +24,7 @@ export interface ProductContent {
 
 export interface WebsiteContent {
   meta: { title: string; description: string };
-  nav: { why: string; product: string; principles: string; feedback: string; privacy: string; skip: string; langLabel: string };
+  nav: { why: string; principles: string; feedback: string; privacy: string; skip: string; langLabel: string };
   hero: {
     eyebrow: string; titleLead: string; titleMain: string; titleDot: string;
     body: string; action: string; watchLabel: string;
