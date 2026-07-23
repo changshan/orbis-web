@@ -16,6 +16,8 @@ describe("build output", () => {
       "dist/zh/index.html", "dist/en/index.html",
       "dist/zh/privacy/index.html", "dist/en/privacy/index.html",
       "dist/assets/global.css", "dist/assets/lang.js", "dist/assets/feedback.js",
+      "dist/assets/home/hero-radar.en.svg", "dist/assets/home/relevance.en.svg",
+      "dist/assets/home/clarity.en.svg",
       "dist/sitemap.xml", "dist/robots.txt", "dist/_headers", "dist/favicon.svg"
     ]) expect(existsSync(f), f).toBe(true);
     expect(existsSync("dist/zh/product/index.html")).toBe(false);
@@ -31,6 +33,10 @@ describe("build output", () => {
       expect(html).toContain('id="principles"');
       expect(html).toContain("data-feedback-form");
     }
+    expect(en).toContain('/assets/home/hero-radar.en.svg');
+    expect(en).toContain('/assets/home/relevance.en.svg');
+    expect(en).toContain('/assets/home/clarity.en.svg');
+    expect(en).not.toMatch(/\/assets\/home\/(?:hero-radar|relevance|clarity)\.png/);
   });
   it("sitemap 与 robots 使用构建 origin且不包含旧产品页", () => {
     const sitemap = readFileSync("dist/sitemap.xml", "utf8");

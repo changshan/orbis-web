@@ -5,7 +5,11 @@ export const zh = {
     title: "Orbis 产品能力｜你的安全，时刻守护",
     description: "了解 Orbis 如何围绕守护地点判断风险相关性，并清晰呈现真正必要的提醒。"
   },
-  nav: { why: "为何 Orbis", principles: "我们的原则", feedback: "反馈", privacy: "隐私", skip: "跳到主要内容", langLabel: "English" },
+  nav: {
+    why: "为何 Orbis", principles: "我们的原则", feedback: "反馈", privacy: "隐私",
+    skip: "跳到主要内容", langLabel: "English",
+    homeAria: "Orbis 首页", primaryAria: "主导航"
+  },
   hero: {
     eyebrow: "QUIET PROTECTION / 清晰判断",
     title: "你的安全，时刻守护",

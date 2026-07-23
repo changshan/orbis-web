@@ -1,3 +1,5 @@
+import { existsSync, readFileSync } from "node:fs";
+import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { renderHome } from "../../src/render/home";
 import { renderPrivacy } from "../../src/render/privacy";
@@ -71,6 +73,42 @@ describe("renderHome", () => {
       expect(html).not.toMatch(/(?:src|href)="https?:\/\/(?!localhost|orbis)/i);
       expect(html).not.toMatch(FORBIDDEN);
     }
+  });
+
+  it("英文首页使用独立的英文视觉素材", () => {
+    const englishAssets = ["hero-radar.en.svg", "relevance.en.svg", "clarity.en.svg"];
+    for (const asset of englishAssets) {
+      expect(en, asset).toContain(`/assets/home/${asset}`);
+      expect(existsSync(join("public/assets/home", asset)), asset).toBe(true);
+    }
+    expect(en).not.toContain('/assets/home/hero-radar.png');
+    expect(en).not.toContain('/assets/home/relevance.png');
+    expect(en).not.toContain('/assets/home/clarity.png');
+  });
+
+  it("英文视觉素材不包含中文文字", () => {
+    for (const asset of ["hero-radar.en.svg", "relevance.en.svg", "clarity.en.svg"]) {
+      const path = join("public/assets/home", asset);
+      expect(existsSync(path), asset).toBe(true);
+      if (existsSync(path)) expect(readFileSync(path, "utf8"), asset).not.toMatch(/\p{Script=Han}/u);
+    }
+  });
+
+  it("英文视觉素材中的长文案使用显式换行", () => {
+    const relevance = readFileSync(join("public/assets/home", "relevance.en.svg"), "utf8");
+    const clarity = readFileSync(join("public/assets/home", "clarity.en.svg"), "utf8");
+    expect(relevance).not.toContain(">PLACE YOU PROTECT</text>");
+    expect(relevance).not.toContain(">MATTERS TO YOU</text>");
+    expect(clarity).not.toContain(">Limit unnecessary travel and follow local official information.</text>");
+    expect(relevance.match(/<tspan/g)).toHaveLength(6);
+    expect(clarity.match(/<tspan/g)).toHaveLength(2);
+  });
+
+  it("导航无障碍名称随页面语言本地化", () => {
+    expect(zh).toContain('aria-label="Orbis 首页"');
+    expect(zh).toContain('aria-label="主导航"');
+    expect(en).toContain('aria-label="Orbis home"');
+    expect(en).toContain('aria-label="Primary navigation"');
   });
 });
 

@@ -57,7 +57,16 @@ export interface PrivacyContent {
 
 export interface WebsiteContent {
   meta: { title: string; description: string };
-  nav: { why: string; principles: string; feedback: string; privacy: string; skip: string; langLabel: string };
+  nav: {
+    why: string;
+    principles: string;
+    feedback: string;
+    privacy: string;
+    skip: string;
+    langLabel: string;
+    homeAria: string;
+    primaryAria: string;
+  };
   hero: HeroContent;
   risks: RiskContent;
   relevance: { eyebrow: string; title: string; body: string };

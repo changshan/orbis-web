@@ -5,7 +5,11 @@ export const en = {
     title: "How Orbis works | Keeping watch over your safety",
     description: "See how Orbis relates changing risks to the places you care about and presents only the information that deserves attention."
   },
-  nav: { why: "Why Orbis", principles: "Principles", feedback: "Feedback", privacy: "Privacy", skip: "Skip to main content", langLabel: "中文" },
+  nav: {
+    why: "Why Orbis", principles: "Principles", feedback: "Feedback", privacy: "Privacy",
+    skip: "Skip to main content", langLabel: "中文",
+    homeAria: "Orbis home", primaryAria: "Primary navigation"
+  },
   hero: {
     eyebrow: "QUIET PROTECTION / CLEAR JUDGMENT",
     title: "Keeping watch over your safety.",

@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="770" height="584" viewBox="0 0 770 584">
+  <title>Incoming signals are filtered into one relevant alert</title>
+  <rect width="770" height="584" fill="#f7f7f3"/>
+  <g stroke="#dfe2dd" stroke-width="1.5">
+    <path d="M35 121H735M35 206H735M35 291H735M35 376H735M35 461H735"/>
+    <path d="M135 37V547M235 37V547M335 37V547M435 37V547M535 37V547M635 37V547"/>
+  </g>
+  <text x="59" y="78" fill="#576872" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="12" letter-spacing=".04em">INCOMING SIGNALS → ONE RELEVANT ALERT</text>
+  <g font-family="ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif">
+    <g fill="#f7f7f3" stroke="#dfe2dd" stroke-width="1.5">
+      <rect x="65" y="157" width="210" height="64"/>
+      <rect x="65" y="257" width="210" height="64"/>
+      <rect x="65" y="357" width="210" height="64"/>
+    </g>
+    <g fill="#93a0a7" font-size="14">
+      <text x="91" y="195">DISTANT EVENT</text>
+      <text x="91" y="295">OUTSIDE IMPACT AREA</text>
+      <text x="91" y="395">POSSIBLY RELEVANT</text>
+    </g>
+    <g stroke="#cfd4d1" stroke-width="1.3">
+      <path d="M275 189L329 220"/>
+      <path d="M275 289H316"/>
+      <path d="M275 389L329 358"/>
+    </g>
+    <circle cx="411" cy="291" r="94" fill="#f7f7f3" stroke="#263943" stroke-width="1.3"/>
+    <circle cx="411" cy="256" r="28" fill="#f2e6d3"/>
+    <circle cx="411" cy="256" r="6" fill="#e7a13a"/>
+    <text x="411" y="300" fill="#1f3039" font-family="Georgia, serif" font-size="21" text-anchor="middle">
+      <tspan x="411">PLACE YOU</tspan><tspan x="411" dy="23">PROTECT</tspan>
+    </text>
+    <text x="411" y="344" fill="#718089" font-size="12" text-anchor="middle">place × area × severity</text>
+    <path d="M505 291H547" stroke="#dca040" stroke-width="1.5"/>
+    <rect x="547" y="231" width="166" height="126" fill="#f7f7f3" stroke="#576872" stroke-width="1.5"/>
+    <rect x="565" y="252" width="78" height="24" fill="#f2dfbf"/>
+    <text x="575" y="268" fill="#7d5b28" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="10">RELEVANT</text>
+    <text x="565" y="306" fill="#1f3039" font-family="Georgia, serif" font-size="20">
+      <tspan x="565">MATTERS</tspan><tspan x="565" dy="22">TO YOU</tspan>
+    </text>
+    <text x="565" y="338" fill="#718089" font-size="10">
+      <tspan x="565">A risk change worth</tspan><tspan x="565" dy="14">your attention</tspan>
+    </text>
+  </g>
+</svg>
