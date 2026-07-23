@@ -95,4 +95,23 @@ describe("renderProduct", () => {
       expect(html).toContain("data-feedback-status");
     }
   });
+
+  it("按设计稿呈现六类风险、判断框架和本地视觉资产", () => {
+    for (const id of ['id="risks"', 'id="relevance"', 'id="clarity"', 'id="product-boundary"']) {
+      expect(zh).toContain(id);
+    }
+    expect(zh.match(/class="risk-card"/g)).toHaveLength(6);
+    for (const asset of [
+      "hero-radar.png", "risk-earthquake.svg", "risk-rain.svg", "risk-heatwave.svg",
+      "risk-flood.svg", "risk-wildfire.svg", "risk-tornado.svg", "relevance.png", "clarity.png"
+    ]) expect(zh, asset).toContain(`/assets/product/${asset}`);
+    expect(zh).toContain("实际可用类型取决于当地信息源与服务范围");
+    expect(zh).toContain("重要信息，优先呈现。");
+    expect(en).toContain("Availability depends on local information sources and service coverage");
+    for (const html of [zh, en]) {
+      expect(html).not.toMatch(/强风|HIGH WIND/i);
+      const withoutMeta = html.replace(/rel="(?:canonical|alternate)"[^>]*/gi, "");
+      expect(withoutMeta).not.toMatch(/(?:src|href)="https?:\/\//i);
+    }
+  });
 });
