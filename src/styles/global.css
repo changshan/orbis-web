@@ -65,7 +65,7 @@ footer a{color:inherit}
 .home-action{margin-top:20px;color:var(--night-text);text-decoration:none;font-weight:600}
 .home-action span{color:var(--lamp-bright);margin-left:.25rem}
 .home-metrics{display:flex;gap:44px;list-style:none;padding:0;margin:auto 0 0;color:var(--night-muted)}
-.home-hero-figure{min-width:0;margin:0;padding:34px 32px;display:grid;place-items:center;background:var(--ink-2);overflow:hidden}
+.home-hero-figure{min-width:0;margin:0;padding:34px 32px;display:grid;place-items:center;background:transparent;overflow:hidden}
 .home-hero-figure img{width:min(100%,596px);height:100%;max-height:640px;object-fit:contain}
 .home-risks{background:var(--ink);color:var(--night-text);padding:84px 64px 128px}
 .home-section-head{max-width:1312px;margin:0 auto 44px;display:flex;align-items:flex-end;justify-content:space-between;gap:48px}
