@@ -27,12 +27,24 @@ test("Hero 右侧图形容器使用透明背景", async ({ page }) => {
   await expect(page.locator(".home-hero-figure")).toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
 });
 
-test("Hero 雷达图放大到 1.1 倍", async ({ page }) => {
+test("Hero 使用重新生成的 1.1 倍雷达图且不依赖 CSS 缩放", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/zh/");
-  await expect(page.locator(".home-hero-figure img")).toHaveCSS(
-    "transform",
-    "matrix(1.1, 0, 0, 1.1, 0, 0)",
-  );
+  const image = page.locator(".home-hero-figure img");
+  await expect(image).toHaveAttribute("width", "656");
+  await expect(image).toHaveAttribute("height", "704");
+  await expect(image).toHaveCSS("transform", "none");
+  await expect
+    .poll(() => image.evaluate((element: HTMLImageElement) => [element.naturalWidth, element.naturalHeight]))
+    .toEqual([656, 704]);
+  await expect
+    .poll(() =>
+      image.evaluate((element) => {
+        const rect = element.getBoundingClientRect();
+        return [Math.round(rect.width), Math.round(rect.height)];
+      }),
+    )
+    .toEqual([656, 704]);
 });
 
 test("320px 无横向滚动", async ({ page }) => {

@@ -42,7 +42,7 @@ ${c.hero.metrics.map((metric) => `<li>${esc(metric)}</li>`).join("")}
 </ul>
 </div>
 <figure class="home-hero-figure">
-<img src="/assets/home/hero-radar.png" alt="" width="596" height="640" />
+<img src="/assets/home/hero-radar.png" alt="" width="656" height="704" />
 </figure>
 </section>
 <section class="home-risks" id="risks" aria-labelledby="risks-title">
