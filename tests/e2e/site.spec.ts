@@ -27,6 +27,14 @@ test("Hero 右侧图形容器使用透明背景", async ({ page }) => {
   await expect(page.locator(".home-hero-figure")).toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
 });
 
+test("Hero 雷达图放大到 1.1 倍", async ({ page }) => {
+  await page.goto("/zh/");
+  await expect(page.locator(".home-hero-figure img")).toHaveCSS(
+    "transform",
+    "matrix(1.1, 0, 0, 1.1, 0, 0)",
+  );
+});
+
 test("320px 无横向滚动", async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 800 });
   await page.goto("/zh/");

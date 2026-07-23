@@ -66,7 +66,7 @@ footer a{color:inherit}
 .home-action span{color:var(--lamp-bright);margin-left:.25rem}
 .home-metrics{display:flex;gap:44px;list-style:none;padding:0;margin:auto 0 0;color:var(--night-muted)}
 .home-hero-figure{min-width:0;margin:0;padding:34px 32px;display:grid;place-items:center;background:transparent;overflow:hidden}
-.home-hero-figure img{width:min(100%,596px);height:100%;max-height:640px;object-fit:contain}
+.home-hero-figure img{width:min(100%,596px);height:100%;max-height:640px;object-fit:contain;transform:scale(1.1)}
 .home-risks{background:var(--ink);color:var(--night-text);padding:84px 64px 128px}
 .home-section-head{max-width:1312px;margin:0 auto 44px;display:flex;align-items:flex-end;justify-content:space-between;gap:48px}
 .home-section-head h2,.home-relevance h2,.home-clarity h2,.home-boundary h2{font-family:var(--font-display);font-weight:500;letter-spacing:.005em}
