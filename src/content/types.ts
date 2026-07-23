@@ -1,7 +1,7 @@
 export interface ProductContent {
   meta: { title: string; description: string };
   hero: {
-    eyebrow: string; title: string; body: string; action: string;
+    eyebrow: string; title: string; titleLines: readonly [string, string]; body: string; action: string;
     metrics: readonly [string, string, string];
   };
   risks: {

@@ -16,3 +16,10 @@ test("无 JS 时品牌内容完整可读", async ({ page }) => {
   await expect(page.locator("h1")).toContainText("任何时候");
   await expect(page.locator("#boundary")).toContainText("不替代当地官方预警");
 });
+
+test("无 JS 时产品能力与反馈表单完整可用", async ({ page }) => {
+  await page.goto("/zh/product/");
+  await expect(page.locator(".product-risks")).toContainText("龙卷风");
+  await expect(page.locator("#product-boundary")).toContainText("不替代当地官方预警");
+  await expect(page.getByLabel("你的反馈")).toBeVisible();
+});

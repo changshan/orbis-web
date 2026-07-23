@@ -41,6 +41,7 @@ export const zh = {
     hero: {
       eyebrow: "QUIET PROTECTION / 清晰判断",
       title: "你的安全，时刻守护。",
+      titleLines: ["你的安全，", "时刻守护。"],
       body: "Orbis 围绕你选择的地点，理解不同风险是否相关，并在重要变化发生时，提供简洁、可信的信息。",
       action: "了解 Orbis 如何判断",
       metrics: ["1  守护地点", "6  风险类型", "4  关键信息"]

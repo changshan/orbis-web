@@ -23,7 +23,7 @@ export function pageDocument(
 <link rel="stylesheet" href="/assets/global.css" />
 <title>${esc(pageMeta.title)}</title>
 </head>
-<body>
+<body class="page-${page}">
 <a class="skip-link" href="#main">${esc(content.nav.skip)}</a>
 ${renderHeader(locale, page, content)}
 <main id="main">

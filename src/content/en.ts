@@ -42,6 +42,7 @@ export const en = {
     hero: {
       eyebrow: "QUIET PROTECTION / CLEAR JUDGMENT",
       title: "Keeping watch over your safety.",
+      titleLines: ["Keeping watch over", "your safety."],
       body: "Orbis considers the places you choose, understands whether changing risks are relevant, and presents concise, trustworthy information when it matters.",
       action: "See how Orbis decides",
       metrics: ["1  PLACE", "6  RISK TYPES", "4  KEY DETAILS"]

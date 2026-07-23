@@ -24,7 +24,7 @@ export function renderProduct(locale: Locale): string {
   const main = `<section class="product-hero" aria-labelledby="product-title">
 <div class="product-hero-copy">
 <p class="mono">${esc(p.hero.eyebrow)}</p>
-<h1 id="product-title">${esc(p.hero.title)}</h1>
+<h1 id="product-title">${p.hero.titleLines.map((line) => `<span>${esc(line)}</span>`).join("")}</h1>
 <p class="product-lede">${esc(p.hero.body)}</p>
 <a class="product-action" href="#relevance">${esc(p.hero.action)} <span aria-hidden="true">↓</span></a>
 <ul class="product-metrics mono">

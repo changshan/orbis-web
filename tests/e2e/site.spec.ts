@@ -23,3 +23,18 @@ test("320px 无横向滚动", async ({ page }) => {
   await page.goto("/zh/");
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(true);
 });
+
+test("产品页呈现六类风险并复用反馈表单", async ({ page }) => {
+  await page.goto("/zh/product/");
+  await expect(page.getByRole("heading", { level: 1 })).toContainText("你的安全");
+  await expect(page.locator(".risk-card")).toHaveCount(6);
+  await expect(page.locator("#relevance")).toBeVisible();
+  await expect(page.locator("#clarity")).toBeVisible();
+  await expect(page.locator("#feedback")).toBeVisible();
+});
+
+test("产品页 320px 无横向滚动", async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 800 });
+  await page.goto("/zh/product/");
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(true);
+});

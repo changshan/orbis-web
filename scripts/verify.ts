@@ -17,8 +17,14 @@ const fail = (msg: string): never => { throw new Error(`verify failed: ${msg}`);
 
 const required = [
   "index.html", "404.html", "zh/index.html", "en/index.html",
+  "zh/product/index.html", "en/product/index.html",
   "zh/privacy/index.html", "en/privacy/index.html",
   "assets/global.css", "assets/lang.js", "assets/feedback.js",
+  "assets/product/hero-radar.png", "assets/product/risk-earthquake.svg",
+  "assets/product/risk-rain.svg", "assets/product/risk-heatwave.svg",
+  "assets/product/risk-flood.svg", "assets/product/risk-wildfire.svg",
+  "assets/product/risk-tornado.svg", "assets/product/relevance.png",
+  "assets/product/clarity.png",
   "sitemap.xml", "robots.txt", "_headers", "favicon.svg"
 ];
 for (const r of required) if (!files.some((f) => rel(f) === r)) fail(`missing ${r}`);

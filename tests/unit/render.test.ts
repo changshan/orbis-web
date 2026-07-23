@@ -79,11 +79,19 @@ describe("renderProduct", () => {
   const en = renderProduct("en");
 
   it("导航顺序、当前项与语言切换正确", () => {
-    const nav = zh.match(/<nav[^>]*>([\s\S]*?)<\/nav>/)![1];
+    const navMatch = zh.match(/<nav[^>]*>([\s\S]*?)<\/nav>/);
+    expect(navMatch).not.toBeNull();
+    const nav = navMatch?.[1] ?? "";
     expect(nav.indexOf("为何 Orbis")).toBeLessThan(nav.indexOf("产品"));
     expect(nav.indexOf("产品")).toBeLessThan(nav.indexOf("我们的原则"));
     expect(zh).toContain('href="/zh/product/" aria-current="page"');
     expect(zh).toContain('class="lang-switch" href="/en/product/"');
+    expect(zh).toContain('<body class="page-product">');
+  });
+
+  it("Hero 保留设计稿的两行标题结构", () => {
+    expect(zh).toContain("<span>你的安全，</span><span>时刻守护。</span>");
+    expect(en).toContain("<span>Keeping watch over</span><span>your safety.</span>");
   });
 
   it("首页与产品页各复用一次完整反馈表单", () => {
