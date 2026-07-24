@@ -52,8 +52,8 @@ describe("build output", () => {
   it("中英文首页是新的唯一能力页面", () => {
     const zh = readFileSync("dist/zh/index.html", "utf8");
     const en = readFileSync("dist/en/index.html", "utf8");
-    expect(zh).toContain("<title>Orbis 产品能力｜你的安全，时刻守护</title>");
-    expect(en).toContain("<title>How Orbis works | Keeping watch over your safety</title>");
+    expect(zh).toContain("<title>Orbis｜你的安全，时刻守护</title>");
+    expect(en).toContain("<title>Orbis | Keeping watch over your safety</title>");
     for (const html of [zh, en]) {
       expect(html.match(/class="risk-card"/g)).toHaveLength(6);
       expect(html).toContain('id="principles"');

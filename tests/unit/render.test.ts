@@ -173,6 +173,7 @@ describe("其余页面", () => {
 
   it("语言入口的有脚本与无脚本路径都只指向首页", () => {
     const entry = renderEntry();
+    expect(entry).toContain("<title>Orbis | Keeping watch over your safety</title>");
     expect(entry).toContain('href="/zh/"');
     expect(entry).toContain('href="/en/"');
     expect(entry).toContain('src="/assets/lang.js"');

@@ -2,7 +2,7 @@ import type { WebsiteContent } from "./types";
 
 export const zh = {
   meta: {
-    title: "Orbis 产品能力｜你的安全，时刻守护",
+    title: "Orbis｜你的安全，时刻守护",
     description: "了解 Orbis 如何围绕守护地点判断风险相关性，并清晰呈现真正必要的提醒。"
   },
   nav: {

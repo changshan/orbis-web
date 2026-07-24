@@ -6,7 +6,7 @@ export function renderEntry(): string {
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
 <link rel="stylesheet" href="/assets/global.css" />
-<title>Orbis</title>
+<title>Orbis | Keeping watch over your safety</title>
 </head>
 <body class="entry">
 <main>

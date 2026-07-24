@@ -3,6 +3,9 @@ import { expect, test } from "@playwright/test";
 for (const locale of ["zh", "en"] as const) {
   test(`${locale} 首页直接渲染完整能力与原则`, async ({ page }) => {
     await page.goto(`/${locale}/`);
+    await expect(page).toHaveTitle(locale === "zh"
+      ? "Orbis｜你的安全，时刻守护"
+      : "Orbis | Keeping watch over your safety");
     await expect(page.locator("h1")).toBeVisible();
     await expect(page.locator(".risk-card")).toHaveCount(6);
     await expect(page.locator("#principles li")).toHaveCount(3);

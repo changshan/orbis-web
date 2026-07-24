@@ -2,7 +2,7 @@ import type { WebsiteContent } from "./types";
 
 export const en = {
   meta: {
-    title: "How Orbis works | Keeping watch over your safety",
+    title: "Orbis | Keeping watch over your safety",
     description: "See how Orbis relates changing risks to the places you care about and presents only the information that deserves attention."
   },
   nav: {

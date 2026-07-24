@@ -36,4 +36,9 @@ describe("双语内容", () => {
     expect("product" in getContent("en")).toBe(false);
     expect(JSON.stringify(CONTENT)).not.toMatch(/强风|HIGH WIND/i);
   });
+
+  it("浏览器标题以品牌开头并传达核心价值", () => {
+    expect(getContent("zh").meta.title).toBe("Orbis｜你的安全，时刻守护");
+    expect(getContent("en").meta.title).toBe("Orbis | Keeping watch over your safety");
+  });
 });
