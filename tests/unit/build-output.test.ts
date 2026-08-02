@@ -78,6 +78,16 @@ describe("build output", () => {
       }
     }
   });
+  it("样式表暴露改版后的设计令牌与线框工具类", () => {
+    const css = readFileSync(hashedAsset("dist/assets", "global", "css"), "utf8");
+    expect(css).toContain("--lamp-ink:#7B5422");
+    expect(css).toContain("--field-bg:#FFFFFF");
+    expect(css).toContain("--dash:#C8C9C3");
+    expect(css).toContain("--night-line:#2A3843");
+    expect(css).not.toContain("rgba(237,234,227,.12)");
+    expect(css).toContain(".corner.tl");
+    expect(css).toContain(".corner.br");
+  });
   it("sitemap 与 robots 使用构建 origin且不包含旧产品页", () => {
     const sitemap = readFileSync("dist/sitemap.xml", "utf8");
     expect(sitemap).toContain("https://orbis.example/zh/");
