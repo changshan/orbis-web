@@ -7,7 +7,6 @@ import { pageDocument } from "./layout";
 
 function renderPrinciples(content: WebsiteContent): string {
   return `<section class="day home-principles" id="principles" aria-labelledby="principles-title">
-<p class="section-code mono">04 · PRINCIPLES</p>
 <h2 class="day-title" id="principles-title">${esc(content.principles.title)}</h2>
 <ul class="ledger">
 ${content.principles.items.map((item) => `<li><span class="l-mark" aria-hidden="true"></span><h3>${esc(item.title)}<small>${esc(item.tag)}</small></h3><p>${esc(item.body)}</p></li>`).join("\n")}
@@ -36,7 +35,6 @@ export function renderHome(locale: Locale): string {
 
   const main = `<section class="home-hero" aria-labelledby="home-title">
 <div class="home-hero-copy">
-<p class="mono">${esc(c.hero.eyebrow)}</p>
 <h1 id="home-title">${c.hero.titleLines.map((line) => `<span>${esc(line)}</span>`).join("")}</h1>
 <p class="home-lede">${esc(c.hero.body)}</p>
 <a class="home-action" href="#relevance">${esc(c.hero.action)} <span aria-hidden="true">↓</span></a>
@@ -51,7 +49,6 @@ ${c.hero.metrics.map((metric) => `<li>${esc(metric)}</li>`).join("")}
 <section class="home-risks" id="risks" aria-labelledby="risks-title">
 <header class="home-section-head">
 <div>
-<p class="mono">${esc(c.risks.eyebrow)}</p>
 <h2 id="risks-title">${esc(c.risks.title)}</h2>
 </div>
 <p class="home-scope-note">${esc(c.risks.note)}</p>
@@ -63,7 +60,6 @@ ${risks}
 <div class="home-color-transition" aria-hidden="true"></div>
 <section class="home-relevance" id="relevance" aria-labelledby="relevance-title">
 <div class="home-relevance-copy">
-<p class="mono">${esc(c.relevance.eyebrow)}</p>
 <h2 id="relevance-title">${esc(c.relevance.title)}</h2>
 <p>${esc(c.relevance.body)}</p>
 </div>
@@ -73,7 +69,6 @@ ${risks}
 </section>
 <section class="home-clarity" id="clarity" aria-labelledby="clarity-title">
 <header>
-<p class="mono">${esc(c.clarity.eyebrow)}</p>
 <h2 id="clarity-title">${esc(c.clarity.title)}</h2>
 <p>${esc(c.clarity.body)}</p>
 </header>
@@ -85,7 +80,6 @@ ${risks}
 ${renderPrinciples(c)}
 <aside class="home-boundary" id="boundary" aria-labelledby="boundary-title">
 <div>
-<p class="mono">${esc(c.boundary.eyebrow)}</p>
 <h2 id="boundary-title">${esc(c.boundary.title)}</h2>
 <p>${esc(c.boundary.body)}</p>
 <ul>${boundaryRules}</ul>

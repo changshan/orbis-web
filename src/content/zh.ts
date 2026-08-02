@@ -11,7 +11,6 @@ export const zh = {
     homeAria: "Orbis 首页", primaryAria: "主导航"
   },
   hero: {
-    eyebrow: "QUIET PROTECTION / 清晰判断",
     title: "你的安全，时刻守护",
     titleLines: ["你的安全，", "时刻守护"],
     body: "Orbis 围绕你选择的地点，理解不同风险是否相关，并在重要变化发生时，提供简洁、可信的信息。",
@@ -19,7 +18,6 @@ export const zh = {
     metrics: ["1  守护地点", "6  风险类型", "4  关键信息"]
   },
   risks: {
-    eyebrow: "01 · WHAT WE WATCH",
     title: "各种风险，全面感知",
     note: "展示可纳入 Orbis 判断框架的风险类型；实际可用类型取决于当地信息源与服务范围。",
     items: [
@@ -32,12 +30,10 @@ export const zh = {
     ]
   },
   relevance: {
-    eyebrow: "02 · RELEVANCE",
     title: "保留真正必要的提醒",
     body: "Orbis 结合守护地点、影响范围和风险程度，过滤与你无关的信息。"
   },
   clarity: {
-    eyebrow: "03 · ONE CLEAR ALERT",
     title: "重要信息，永不遗漏",
     body: "灾害类型、影响地点、关键时间和首要行动，按照重要程度呈现。",
     items: [
@@ -56,7 +52,6 @@ export const zh = {
     ]
   },
   boundary: {
-    eyebrow: "05 · CLEAR BOUNDARIES",
     title: "可信，也包括明确边界。",
     body: "Orbis 对信息来源、不确定性和能力范围保持透明。Orbis 不替代当地官方预警、政府指令或紧急服务；遇到紧急情况，请立即联系当地紧急服务。",
     rules: ["来源可见 · 保留官方入口", "不确定性可见 · 不包装成确定", "行动保持克制 · 不预测、不保证"]

@@ -1,5 +1,4 @@
 export interface HeroContent {
-  eyebrow: string;
   title: string;
   titleLines: readonly [string, string];
   body: string;
@@ -8,7 +7,6 @@ export interface HeroContent {
 }
 
 export interface RiskContent {
-  eyebrow: string;
   title: string;
   note: string;
   items: ReadonlyArray<{
@@ -19,14 +17,12 @@ export interface RiskContent {
 }
 
 export interface ClarityContent {
-  eyebrow: string;
   title: string;
   body: string;
   items: ReadonlyArray<{ tag: string; title: string; body: string }>;
 }
 
 export interface BoundaryContent {
-  eyebrow: string;
   title: string;
   body: string;
   rules: readonly [string, string, string];
@@ -70,7 +66,7 @@ export interface WebsiteContent {
   };
   hero: HeroContent;
   risks: RiskContent;
-  relevance: { eyebrow: string; title: string; body: string };
+  relevance: { title: string; body: string };
   clarity: ClarityContent;
   principles: {
     title: string;

@@ -11,7 +11,6 @@ export const en = {
     homeAria: "Orbis home", primaryAria: "Primary navigation"
   },
   hero: {
-    eyebrow: "QUIET PROTECTION / CLEAR JUDGMENT",
     title: "Keeping watch over your safety.",
     titleLines: ["Keeping watch over", "your safety."],
     body: "Orbis considers the places you choose, understands whether changing risks are relevant, and presents concise, trustworthy information when it matters.",
@@ -19,7 +18,6 @@ export const en = {
     metrics: ["1  PLACE", "6  RISK TYPES", "4  KEY DETAILS"]
   },
   risks: {
-    eyebrow: "01 · WHAT WE WATCH",
     title: "Comprehensive awareness across risks.",
     note: "Examples of risks that can fit the Orbis relevance framework. Availability depends on local information sources and service coverage.",
     items: [
@@ -32,12 +30,10 @@ export const en = {
     ]
   },
   relevance: {
-    eyebrow: "02 · RELEVANCE",
     title: "Keep only the alerts that truly matter.",
     body: "Orbis combines the place you care about, the affected area, and the level of risk to filter out information that is not relevant to you."
   },
   clarity: {
-    eyebrow: "03 · ONE CLEAR ALERT",
     title: "Important information, never missed.",
     body: "Risk type, affected place, key timing, and the first action are presented in order of importance.",
     items: [
@@ -56,7 +52,6 @@ export const en = {
     ]
   },
   boundary: {
-    eyebrow: "05 · CLEAR BOUNDARIES",
     title: "Trust also means clear boundaries.",
     body: "Orbis is transparent about sources, uncertainty, and service limits. It does not replace official local alerts, government instructions, or emergency services. In an emergency, contact local emergency services immediately.",
     rules: ["Sources stay visible · official links remain", "Uncertainty stays visible · never presented as certainty", "Actions stay measured · no forecasts or promises"]
