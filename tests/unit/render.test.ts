@@ -77,6 +77,8 @@ describe("renderHome", () => {
       expect(html.match(/class="signal-row/g)).toHaveLength(3);
       expect(html).toContain("signal-row is-pass");
       expect(html).toContain("INCOMING SIGNALS → ONE RELEVANT ALERT");
+      expect(html.match(/>OUT</g)).toHaveLength(2);
+      expect(html.match(/>PASS</g)).toHaveLength(1);
     }
     expect(zh).toContain(">远处事件<");
     expect(en).toContain(">Distant event<");
