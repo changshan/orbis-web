@@ -60,15 +60,26 @@ describe("renderHome", () => {
     expect(zh).not.toMatch(/强风|HIGH WIND/i);
   });
 
-  it("在风险与相关性之间渲染纯装饰背景过渡", () => {
+  it("夜纸交界用 1px 硬切，不再有渐变过渡带", () => {
     for (const html of [zh, en]) {
-      expect(html).toContain('<div class="home-color-transition" aria-hidden="true"></div>');
+      expect(html).not.toContain("home-color-transition");
       const risksEnd = html.indexOf("</section>", html.indexOf('id="risks"'));
-      const transition = html.indexOf('class="home-color-transition"');
-      const relevance = html.indexOf('id="relevance"');
-      expect(risksEnd).toBeLessThan(transition);
-      expect(transition).toBeLessThan(relevance);
+      expect(risksEnd).toBeLessThan(html.indexOf('id="relevance"'));
     }
+  });
+
+  it("判断逻辑区用线框过滤图替代位图", () => {
+    for (const html of [zh, en]) {
+      expect(html).not.toContain("relevance.png");
+      expect(html).not.toContain("relevance.en.svg");
+      expect(html).toContain('class="relevance-diagram blueprint blueprint-muted"');
+      expect(html).toContain('class="factor-list"');
+      expect(html.match(/class="signal-row/g)).toHaveLength(3);
+      expect(html).toContain("signal-row is-pass");
+      expect(html).toContain("INCOMING SIGNALS → ONE RELEVANT ALERT");
+    }
+    expect(zh).toContain(">远处事件<");
+    expect(en).toContain(">Distant event<");
   });
 
   it("保留完整反馈表单契约", () => {
@@ -105,7 +116,7 @@ describe("renderHome", () => {
   it("只引用本地首页视觉资产且没有禁词", () => {
     for (const asset of [
       "risk-earthquake.svg", "risk-rain.svg", "risk-heatwave.svg",
-      "risk-flood.svg", "risk-wildfire.svg", "risk-tornado.svg", "relevance.png", "clarity.png"
+      "risk-flood.svg", "risk-wildfire.svg", "risk-tornado.svg", "clarity.png"
     ]) expect(zh, asset).toContain(`/assets/home/${asset}`);
     for (const html of [zh, en]) {
       expect(html).not.toMatch(/<script(?![^>]*\bsrc=)/i);
@@ -116,17 +127,16 @@ describe("renderHome", () => {
   });
 
   it("英文首页使用独立的英文视觉素材", () => {
-    const englishAssets = ["relevance.en.svg", "clarity.en.svg"];
+    const englishAssets = ["clarity.en.svg"];
     for (const asset of englishAssets) {
       expect(en, asset).toContain(`/assets/home/${asset}`);
       expect(existsSync(join("public/assets/home", asset)), asset).toBe(true);
     }
-    expect(en).not.toContain('/assets/home/relevance.png');
     expect(en).not.toContain('/assets/home/clarity.png');
   });
 
   it("英文视觉素材不包含中文文字", () => {
-    for (const asset of ["relevance.en.svg", "clarity.en.svg"]) {
+    for (const asset of ["clarity.en.svg"]) {
       const path = join("public/assets/home", asset);
       expect(existsSync(path), asset).toBe(true);
       if (existsSync(path)) expect(readFileSync(path, "utf8"), asset).not.toMatch(/\p{Script=Han}/u);
@@ -134,12 +144,8 @@ describe("renderHome", () => {
   });
 
   it("英文视觉素材中的长文案使用显式换行", () => {
-    const relevance = readFileSync(join("public/assets/home", "relevance.en.svg"), "utf8");
     const clarity = readFileSync(join("public/assets/home", "clarity.en.svg"), "utf8");
-    expect(relevance).not.toContain(">PLACE YOU PROTECT</text>");
-    expect(relevance).not.toContain(">MATTERS TO YOU</text>");
     expect(clarity).not.toContain(">Limit unnecessary travel and follow local official information.</text>");
-    expect(relevance.match(/<tspan/g)).toHaveLength(6);
     expect(clarity.match(/<tspan/g)).toHaveLength(2);
   });
 

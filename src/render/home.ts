@@ -63,9 +63,7 @@ ${content.principles.items.map((item) => `<li><span class="l-mark" aria-hidden="
 
 export function renderHome(locale: Locale): string {
   const c = getContent(locale);
-  const visuals = locale === "en"
-    ? { relevance: "relevance.en.svg", clarity: "clarity.en.svg" }
-    : { relevance: "relevance.png", clarity: "clarity.png" };
+  const visuals = locale === "en" ? { clarity: "clarity.en.svg" } : { clarity: "clarity.png" };
   const risks = c.risks.items.map((item) => `<li class="risk-card">
 <span class="risk-code mono">${esc(item.code)}</span>
 <img class="risk-icon" src="/assets/home/risk-${item.key}.svg" alt="" loading="lazy" decoding="async" width="360" height="260" />
@@ -109,15 +107,31 @@ ${risks}
 ${severity}
 </ul>
 </section>
-<div class="home-color-transition" aria-hidden="true"></div>
 <section class="home-relevance" id="relevance" aria-labelledby="relevance-title">
-<div class="home-relevance-copy">
+<div class="relevance-copy">
 <h2 id="relevance-title">${esc(c.relevance.title)}</h2>
-<p>${esc(c.relevance.body)}</p>
+<p class="section-body">${esc(c.relevance.body)}</p>
+<ul class="factor-list">
+${c.relevance.factors.map((factor) => `<li><span>${esc(factor.name)}</span><span class="mono">${esc(factor.term)}</span></li>`).join("")}
+</ul>
 </div>
-<figure class="home-relevance-figure">
-<img src="/assets/home/${visuals.relevance}" alt="" loading="lazy" decoding="async" width="770" height="584" />
-</figure>
+<div class="relevance-diagram blueprint blueprint-muted">${corners()}
+<p class="diagram-caption mono">${esc(c.relevance.diagram.caption)}</p>
+<ul class="signal-list">
+${c.relevance.diagram.rows.map((row) => `<li class="signal-row${row.pass ? " is-pass" : ""}"><span class="signal-box"><span>${esc(row.label)}</span><span class="mono">${esc(row.verdict)}</span></span><span class="signal-line" aria-hidden="true"></span><span class="signal-node" aria-hidden="true"></span></li>`).join("")}
+</ul>
+<div class="diagram-result">
+<div>
+<p class="result-source">${esc(c.relevance.diagram.sourceTitle)}</p>
+<p class="result-sub">${esc(c.relevance.diagram.sourceSub)}</p>
+</div>
+<span class="result-arrow mono" aria-hidden="true">———→</span>
+<div class="result-box">
+<p class="mono">${esc(c.relevance.diagram.resultTag)}</p>
+<p class="result-text">${esc(c.relevance.diagram.resultText)}</p>
+</div>
+</div>
+</div>
 </section>
 <section class="home-clarity" id="clarity" aria-labelledby="clarity-title">
 <header>

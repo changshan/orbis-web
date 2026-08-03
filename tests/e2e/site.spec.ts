@@ -35,16 +35,11 @@ test("Hero 用线框警报样机并标注为示例", async ({ page }) => {
   await expect(page.locator(".home-hero")).toHaveCSS("border-bottom-color", "rgb(226, 161, 68)");
 });
 
-test("深浅背景通过装饰层平滑过渡", async ({ page }) => {
+test("渐变过渡带已移除且窄屏无横向滚动", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/zh/");
-  const transition = page.locator(".home-color-transition");
-  await expect(transition).toHaveAttribute("aria-hidden", "true");
-  await expect(transition).toHaveCSS("height", "144px");
-  await expect(transition).toHaveCSS("background-image", /linear-gradient/);
-
+  await expect(page.locator(".home-color-transition")).toHaveCount(0);
   await page.setViewportSize({ width: 390, height: 844 });
-  await expect(transition).toHaveCSS("height", "96px");
   expect(await page.evaluate(() =>
     document.documentElement.scrollWidth <= document.documentElement.clientWidth
   )).toBe(true);

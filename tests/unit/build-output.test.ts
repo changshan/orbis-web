@@ -40,7 +40,6 @@ describe("build output", () => {
     expect(existsSync(hashedAsset("dist/assets", "global", "css"))).toBe(true);
     expect(existsSync(hashedAsset("dist/assets", "lang", "js"))).toBe(true);
     expect(existsSync(hashedAsset("dist/assets", "feedback", "js"))).toBe(true);
-    expect(existsSync(hashedAsset("dist/assets/home", "relevance.en", "svg"))).toBe(true);
     expect(existsSync(hashedAsset("dist/assets/home", "clarity.en", "svg"))).toBe(true);
     for (const asset of walk("dist/assets")) {
       expect(basename(asset), asset).toMatch(HASHED_FILENAME);
@@ -57,17 +56,13 @@ describe("build output", () => {
       expect(html.match(/class="risk-card"/g)).toHaveLength(6);
       expect(html).toContain('id="principles"');
       expect(html).toContain("data-feedback-form");
-      expect(html).toContain('<div class="home-color-transition" aria-hidden="true"></div>');
     }
     const css = readFileSync(hashedAsset("dist/assets", "global", "css"), "utf8");
-    expect(css).toContain(".home-color-transition");
-    expect(css).toContain("linear-gradient");
     expect(css).toContain("--control-border:#7F8A91");
     expect(css).toContain(":focus-visible{outline:2px solid #fff;outline-offset:2px;box-shadow:0 0 0 4px var(--text)}");
     expect(css).toContain("border:1px solid var(--control-border)");
-    expect(en).toMatch(/\/assets\/home\/relevance\.en\.[a-f0-9]{12}\.svg/);
     expect(en).toMatch(/\/assets\/home\/clarity\.en\.[a-f0-9]{12}\.svg/);
-    expect(en).not.toMatch(/\/assets\/home\/(?:relevance|clarity)\.png/);
+    expect(en).not.toMatch(/\/assets\/home\/clarity\.png/);
     for (const page of walk("dist").filter((file) => file.endsWith(".html"))) {
       const html = readFileSync(page, "utf8");
       for (const reference of html.match(/\/assets\/[^"' <>)]+/g) ?? []) {

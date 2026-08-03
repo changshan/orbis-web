@@ -27,9 +27,8 @@ const expectedAssets = [
   "assets/home/risk-earthquake.svg",
   "assets/home/risk-rain.svg", "assets/home/risk-heatwave.svg",
   "assets/home/risk-flood.svg", "assets/home/risk-wildfire.svg",
-  "assets/home/risk-tornado.svg", "assets/home/relevance.png",
-  "assets/home/clarity.png",
-  "assets/home/relevance.en.svg", "assets/home/clarity.en.svg"
+  "assets/home/risk-tornado.svg",
+  "assets/home/clarity.png", "assets/home/clarity.en.svg"
 ];
 const fingerprintPattern = /\.[a-f0-9]{12}\.[^./]+$/;
 const escapeRegExp = (value: string): string => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
