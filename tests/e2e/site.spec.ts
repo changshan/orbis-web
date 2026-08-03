@@ -104,6 +104,24 @@ test("反馈控件具有双层高对比度焦点指示", async ({ page }) => {
   await expect(message).toHaveCSS("box-shadow", /rgb\(28, 42, 51\)/);
 });
 
+test("当前页导航项聚焦时保留完整双层焦点环并叠加当前页指示", async ({ page }) => {
+  await page.goto("/zh/");
+  const current = page.locator(".site-nav a[aria-current=page]");
+  await current.focus();
+  // Full focus ring must survive on the current-page link, not just the plain nav links.
+  await expect(current).toHaveCSS("outline-color", "rgb(255, 255, 255)");
+  await expect(current).toHaveCSS("outline-width", "2px");
+  await expect(current).toHaveCSS("outline-offset", "2px");
+  await expect(current).toHaveCSS("box-shadow", /rgb\(28, 42, 51\)/);
+  // The current-page indicator itself must ride a non-box-shadow, non-colour channel.
+  await expect(current).toHaveCSS("text-decoration-line", "underline");
+
+  const ordinary = page.locator(".site-nav a").nth(1);
+  await ordinary.focus();
+  await expect(ordinary).toHaveCSS("box-shadow", /rgb\(28, 42, 51\)/);
+  await expect(ordinary).toHaveCSS("text-decoration-line", "none");
+});
+
 test("严重度图例 urgent 标记的外圈不透明且清晰可辨", async ({ page }) => {
   await page.goto("/zh/");
   const mark = page.locator(".sev-mark.sev-urgent").first();
