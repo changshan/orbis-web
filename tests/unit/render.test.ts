@@ -8,6 +8,24 @@ import { renderNotFound } from "../../src/render/notFound";
 
 const FORBIDDEN = /\b(waitlist|join beta|app store|download|critical alerts|prediction|guarantee)\b|预测地震|保证安全|不会漏报/i;
 
+const RISK_ICONS = [
+  "risk-earthquake.svg", "risk-rain.svg", "risk-heatwave.svg",
+  "risk-flood.svg", "risk-wildfire.svg", "risk-tornado.svg"
+] as const;
+
+describe("风险图标资产", () => {
+  it("六个图标统一使用 lamp-ink 填充、等比缩放且不含内联样式", () => {
+    for (const icon of RISK_ICONS) {
+      const svg = readFileSync(join("public/assets/home", icon), "utf8");
+      expect(svg, icon).toContain('viewBox="0 0 360 260"');
+      expect(svg, icon).toContain('fill="#7B5422"');
+      expect(svg, icon).toContain('preserveAspectRatio="xMidYMid meet"');
+      expect(svg, icon).not.toMatch(/\sstyle=/);
+      expect(svg, icon).not.toMatch(/preserveAspectRatio="none"/);
+    }
+  });
+});
+
 describe("renderHome", () => {
   const zh = renderHome("zh");
   const en = renderHome("en");
