@@ -39,6 +39,7 @@ test("渐变过渡带已移除且窄屏无横向滚动", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/zh/");
   await expect(page.locator(".home-color-transition")).toHaveCount(0);
+  await expect(page.locator(".home-clarity")).toHaveCSS("border-top-color", "rgb(226, 161, 68)");
   await page.setViewportSize({ width: 390, height: 844 });
   expect(await page.evaluate(() =>
     document.documentElement.scrollWidth <= document.documentElement.clientWidth

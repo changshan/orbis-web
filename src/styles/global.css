@@ -124,7 +124,7 @@ h2{font-family:var(--font-display);font-weight:500;letter-spacing:.005em;margin:
 .sev-watch{border:1px solid var(--muted)}
 .sev-alert{background:var(--lamp)}
 .sev-urgent{background:var(--error);outline:3px solid var(--error);outline-offset:2px}
-.home-clarity .mono,.home-boundary .mono{margin:0;color:var(--muted)}
+.home-boundary .mono{margin:0;color:var(--muted)}
 .home-relevance{border-top:1px solid var(--hairline);max-width:var(--shell);margin-inline:auto;padding:clamp(72px,8vw,120px) var(--pad-x);display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:clamp(40px,5vw,72px);align-items:center}
 .relevance-copy{min-width:0}
 .relevance-copy h2{font-size:clamp(30px,3.4vw,44px);line-height:1.24;color:var(--text);margin:0 0 22px}
@@ -152,13 +152,20 @@ h2{font-family:var(--font-display);font-weight:500;letter-spacing:.005em;margin:
 .result-box{border:1px solid var(--lamp);padding:14px 18px;background:rgba(226,161,68,.08)}
 .result-box .mono{color:var(--lamp-ink)}
 .result-text{font-size:15px;color:var(--text);margin-top:7px!important}
-.home-clarity{padding:76px 64px 64px;text-align:center;background:var(--paper)}
-.home-clarity>header{display:flex;flex-direction:column;align-items:center;gap:18px}
-.home-clarity h2{font-size:clamp(2.4rem,3.5vw,3.125rem);line-height:1.2;margin:0}
-.home-clarity header>p:last-child{color:var(--muted);margin:0}
-.home-clarity-stage{position:relative;max-width:1240px;margin:18px auto 0}
-.home-clarity-figure{width:100%;height:auto}
-.home-clarity-list{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}
+.home-clarity{background:var(--ink);color:var(--night-text);border-top:1px solid var(--lamp)}
+.home-clarity>*{max-width:var(--shell);margin-inline:auto;padding-inline:var(--pad-x)}
+.home-clarity>.clarity-head{padding-top:clamp(72px,8vw,120px)}
+.home-clarity>.clarity-grid{padding-bottom:clamp(72px,8vw,120px)}
+.clarity-head h2{font-size:clamp(30px,3.6vw,52px);line-height:1.22;color:var(--night-text);margin:0 0 20px}
+.clarity-head p{font-size:15px;line-height:1.8;color:var(--night-muted);max-width:52ch;margin:0 0 clamp(40px,5vw,64px)}
+.clarity-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:clamp(40px,5vw,72px);align-items:start}
+.clarity-list{min-width:0;display:grid;gap:1px;background:var(--night-line);border:1px solid var(--night-line);list-style:none;padding:0;margin:0;counter-reset:none}
+.clarity-list li{background:var(--ink);padding:24px 26px;display:grid;grid-template-columns:56px 1fr;gap:20px;align-items:baseline}
+.clarity-index{color:var(--lamp)}
+.clarity-list h3{font-size:17px;font-weight:500;color:var(--night-text);margin:0}
+.clarity-list p{font-size:14px;color:var(--night-muted);margin:7px 0 0}
+.clarity-figure{min-width:0}
+.alert-card-full{max-width:none}
 .home-boundary{padding:48px 64px;background:var(--paper)}
 .home-boundary>div{max-width:1120px;min-height:324px;border:1px solid var(--text);padding:36px 48px 32px}
 .home-boundary h2{font-size:clamp(2rem,3vw,2.4rem);line-height:1.25;margin:18px 0}
@@ -170,15 +177,13 @@ h2{font-family:var(--font-display);font-weight:500;letter-spacing:.005em;margin:
 .hero-grid{grid-template-columns:1fr}
 .hero-metrics{grid-template-columns:1fr}
 .hero-copy h1{font-size:clamp(34px,10vw,48px)}
-.home-risks,.home-relevance,.home-clarity,.home-boundary{padding-left:var(--pad-x);padding-right:var(--pad-x)}
+.home-risks,.home-relevance,.home-boundary{padding-left:var(--pad-x);padding-right:var(--pad-x)}
 .section-head{align-items:flex-start;flex-direction:column;gap:24px}
 .severity-legend{flex-direction:column;align-items:flex-start}
 .home-relevance{grid-template-columns:1fr}
 .signal-row{grid-template-columns:1fr}
 .signal-line,.signal-node{display:none}
-.home-clarity{padding-top:64px;padding-bottom:56px;text-align:left}
-.home-clarity>header{align-items:flex-start}
-.home-clarity-stage{margin-top:32px}
+.clarity-grid{grid-template-columns:1fr}
 .home-boundary{padding-top:40px;padding-bottom:40px}
 .home-boundary>div{min-height:0;padding:28px 24px}
 .home-boundary ul{flex-direction:column}

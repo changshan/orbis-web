@@ -24,11 +24,9 @@ for (const r of required) if (!files.some((f) => rel(f) === r)) fail(`missing ${
 
 const expectedAssets = [
   "assets/global.css", "assets/lang.js", "assets/feedback.js",
-  "assets/home/risk-earthquake.svg",
-  "assets/home/risk-rain.svg", "assets/home/risk-heatwave.svg",
-  "assets/home/risk-flood.svg", "assets/home/risk-wildfire.svg",
-  "assets/home/risk-tornado.svg",
-  "assets/home/clarity.png", "assets/home/clarity.en.svg"
+  "assets/home/risk-earthquake.svg", "assets/home/risk-rain.svg",
+  "assets/home/risk-heatwave.svg", "assets/home/risk-flood.svg",
+  "assets/home/risk-wildfire.svg", "assets/home/risk-tornado.svg"
 ];
 const fingerprintPattern = /\.[a-f0-9]{12}\.[^./]+$/;
 const escapeRegExp = (value: string): string => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");

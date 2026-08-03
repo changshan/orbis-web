@@ -33,6 +33,7 @@ function renderAlertCard(content: WebsiteContent, variant: "compact" | "full"): 
 <p class="alert-where">${esc(a.where)}</p>
 </div>`;
   const whenLabel = variant === "compact" ? a.whenLabel : a.fieldLabels.when;
+  const actionLabel = variant === "compact" ? a.actionLabel : a.fieldLabels.action;
   const foot = variant === "compact"
     ? `<p class="alert-foot">${esc(a.sourceNote)}</p>`
     : `<div class="alert-foot alert-foot-split"><span>${esc(a.sourceNote)}</span><span>${esc(a.boundaryNote)}</span></div>`;
@@ -45,7 +46,7 @@ ${headline}
 <div><p class="alert-tag alert-tag-muted mono">${esc(a.updatedLabel)}</p><p class="alert-fact">${esc(a.updated)}</p></div>
 </div>
 <div class="alert-action">
-<p class="alert-tag mono">${esc(a.actionLabel)}</p>
+<p class="alert-tag mono">${esc(actionLabel)}</p>
 <p class="alert-action-body">${esc(a.action)}</p>
 ${foot}
 </div>
@@ -63,7 +64,6 @@ ${content.principles.items.map((item) => `<li><span class="l-mark" aria-hidden="
 
 export function renderHome(locale: Locale): string {
   const c = getContent(locale);
-  const visuals = locale === "en" ? { clarity: "clarity.en.svg" } : { clarity: "clarity.png" };
   const risks = c.risks.items.map((item) => `<li class="risk-card">
 <span class="risk-code mono">${esc(item.code)}</span>
 <img class="risk-icon" src="/assets/home/risk-${item.key}.svg" alt="" loading="lazy" decoding="async" width="360" height="260" />
@@ -72,9 +72,8 @@ export function renderHome(locale: Locale): string {
 </li>`).join("\n");
   const severity = c.risks.severity.levels.map((level) => `<li><span class="sev-mark sev-${level.tone}" aria-hidden="true"></span>${esc(level.text)}</li>`).join("");
   const clarity = c.clarity.items.map((item) => `<li>
-<span class="mono">${esc(item.tag)}</span>
-<h3>${esc(item.title)}</h3>
-<p>${esc(item.body)}</p>
+<span class="clarity-index mono">${esc(item.index)}</span>
+<div><h3>${esc(item.title)}</h3><p>${esc(item.body)}</p></div>
 </li>`).join("\n");
   const boundaryRules = c.boundary.rules.map((rule) => `<li>${esc(rule)}</li>`).join("");
 
@@ -134,13 +133,15 @@ ${c.relevance.diagram.rows.map((row) => `<li class="signal-row${row.pass ? " is-
 </div>
 </section>
 <section class="home-clarity" id="clarity" aria-labelledby="clarity-title">
-<header>
+<header class="clarity-head">
 <h2 id="clarity-title">${esc(c.clarity.title)}</h2>
 <p>${esc(c.clarity.body)}</p>
 </header>
-<div class="home-clarity-stage">
-<img class="home-clarity-figure" src="/assets/home/${visuals.clarity}" alt="" loading="lazy" decoding="async" width="1240" height="630" />
-<ol class="home-clarity-list">${clarity}</ol>
+<div class="clarity-grid">
+<ol class="clarity-list">${clarity}</ol>
+<div class="clarity-figure">
+${renderAlertCard(c, "full")}
+</div>
 </div>
 </section>
 ${renderPrinciples(c)}

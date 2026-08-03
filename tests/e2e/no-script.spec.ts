@@ -23,5 +23,7 @@ test("无 JS 时首页能力与反馈表单完整可用", async ({ page }) => {
   await page.goto("/zh/");
   await expect(page.locator("#relevance")).toBeVisible();
   await expect(page.locator("#clarity")).toBeVisible();
+  await expect(page.locator("#clarity .clarity-list li")).toHaveCount(4);
+  await expect(page.locator("#clarity")).toContainText("首先关注什么");
   await expect(page.getByLabel("你的反馈")).toBeVisible();
 });

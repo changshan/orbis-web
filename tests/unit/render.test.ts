@@ -1,4 +1,4 @@
-import { existsSync, readFileSync } from "node:fs";
+import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { renderHome } from "../../src/render/home";
@@ -47,6 +47,8 @@ describe("renderHome", () => {
     expect(zh).toContain("LEVEL 2 · 注意");
     expect(zh.match(/class="hero-metrics"/g)).toHaveLength(1);
     expect(zh).toContain('<span class="metric-value">1</span>');
+    expect(zh).toContain('<p class="alert-tag mono">FIRST ACTION / 首先关注</p>');
+    expect(en).toContain('<p class="alert-tag mono">FIRST ACTION</p>');
   });
 
   it("按顺序包含六类风险、相关性、清晰度、三条原则、边界与反馈", () => {
@@ -118,7 +120,7 @@ describe("renderHome", () => {
   it("只引用本地首页视觉资产且没有禁词", () => {
     for (const asset of [
       "risk-earthquake.svg", "risk-rain.svg", "risk-heatwave.svg",
-      "risk-flood.svg", "risk-wildfire.svg", "risk-tornado.svg", "clarity.png"
+      "risk-flood.svg", "risk-wildfire.svg", "risk-tornado.svg"
     ]) expect(zh, asset).toContain(`/assets/home/${asset}`);
     for (const html of [zh, en]) {
       expect(html).not.toMatch(/<script(?![^>]*\bsrc=)/i);
@@ -128,27 +130,21 @@ describe("renderHome", () => {
     }
   });
 
-  it("英文首页使用独立的英文视觉素材", () => {
-    const englishAssets = ["clarity.en.svg"];
-    for (const asset of englishAssets) {
-      expect(en, asset).toContain(`/assets/home/${asset}`);
-      expect(existsSync(join("public/assets/home", asset)), asset).toBe(true);
+  it("清晰度区用完整警报卡替代位图，四项内容真实可见", () => {
+    for (const html of [zh, en]) {
+      expect(html).not.toContain("clarity.png");
+      expect(html).not.toContain("clarity.en.svg");
+      expect(html).toContain('class="clarity-grid"');
+      expect(html).toContain('class="alert-card alert-card-full blueprint"');
+      expect(html.match(/class="clarity-index mono"/g)).toHaveLength(4);
+      expect(html).not.toContain("home-clarity-stage");
+      expect(html).not.toContain("home-clarity-figure");
     }
-    expect(en).not.toContain('/assets/home/clarity.png');
-  });
-
-  it("英文视觉素材不包含中文文字", () => {
-    for (const asset of ["clarity.en.svg"]) {
-      const path = join("public/assets/home", asset);
-      expect(existsSync(path), asset).toBe(true);
-      if (existsSync(path)) expect(readFileSync(path, "utf8"), asset).not.toMatch(/\p{Script=Han}/u);
-    }
-  });
-
-  it("英文视觉素材中的长文案使用显式换行", () => {
-    const clarity = readFileSync(join("public/assets/home", "clarity.en.svg"), "utf8");
-    expect(clarity).not.toContain(">Limit unnecessary travel and follow local official information.</text>");
-    expect(clarity.match(/<tspan/g)).toHaveLength(2);
+    expect(zh).toContain("首先关注什么");
+    expect(en).toContain("What to notice first");
+    expect(zh.match(/class="alert-sample mono"/g)).toHaveLength(2);
+    expect(zh).toContain('<p class="alert-tag mono">04 FIRST ACTION / 首先关注</p>');
+    expect(en).toContain('<p class="alert-tag mono">04 FIRST ACTION</p>');
   });
 
   it("风险区收敛为索引网格并给出三档严重度图例", () => {
