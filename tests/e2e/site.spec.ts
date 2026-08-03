@@ -74,7 +74,7 @@ test("严重度图例 urgent 标记的外圈不透明且清晰可辨", async ({ 
   await expect(mark).toBeVisible();
   const outline = await mark.evaluate((el) => {
     const style = getComputedStyle(el);
-    return { color: style.outlineColor, width: parseFloat(style.outlineWidth), styleKind: style.outlineStyle };
+    return { color: style.outlineColor, width: parseFloat(style.outlineWidth), styleKind: style.outlineStyle, offset: style.outlineOffset };
   });
   expect(outline.styleKind).toBe("solid");
   expect(outline.width).toBeGreaterThanOrEqual(2);
@@ -82,6 +82,7 @@ test("严重度图例 urgent 标记的外圈不透明且清晰可辨", async ({ 
   const [r = NaN, g = NaN, b = NaN, a = 1] = parts;
   expect([r, g, b]).toEqual([166, 64, 47]);
   expect(a).toBeGreaterThanOrEqual(0.99);
+  expect(outline.offset).toBe("2px");
 });
 
 test("首页为何 Orbis 保持当前首页且只有一个导航定位", async ({ page }) => {
