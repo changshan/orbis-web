@@ -35,7 +35,7 @@ describe("renderHome", () => {
     expect(en).toContain('lang="en"');
     expect(zh).toContain('<body class="page-home">');
     expect(zh).toContain('<h1 id="home-title"><span>你的安全，</span><span>时刻守护</span></h1>');
-    expect(en).toContain('<h1 id="home-title"><span>Keeping watch over</span><span>your safety.</span></h1>');
+    expect(en).toContain('<h1 id="home-title"><span>Keeping watch</span><span>over your safety.</span></h1>');
     for (const html of [zh, en]) {
       expect(html).not.toContain("hero-radar");
       expect(html).toContain('class="hero-figure"');

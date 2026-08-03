@@ -46,6 +46,46 @@ test("渐变过渡带已移除且窄屏无横向滚动", async ({ page }) => {
   )).toBe(true);
 });
 
+test("1152px 中间宽度：风险格无空白格且边界面板与相邻内容对齐", async ({ page }) => {
+  await page.setViewportSize({ width: 1152, height: 900 });
+  await page.goto("/zh/");
+
+  const grid = page.locator(".risk-grid");
+  const cards = page.locator(".risk-card");
+  await expect(cards).toHaveCount(6);
+  const geometry = await page.evaluate(() => {
+    const gridEl = document.querySelector(".risk-grid") as HTMLElement;
+    const cols = getComputedStyle(gridEl).gridTemplateColumns.split(" ").length;
+    const rows = getComputedStyle(gridEl).gridTemplateRows.split(" ").length;
+    const cardCount = document.querySelectorAll(".risk-card").length;
+    return { cols, rows, cardCount };
+  });
+  // The grid must be exactly filled by the six cards: no implicit, unpainted tracks.
+  expect(geometry.cols * geometry.rows).toBe(geometry.cardCount);
+
+  const insets = await page.evaluate(() => {
+    const principles = document.querySelector(".home-principles") as HTMLElement;
+    const pRect = principles.getBoundingClientRect();
+    const pPadLeft = parseFloat(getComputedStyle(principles).paddingLeft);
+    const principlesContentLeft = pRect.left + pPadLeft;
+
+    const homeBoundary = document.querySelector(".home-boundary") as HTMLElement;
+    const homeBoundaryLeft = homeBoundary.getBoundingClientRect().left;
+
+    const heroGrid = document.querySelector(".hero-grid") as HTMLElement;
+    const hRect = heroGrid.getBoundingClientRect();
+    const hPadLeft = parseFloat(getComputedStyle(heroGrid).paddingLeft);
+    const heroContentLeft = hRect.left + hPadLeft;
+
+    const heroBoundary = document.querySelector(".hero-boundary") as HTMLElement;
+    const heroBoundaryPadLeft = parseFloat(getComputedStyle(heroBoundary).paddingLeft);
+
+    return { principlesContentLeft, homeBoundaryLeft, heroContentLeft, heroBoundaryPadLeft };
+  });
+  expect(Math.abs(insets.homeBoundaryLeft - insets.principlesContentLeft)).toBeLessThan(1);
+  expect(Math.abs(insets.heroBoundaryPadLeft - insets.heroContentLeft)).toBeLessThan(1);
+});
+
 test("320px 无横向滚动", async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 800 });
   await page.goto("/zh/");
