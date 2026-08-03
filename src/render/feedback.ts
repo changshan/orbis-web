@@ -4,13 +4,12 @@ import { escapeHtml as esc } from "./html";
 
 export function renderFeedbackSection(locale: Locale, content: WebsiteContent): string {
   const c = content.feedback;
-  return `<section class="day" id="feedback" aria-labelledby="feedback-title">
+  return `<section class="home-feedback" id="feedback" aria-labelledby="feedback-title">
 <div class="fb-intro">
-<p class="section-code mono">06 · FEEDBACK</p>
-<h2 class="day-title" id="feedback-title">${esc(c.title)}</h2>
+<h2 id="feedback-title">${esc(c.title)}</h2>
 <p class="fb-body">${esc(c.body)}</p>
 </div>
-<form method="post" action="/api/feedback" novalidate data-feedback-form
+<form class="fb-form" method="post" action="/api/feedback" novalidate data-feedback-form
  data-sending="${esc(c.sending)}" data-success="${esc(c.success)}" data-validation="${esc(c.validation)}"
  data-rate-limited="${esc(c.rateLimited)}" data-unavailable="${esc(c.unavailable)}" data-uncertain="${esc(c.uncertain)}">
 <input type="hidden" name="locale" value="${locale}" />

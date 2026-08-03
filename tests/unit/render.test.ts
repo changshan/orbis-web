@@ -102,6 +102,16 @@ describe("renderHome", () => {
     ]) expect(zh, attr).toContain(attr);
   });
 
+  it("反馈区改为双栏且不再显示区块编号", () => {
+    for (const html of [zh, en]) {
+      expect(html).toContain('<section class="home-feedback" id="feedback"');
+      expect(html).toContain('class="fb-intro"');
+      expect(html).toContain('class="fb-form"');
+      expect(html).not.toContain("section-code");
+      expect(html).not.toContain("06 · FEEDBACK");
+    }
+  });
+
   it("导航把为何 Orbis 定位到当前首页并保持语言页面类型", () => {
     const nav = zh.match(/<nav[^>]*>([\s\S]*?)<\/nav>/)?.[1] ?? "";
     expect(nav.indexOf("为何 Orbis")).toBeLessThan(nav.indexOf("我们的原则"));
