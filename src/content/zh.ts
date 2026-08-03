@@ -15,32 +15,84 @@ export const zh = {
     titleLines: ["你的安全，", "时刻守护"],
     body: "Orbis 围绕你选择的地点，理解不同风险是否相关，并在重要变化发生时，提供简洁、可信的信息。",
     action: "了解 Orbis 如何判断",
-    metrics: ["1  守护地点", "6  风险类型", "4  关键信息"]
+    metrics: [
+      { value: "1", label: "守护地点" },
+      { value: "6", label: "风险类型" },
+      { value: "4", label: "关键信息" }
+    ],
+    boundary: {
+      tag: "BOUNDARY",
+      note: "Orbis 不替代当地官方预警、政府指令或紧急服务。遇到紧急情况，请立即联系当地紧急服务。"
+    }
+  },
+  alertSample: {
+    sampleTag: "示例",
+    nowLabel: "现在",
+    levelLabel: "LEVEL 2 · 注意",
+    headLabel: "ALERT · 暴雨",
+    indexLabel: "01 / 02 / 03 / 04",
+    hazard: "暴雨",
+    whatValue: "暴雨 · 注意",
+    where: "与你在意的地点相关",
+    whenLabel: "WHEN",
+    when: "今晚开始",
+    updatedLabel: "UPDATED",
+    updated: "刚刚",
+    actionLabel: "FIRST ACTION / 首先关注",
+    action: "减少不必要的户外安排，并留意当地官方信息。",
+    sourceNote: "来源与完整信息可查看",
+    boundaryNote: "不替代官方预警或紧急服务",
+    fieldLabels: { what: "01 WHAT", where: "02 WHERE", when: "03 WHEN", action: "04 FIRST ACTION / 首先关注" }
   },
   risks: {
     title: "各种风险，全面感知",
     note: "展示可纳入 Orbis 判断框架的风险类型；实际可用类型取决于当地信息源与服务范围。",
     items: [
-      { key: "earthquake", name: "地震", body: "了解震级、位置、时间，以及与守护地点的距离。" },
-      { key: "rain", name: "暴雨", body: "了解影响区域、持续时间和风险程度。" },
-      { key: "heatwave", name: "热浪", body: "在高温到来前，了解影响时间和注意事项。" },
-      { key: "flood", name: "洪水", body: "了解水位变化、影响范围和官方行动信息。" },
-      { key: "wildfire", name: "山火", body: "了解火情位置、蔓延范围和相关限制。" },
-      { key: "tornado", name: "龙卷风", body: "了解发生位置、影响范围和紧急避险信息。" }
-    ]
+      { key: "earthquake", code: "R-01", name: "地震", term: "EARTHQUAKE", body: "了解震级、位置、时间，以及与守护地点的距离。" },
+      { key: "rain", code: "R-02", name: "暴雨", term: "HEAVY RAIN", body: "了解影响区域、持续时间和风险程度。" },
+      { key: "heatwave", code: "R-03", name: "热浪", term: "HEATWAVE", body: "在高温到来前，了解影响时间和注意事项。" },
+      { key: "flood", code: "R-04", name: "洪水", term: "FLOOD", body: "了解水位变化、影响范围和官方行动信息。" },
+      { key: "wildfire", code: "R-05", name: "山火", term: "WILDFIRE", body: "了解火情位置、蔓延范围和相关限制。" },
+      { key: "tornado", code: "R-06", name: "龙卷风", term: "TORNADO", body: "了解发生位置、影响范围和紧急避险信息。" }
+    ],
+    severity: {
+      label: "SEVERITY",
+      levels: [
+        { tone: "watch", text: "关注 · 变化在记录中" },
+        { tone: "alert", text: "注意 · 与你的地点相关" },
+        { tone: "urgent", text: "紧急 · 需要立即处理" }
+      ]
+    }
   },
   relevance: {
     title: "保留真正必要的提醒",
-    body: "Orbis 结合守护地点、影响范围和风险程度，过滤与你无关的信息。"
+    body: "Orbis 结合守护地点、影响范围和风险程度，过滤与你无关的信息。",
+    factors: [
+      { name: "地点", term: "PLACE" },
+      { name: "范围", term: "RANGE" },
+      { name: "程度", term: "SEVERITY" }
+    ],
+    diagram: {
+      caption: "INCOMING SIGNALS → ONE RELEVANT ALERT",
+      rows: [
+        { label: "远处事件", verdict: "OUT", pass: false },
+        { label: "影响范围外", verdict: "OUT", pass: false },
+        { label: "与你可能相关", verdict: "PASS", pass: true }
+      ],
+      sourceTitle: "守护地点",
+      sourceSub: "地点 × 范围 × 程度",
+      resultTag: "RELEVANT",
+      resultText: "与你相关的风险变化"
+    }
   },
   clarity: {
     title: "重要信息，永不遗漏",
     body: "灾害类型、影响地点、关键时间和首要行动，按照重要程度呈现。",
     items: [
-      { tag: "01 · WHAT", title: "发生了什么", body: "灾害类型与风险程度" },
-      { tag: "02 · WHERE", title: "影响哪里", body: "与你选择地点的关系" },
-      { tag: "03 · WHEN", title: "关键时间", body: "发生、开始或更新时间" },
-      { tag: "04 · ACTION", title: "首先关注什么", body: "审核后的固定行动表达" }
+      { index: "01", tag: "01 · WHAT", title: "发生了什么", body: "灾害类型与风险程度" },
+      { index: "02", tag: "02 · WHERE", title: "影响哪里", body: "与你选择地点的关系" },
+      { index: "03", tag: "03 · WHEN", title: "关键时间", body: "发生、开始或更新时间" },
+      { index: "04", tag: "04 · ACTION", title: "首先关注什么", body: "审核后的固定行动表达" }
     ]
   },
   principles: {

@@ -1,25 +1,72 @@
+export interface MetricItem {
+  value: string;
+  label: string;
+}
+
 export interface HeroContent {
   title: string;
   titleLines: readonly [string, string];
   body: string;
   action: string;
-  metrics: readonly [string, string, string];
+  metrics: readonly [MetricItem, MetricItem, MetricItem];
+  boundary: { tag: string; note: string };
+}
+
+export interface AlertSampleContent {
+  sampleTag: string;
+  nowLabel: string;
+  levelLabel: string;
+  headLabel: string;
+  indexLabel: string;
+  hazard: string;
+  whatValue: string;
+  where: string;
+  whenLabel: string;
+  when: string;
+  updatedLabel: string;
+  updated: string;
+  actionLabel: string;
+  action: string;
+  sourceNote: string;
+  boundaryNote: string;
+  fieldLabels: { what: string; where: string; when: string; action: string };
+}
+
+export type RiskKey = "earthquake" | "rain" | "heatwave" | "flood" | "wildfire" | "tornado";
+
+export interface SeverityLevel {
+  tone: "watch" | "alert" | "urgent";
+  text: string;
 }
 
 export interface RiskContent {
   title: string;
   note: string;
-  items: ReadonlyArray<{
-    key: "earthquake" | "rain" | "heatwave" | "flood" | "wildfire" | "tornado";
-    name: string;
-    body: string;
-  }>;
+  items: ReadonlyArray<{ key: RiskKey; code: string; name: string; term: string; body: string }>;
+  severity: {
+    label: string;
+    levels: readonly [SeverityLevel, SeverityLevel, SeverityLevel];
+  };
+}
+
+export interface RelevanceContent {
+  title: string;
+  body: string;
+  factors: readonly [{ name: string; term: string }, { name: string; term: string }, { name: string; term: string }];
+  diagram: {
+    caption: string;
+    rows: ReadonlyArray<{ label: string; verdict: string; pass: boolean }>;
+    sourceTitle: string;
+    sourceSub: string;
+    resultTag: string;
+    resultText: string;
+  };
 }
 
 export interface ClarityContent {
   title: string;
   body: string;
-  items: ReadonlyArray<{ tag: string; title: string; body: string }>;
+  items: ReadonlyArray<{ index: string; tag: string; title: string; body: string }>;
 }
 
 export interface BoundaryContent {
@@ -65,8 +112,9 @@ export interface WebsiteContent {
     primaryAria: string;
   };
   hero: HeroContent;
+  alertSample: AlertSampleContent;
   risks: RiskContent;
-  relevance: { title: string; body: string };
+  relevance: RelevanceContent;
   clarity: ClarityContent;
   principles: {
     title: string;

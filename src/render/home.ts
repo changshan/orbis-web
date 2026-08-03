@@ -39,7 +39,7 @@ export function renderHome(locale: Locale): string {
 <p class="home-lede">${esc(c.hero.body)}</p>
 <a class="home-action" href="#relevance">${esc(c.hero.action)} <span aria-hidden="true">↓</span></a>
 <ul class="home-metrics mono">
-${c.hero.metrics.map((metric) => `<li>${esc(metric)}</li>`).join("")}
+${c.hero.metrics.map((metric) => `<li>${esc(metric.value)} ${esc(metric.label)}</li>`).join("")}
 </ul>
 </div>
 <figure class="home-hero-figure">

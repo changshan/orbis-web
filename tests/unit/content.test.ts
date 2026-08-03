@@ -41,4 +41,24 @@ describe("双语内容", () => {
     expect(getContent("zh").meta.title).toBe("Orbis｜你的安全，时刻守护");
     expect(getContent("en").meta.title).toBe("Orbis | Keeping watch over your safety");
   });
+
+  it("提供改版所需的样机、严重度与判断逻辑文案", () => {
+    for (const locale of ["zh", "en"] as const) {
+      const c = getContent(locale);
+      expect(c.hero.metrics.map((m) => m.value)).toEqual(["1", "6", "4"]);
+      expect(c.hero.boundary.tag).toBe("BOUNDARY");
+      expect(c.hero.boundary.note.length).toBeGreaterThan(20);
+      expect(c.alertSample.sampleTag.length).toBeGreaterThan(0);
+      expect(c.risks.items.map((i) => i.code)).toEqual(["R-01", "R-02", "R-03", "R-04", "R-05", "R-06"]);
+      expect(c.risks.items.map((i) => i.term)).toEqual([
+        "EARTHQUAKE", "HEAVY RAIN", "HEATWAVE", "FLOOD", "WILDFIRE", "TORNADO"
+      ]);
+      expect(c.risks.severity.levels.map((l) => l.tone)).toEqual(["watch", "alert", "urgent"]);
+      expect(c.relevance.factors.map((f) => f.term)).toEqual(["PLACE", "RANGE", "SEVERITY"]);
+      expect(c.relevance.diagram.rows.map((r) => r.pass)).toEqual([false, false, true]);
+      expect(c.clarity.items.map((i) => i.index)).toEqual(["01", "02", "03", "04"]);
+    }
+    expect(getContent("zh").alertSample.sampleTag).toBe("示例");
+    expect(getContent("en").alertSample.sampleTag).toBe("SAMPLE");
+  });
 });
