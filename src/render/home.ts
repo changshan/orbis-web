@@ -54,10 +54,10 @@ ${foot}
 }
 
 function renderPrinciples(content: WebsiteContent): string {
-  return `<section class="day home-principles" id="principles" aria-labelledby="principles-title">
-<h2 class="day-title" id="principles-title">${esc(content.principles.title)}</h2>
+  return `<section class="home-principles" id="principles" aria-labelledby="principles-title">
+<h2 id="principles-title">${esc(content.principles.title)}</h2>
 <ul class="ledger">
-${content.principles.items.map((item) => `<li><span class="l-mark" aria-hidden="true"></span><h3>${esc(item.title)}<small>${esc(item.tag)}</small></h3><p>${esc(item.body)}</p></li>`).join("\n")}
+${content.principles.items.map((item) => `<li><span class="l-mark" aria-hidden="true"></span><h3>${esc(item.title)}<small class="mono">${esc(item.tag)}</small></h3><p>${esc(item.body)}</p></li>`).join("\n")}
 </ul>
 </section>`;
 }
@@ -75,7 +75,7 @@ export function renderHome(locale: Locale): string {
 <span class="clarity-index mono">${esc(item.index)}</span>
 <div><h3>${esc(item.title)}</h3><p>${esc(item.body)}</p></div>
 </li>`).join("\n");
-  const boundaryRules = c.boundary.rules.map((rule) => `<li>${esc(rule)}</li>`).join("");
+  const boundaryRules = c.boundary.rules.map((rule) => `<li><span class="rule-mark" aria-hidden="true"></span>${esc(rule)}</li>`).join("");
 
   const main = `<section class="home-hero" aria-labelledby="home-title">
 <div class="hero-grid">
@@ -145,12 +145,10 @@ ${renderAlertCard(c, "full")}
 </div>
 </section>
 ${renderPrinciples(c)}
-<aside class="home-boundary" id="boundary" aria-labelledby="boundary-title">
-<div>
+<aside class="home-boundary blueprint blueprint-ink" id="boundary" aria-labelledby="boundary-title">${corners()}
 <h2 id="boundary-title">${esc(c.boundary.title)}</h2>
 <p>${esc(c.boundary.body)}</p>
 <ul>${boundaryRules}</ul>
-</div>
 </aside>
 ${renderFeedbackSection(locale, c)}`;
 

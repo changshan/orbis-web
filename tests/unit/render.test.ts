@@ -172,6 +172,16 @@ describe("renderHome", () => {
     expect(en).toContain('aria-label="Orbis home"');
     expect(en).toContain('aria-label="Primary navigation"');
   });
+
+  it("原则与边界按线框风格重排且行数不变", () => {
+    for (const html of [zh, en]) {
+      expect(html.match(/<li><span class="l-mark"/g)).toHaveLength(3);
+      expect(html).toContain('<aside class="home-boundary blueprint blueprint-ink"');
+      expect(html).toContain('<span class="corner tl" aria-hidden="true"></span>');
+      expect(html).not.toContain('class="day home-principles"');
+      expect(html).toContain('class="home-principles"');
+    }
+  });
 });
 
 describe("其余页面", () => {
