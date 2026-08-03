@@ -68,6 +68,22 @@ test("反馈控件具有双层高对比度焦点指示", async ({ page }) => {
   await expect(message).toHaveCSS("box-shadow", /rgb\(28, 42, 51\)/);
 });
 
+test("严重度图例 urgent 标记的外圈不透明且清晰可辨", async ({ page }) => {
+  await page.goto("/zh/");
+  const mark = page.locator(".sev-mark.sev-urgent").first();
+  await expect(mark).toBeVisible();
+  const outline = await mark.evaluate((el) => {
+    const style = getComputedStyle(el);
+    return { color: style.outlineColor, width: parseFloat(style.outlineWidth), styleKind: style.outlineStyle };
+  });
+  expect(outline.styleKind).toBe("solid");
+  expect(outline.width).toBeGreaterThanOrEqual(2);
+  const parts = outline.color.match(/rgba?\(([^)]+)\)/)?.[1]?.split(",").map((n) => parseFloat(n)) ?? [];
+  const [r = NaN, g = NaN, b = NaN, a = 1] = parts;
+  expect([r, g, b]).toEqual([166, 64, 47]);
+  expect(a).toBeGreaterThanOrEqual(0.99);
+});
+
 test("首页为何 Orbis 保持当前首页且只有一个导航定位", async ({ page }) => {
   await page.goto("/zh/");
   const why = page.getByRole("navigation").getByRole("link", { name: "为何 Orbis" });

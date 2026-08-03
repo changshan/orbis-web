@@ -123,7 +123,7 @@ h2{font-family:var(--font-display);font-weight:500;letter-spacing:.005em;margin:
 .sev-mark{width:9px;height:9px;display:block;flex:none}
 .sev-watch{border:1px solid var(--muted)}
 .sev-alert{background:var(--lamp)}
-.sev-urgent{background:var(--error);outline:3px solid rgba(166,64,47,.22)}
+.sev-urgent{background:var(--error);outline:3px solid var(--error);outline-offset:2px}
 .home-color-transition{position:relative;height:144px;overflow:hidden;background:linear-gradient(to bottom,var(--ink) 0%,#31404a 34%,#879197 68%,var(--paper) 100%)}
 .home-color-transition::before{content:"";position:absolute;inset:0 0 45%;background-image:linear-gradient(rgba(143,160,171,.16) 1px,transparent 1px),linear-gradient(90deg,rgba(143,160,171,.16) 1px,transparent 1px);background-position:0 16px;background-size:144px 32px;mask-image:linear-gradient(to bottom,#000,transparent);-webkit-mask-image:linear-gradient(to bottom,#000,transparent)}
 .home-color-transition::after{content:"";position:absolute;left:50%;top:38%;width:6px;height:6px;border-radius:50%;background:var(--lamp-bright);transform:translate(-50%,-50%);box-shadow:0 0 20px 10px rgba(240,180,92,.18)}
