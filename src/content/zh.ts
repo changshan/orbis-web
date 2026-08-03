@@ -48,12 +48,12 @@ export const zh = {
     title: "各种风险，全面感知",
     note: "展示可纳入 Orbis 判断框架的风险类型；实际可用类型取决于当地信息源与服务范围。",
     items: [
-      { key: "earthquake", code: "R-01", name: "地震", term: "EARTHQUAKE", body: "了解震级、位置、时间，以及与守护地点的距离。" },
-      { key: "rain", code: "R-02", name: "暴雨", term: "HEAVY RAIN", body: "了解影响区域、持续时间和风险程度。" },
-      { key: "heatwave", code: "R-03", name: "热浪", term: "HEATWAVE", body: "在高温到来前，了解影响时间和注意事项。" },
-      { key: "flood", code: "R-04", name: "洪水", term: "FLOOD", body: "了解水位变化、影响范围和官方行动信息。" },
-      { key: "wildfire", code: "R-05", name: "山火", term: "WILDFIRE", body: "了解火情位置、蔓延范围和相关限制。" },
-      { key: "tornado", code: "R-06", name: "龙卷风", term: "TORNADO", body: "了解发生位置、影响范围和紧急避险信息。" }
+      { key: "earthquake", code: "R-01", name: "地震", term: "EARTHQUAKE" },
+      { key: "rain", code: "R-02", name: "暴雨", term: "HEAVY RAIN" },
+      { key: "heatwave", code: "R-03", name: "热浪", term: "HEATWAVE" },
+      { key: "flood", code: "R-04", name: "洪水", term: "FLOOD" },
+      { key: "wildfire", code: "R-05", name: "山火", term: "WILDFIRE" },
+      { key: "tornado", code: "R-06", name: "龙卷风", term: "TORNADO" }
     ],
     severity: {
       label: "SEVERITY",
@@ -89,10 +89,10 @@ export const zh = {
     title: "重要信息，永不遗漏",
     body: "灾害类型、影响地点、关键时间和首要行动，按照重要程度呈现。",
     items: [
-      { index: "01", tag: "01 · WHAT", title: "发生了什么", body: "灾害类型与风险程度" },
-      { index: "02", tag: "02 · WHERE", title: "影响哪里", body: "与你选择地点的关系" },
-      { index: "03", tag: "03 · WHEN", title: "关键时间", body: "发生、开始或更新时间" },
-      { index: "04", tag: "04 · ACTION", title: "首先关注什么", body: "审核后的固定行动表达" }
+      { index: "01", title: "发生了什么", body: "灾害类型与风险程度" },
+      { index: "02", title: "影响哪里", body: "与你选择地点的关系" },
+      { index: "03", title: "关键时间", body: "发生、开始或更新时间" },
+      { index: "04", title: "首先关注什么", body: "审核后的固定行动表达" }
     ]
   },
   principles: {

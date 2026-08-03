@@ -42,7 +42,7 @@ export interface SeverityLevel {
 export interface RiskContent {
   title: string;
   note: string;
-  items: ReadonlyArray<{ key: RiskKey; code: string; name: string; term: string; body: string }>;
+  items: ReadonlyArray<{ key: RiskKey; code: string; name: string; term: string }>;
   severity: {
     label: string;
     levels: readonly [SeverityLevel, SeverityLevel, SeverityLevel];
@@ -66,7 +66,7 @@ export interface RelevanceContent {
 export interface ClarityContent {
   title: string;
   body: string;
-  items: ReadonlyArray<{ index: string; tag: string; title: string; body: string }>;
+  items: ReadonlyArray<{ index: string; title: string; body: string }>;
 }
 
 export interface BoundaryContent {

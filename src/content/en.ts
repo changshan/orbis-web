@@ -48,12 +48,12 @@ export const en = {
     title: "Comprehensive awareness across risks.",
     note: "Examples of risks that can fit the Orbis relevance framework. Availability depends on local information sources and service coverage.",
     items: [
-      { key: "earthquake", code: "R-01", name: "Earthquake", term: "EARTHQUAKE", body: "Understand magnitude, location, timing, and distance from a place you care about." },
-      { key: "rain", code: "R-02", name: "Heavy rain", term: "HEAVY RAIN", body: "Understand the affected area, duration, and level of risk." },
-      { key: "heatwave", code: "R-03", name: "Heatwave", term: "HEATWAVE", body: "Understand the expected timing and points to watch before extreme heat arrives." },
-      { key: "flood", code: "R-04", name: "Flood", term: "FLOOD", body: "Understand water-level changes, affected areas, and official action information." },
-      { key: "wildfire", code: "R-05", name: "Wildfire", term: "WILDFIRE", body: "Understand the fire location, spread, and related restrictions." },
-      { key: "tornado", code: "R-06", name: "Tornado", term: "TORNADO", body: "Understand the location, affected area, and urgent shelter information." }
+      { key: "earthquake", code: "R-01", name: "Earthquake", term: "EARTHQUAKE" },
+      { key: "rain", code: "R-02", name: "Heavy rain", term: "HEAVY RAIN" },
+      { key: "heatwave", code: "R-03", name: "Heatwave", term: "HEATWAVE" },
+      { key: "flood", code: "R-04", name: "Flood", term: "FLOOD" },
+      { key: "wildfire", code: "R-05", name: "Wildfire", term: "WILDFIRE" },
+      { key: "tornado", code: "R-06", name: "Tornado", term: "TORNADO" }
     ],
     severity: {
       label: "SEVERITY",
@@ -89,10 +89,10 @@ export const en = {
     title: "Important information, never missed.",
     body: "Risk type, affected place, key timing, and the first action are presented in order of importance.",
     items: [
-      { index: "01", tag: "01 · WHAT", title: "What happened", body: "Risk type and severity" },
-      { index: "02", tag: "02 · WHERE", title: "Where it matters", body: "Relation to the place you chose" },
-      { index: "03", tag: "03 · WHEN", title: "Key timing", body: "Occurrence, start, or update time" },
-      { index: "04", tag: "04 · ACTION", title: "What to notice first", body: "Reviewed, fixed action language" }
+      { index: "01", title: "What happened", body: "Risk type and severity" },
+      { index: "02", title: "Where it matters", body: "Relation to the place you chose" },
+      { index: "03", title: "Key timing", body: "Occurrence, start, or update time" },
+      { index: "04", title: "What to notice first", body: "Reviewed, fixed action language" }
     ]
   },
   principles: {

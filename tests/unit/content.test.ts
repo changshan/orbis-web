@@ -35,6 +35,8 @@ describe("双语内容", () => {
     expect("product" in getContent("zh")).toBe(false);
     expect("product" in getContent("en")).toBe(false);
     expect(JSON.stringify(CONTENT)).not.toMatch(/强风|HIGH WIND/i);
+    expect(JSON.stringify(CONTENT)).not.toContain("了解震级、位置、时间");
+    expect(JSON.stringify(CONTENT)).not.toContain("01 · WHAT");
   });
 
   it("浏览器标题以品牌开头并传达核心价值", () => {
@@ -60,5 +62,14 @@ describe("双语内容", () => {
     }
     expect(getContent("zh").alertSample.sampleTag).toBe("示例");
     expect(getContent("en").alertSample.sampleTag).toBe("SAMPLE");
+  });
+
+  it("行动建议文案与已审核固定模板逐字一致，不允许模型改写", () => {
+    expect(getContent("zh").alertSample.action).toBe(
+      "减少不必要的户外安排，并留意当地官方信息。"
+    );
+    expect(getContent("en").alertSample.action).toBe(
+      "Limit unnecessary outdoor plans and follow local official information."
+    );
   });
 });
