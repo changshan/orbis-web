@@ -66,13 +66,13 @@ export function renderHome(locale: Locale): string {
   const visuals = locale === "en"
     ? { relevance: "relevance.en.svg", clarity: "clarity.en.svg" }
     : { relevance: "relevance.png", clarity: "clarity.png" };
-  const risks = c.risks.items.map((item) => `<article class="risk-card">
-<img src="/assets/home/risk-${item.key}.svg" alt="" loading="lazy" decoding="async" width="360" height="260" />
-<div class="risk-card-copy">
-<h3>${esc(item.name)}</h3>
-<p>${esc(item.body)}</p>
-</div>
-</article>`).join("\n");
+  const risks = c.risks.items.map((item) => `<li class="risk-card">
+<span class="risk-code mono">${esc(item.code)}</span>
+<img class="risk-icon" src="/assets/home/risk-${item.key}.svg" alt="" loading="lazy" decoding="async" width="360" height="260" />
+<h3 class="risk-name">${esc(item.name)}</h3>
+<span class="risk-term mono">${esc(item.term)}</span>
+</li>`).join("\n");
+  const severity = c.risks.severity.levels.map((level) => `<li><span class="sev-mark sev-${level.tone}" aria-hidden="true"></span>${esc(level.text)}</li>`).join("");
   const clarity = c.clarity.items.map((item) => `<li>
 <span class="mono">${esc(item.tag)}</span>
 <h3>${esc(item.title)}</h3>
@@ -97,15 +97,17 @@ ${renderAlertCard(c, "compact")}
 <p class="hero-boundary"><span class="mono">${esc(c.hero.boundary.tag)}</span><span>${esc(c.hero.boundary.note)}</span></p>
 </section>
 <section class="home-risks" id="risks" aria-labelledby="risks-title">
-<header class="home-section-head">
-<div>
+<header class="section-head">
 <h2 id="risks-title">${esc(c.risks.title)}</h2>
-</div>
-<p class="home-scope-note">${esc(c.risks.note)}</p>
+<p class="section-note">${esc(c.risks.note)}</p>
 </header>
-<div class="home-risk-grid">
+<ul class="risk-grid">
 ${risks}
-</div>
+</ul>
+<ul class="severity-legend">
+<li class="severity-label mono">${esc(c.risks.severity.label)}</li>
+${severity}
+</ul>
 </section>
 <div class="home-color-transition" aria-hidden="true"></div>
 <section class="home-relevance" id="relevance" aria-labelledby="relevance-title">

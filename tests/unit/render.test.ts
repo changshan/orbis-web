@@ -143,6 +143,25 @@ describe("renderHome", () => {
     expect(clarity.match(/<tspan/g)).toHaveLength(2);
   });
 
+  it("风险区收敛为索引网格并给出三档严重度图例", () => {
+    for (const html of [zh, en]) {
+      expect(html.match(/class="risk-card"/g)).toHaveLength(6);
+      expect(html).toContain('<span class="risk-code mono">R-01</span>');
+      expect(html).toContain('<span class="risk-term mono">EARTHQUAKE</span>');
+      expect(html).toContain('class="severity-legend"');
+      for (const tone of ["sev-watch", "sev-alert", "sev-urgent"]) {
+        expect(html, tone).toContain(tone);
+      }
+      const icon = html.slice(html.indexOf('src="/assets/home/risk-earthquake.svg"') - 200,
+        html.indexOf('src="/assets/home/risk-earthquake.svg"') + 200);
+      expect(icon).toContain('loading="lazy"');
+      expect(icon).toContain('decoding="async"');
+      expect(icon).toContain('alt=""');
+    }
+    expect(zh).toContain('<h3 class="risk-name">地震</h3>');
+    expect(en).toContain('<h3 class="risk-name">Earthquake</h3>');
+  });
+
   it("导航无障碍名称随页面语言本地化", () => {
     expect(zh).toContain('aria-label="Orbis 首页"');
     expect(zh).toContain('aria-label="主导航"');
