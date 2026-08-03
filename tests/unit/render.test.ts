@@ -204,4 +204,13 @@ describe("其余页面", () => {
     expect(nf).toContain('href="/zh/"');
     expect(nf).toContain('href="/en/"');
   });
+
+  it("页头吸顶、页脚夜底，且首页与隐私页共用同一骨架", () => {
+    for (const html of [renderHome("zh"), renderPrivacy("zh")]) {
+      expect(html).toContain('<header class="site-header">');
+      expect(html).toContain('<div class="header-inner">');
+      expect(html).toContain('<footer class="site-footer">');
+      expect(html).toContain('<div class="footer-inner">');
+    }
+  });
 });

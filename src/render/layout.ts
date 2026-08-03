@@ -42,6 +42,7 @@ function sectionHref(locale: Locale, page: LocalizedPage, section: "principles" 
 export function renderHeader(locale: Locale, page: LocalizedPage, content: WebsiteContent): string {
   const alt: Locale = locale === "zh" ? "en" : "zh";
   return `<header class="site-header">
+<div class="header-inner">
 <a class="brand" href="${localizedPath(locale, "home")}" aria-label="${esc(content.nav.homeAria)}"><span class="brand-mark" aria-hidden="true"></span><span>ORBIS</span></a>
 <nav class="site-nav" aria-label="${esc(content.nav.primaryAria)}">
 <a href="${localizedPath(locale, "home")}"${page === "home" ? ' aria-current="page"' : ""}>${esc(content.nav.why)}</a>
@@ -50,12 +51,15 @@ export function renderHeader(locale: Locale, page: LocalizedPage, content: Websi
 <a href="${localizedPath(locale, "privacy")}">${esc(content.nav.privacy)}</a>
 <a class="lang-switch" href="${localizedPath(alt, page)}" hreflang="${alt === "zh" ? "zh-CN" : "en"}">${esc(content.nav.langLabel)}</a>
 </nav>
+</div>
 </header>`;
 }
 
 export function renderFooter(locale: Locale, page: LocalizedPage, content: WebsiteContent): string {
-  return `<footer>
+  return `<footer class="site-footer">
+<div class="footer-inner">
 <p>${esc(content.footer.boundary)}</p>
 <p><a href="${localizedPath(locale, "home")}">${esc(content.nav.why)}</a> · <a href="${sectionHref(locale, page, "feedback")}">${esc(content.nav.feedback)}</a> · <a href="${localizedPath(locale, "privacy")}">${esc(content.nav.privacy)}</a> · ${esc(content.footer.copyright)}</p>
+</div>
 </footer>`;
 }
