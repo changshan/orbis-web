@@ -40,7 +40,6 @@ describe("build output", () => {
     expect(existsSync(hashedAsset("dist/assets", "global", "css"))).toBe(true);
     expect(existsSync(hashedAsset("dist/assets", "lang", "js"))).toBe(true);
     expect(existsSync(hashedAsset("dist/assets", "feedback", "js"))).toBe(true);
-    expect(existsSync(hashedAsset("dist/assets/home", "hero-radar.en", "svg"))).toBe(true);
     expect(existsSync(hashedAsset("dist/assets/home", "relevance.en", "svg"))).toBe(true);
     expect(existsSync(hashedAsset("dist/assets/home", "clarity.en", "svg"))).toBe(true);
     for (const asset of walk("dist/assets")) {
@@ -66,10 +65,9 @@ describe("build output", () => {
     expect(css).toContain("--control-border:#7F8A91");
     expect(css).toContain(":focus-visible{outline:2px solid #fff;outline-offset:2px;box-shadow:0 0 0 4px var(--text)}");
     expect(css).toContain("border:1px solid var(--control-border)");
-    expect(en).toMatch(/\/assets\/home\/hero-radar\.en\.[a-f0-9]{12}\.svg/);
     expect(en).toMatch(/\/assets\/home\/relevance\.en\.[a-f0-9]{12}\.svg/);
     expect(en).toMatch(/\/assets\/home\/clarity\.en\.[a-f0-9]{12}\.svg/);
-    expect(en).not.toMatch(/\/assets\/home\/(?:hero-radar|relevance|clarity)\.png/);
+    expect(en).not.toMatch(/\/assets\/home\/(?:relevance|clarity)\.png/);
     for (const page of walk("dist").filter((file) => file.endsWith(".html"))) {
       const html = readFileSync(page, "utf8");
       for (const reference of html.match(/\/assets\/[^"' <>)]+/g) ?? []) {

@@ -30,12 +30,23 @@ describe("renderHome", () => {
   const zh = renderHome("zh");
   const en = renderHome("en");
 
-  it("直接在中英文首页呈现定稿 Hero", () => {
+  it("Hero 用线框警报样机替代位图，并常驻边界声明", () => {
     expect(zh).toContain('lang="zh-CN"');
     expect(en).toContain('lang="en"');
     expect(zh).toContain('<body class="page-home">');
     expect(zh).toContain('<h1 id="home-title"><span>你的安全，</span><span>时刻守护</span></h1>');
     expect(en).toContain('<h1 id="home-title"><span>Keeping watch over</span><span>your safety.</span></h1>');
+    for (const html of [zh, en]) {
+      expect(html).not.toContain("hero-radar");
+      expect(html).toContain('class="hero-figure"');
+      expect(html).toContain('class="alert-card alert-card-compact blueprint"');
+      expect(html).toContain('class="hero-boundary"');
+    }
+    expect(zh).toContain('<span class="alert-sample mono">示例</span>');
+    expect(en).toContain('<span class="alert-sample mono">SAMPLE</span>');
+    expect(zh).toContain("LEVEL 2 · 注意");
+    expect(zh.match(/class="hero-metrics"/g)).toHaveLength(1);
+    expect(zh).toContain('<span class="metric-value">1</span>');
   });
 
   it("按顺序包含六类风险、相关性、清晰度、三条原则、边界与反馈", () => {
@@ -93,7 +104,7 @@ describe("renderHome", () => {
 
   it("只引用本地首页视觉资产且没有禁词", () => {
     for (const asset of [
-      "hero-radar.png", "risk-earthquake.svg", "risk-rain.svg", "risk-heatwave.svg",
+      "risk-earthquake.svg", "risk-rain.svg", "risk-heatwave.svg",
       "risk-flood.svg", "risk-wildfire.svg", "risk-tornado.svg", "relevance.png", "clarity.png"
     ]) expect(zh, asset).toContain(`/assets/home/${asset}`);
     for (const html of [zh, en]) {
@@ -104,48 +115,18 @@ describe("renderHome", () => {
     }
   });
 
-  it("首屏视觉优先加载，后续视觉延迟并异步解码", () => {
-    const imageTag = (src: string): string => {
-      const source = zh.indexOf(`src="${src}"`);
-      const start = zh.lastIndexOf("<img", source);
-      const end = zh.indexOf("/>", start);
-      expect(source, src).toBeGreaterThanOrEqual(0);
-      return zh.slice(start, end + 2);
-    };
-    const hero = imageTag("/assets/home/hero-radar.png");
-    expect(hero).toContain('fetchpriority="high"');
-    expect(hero).toContain('decoding="async"');
-    expect(hero).not.toContain('loading="lazy"');
-
-    for (const src of [
-      "/assets/home/risk-earthquake.svg",
-      "/assets/home/risk-rain.svg",
-      "/assets/home/risk-heatwave.svg",
-      "/assets/home/risk-flood.svg",
-      "/assets/home/risk-wildfire.svg",
-      "/assets/home/risk-tornado.svg",
-      "/assets/home/relevance.png",
-      "/assets/home/clarity.png"
-    ]) {
-      const tag = imageTag(src);
-      expect(tag, src).toContain('loading="lazy"');
-      expect(tag, src).toContain('decoding="async"');
-    }
-  });
-
   it("英文首页使用独立的英文视觉素材", () => {
-    const englishAssets = ["hero-radar.en.svg", "relevance.en.svg", "clarity.en.svg"];
+    const englishAssets = ["relevance.en.svg", "clarity.en.svg"];
     for (const asset of englishAssets) {
       expect(en, asset).toContain(`/assets/home/${asset}`);
       expect(existsSync(join("public/assets/home", asset)), asset).toBe(true);
     }
-    expect(en).not.toContain('/assets/home/hero-radar.png');
     expect(en).not.toContain('/assets/home/relevance.png');
     expect(en).not.toContain('/assets/home/clarity.png');
   });
 
   it("英文视觉素材不包含中文文字", () => {
-    for (const asset of ["hero-radar.en.svg", "relevance.en.svg", "clarity.en.svg"]) {
+    for (const asset of ["relevance.en.svg", "clarity.en.svg"]) {
       const path = join("public/assets/home", asset);
       expect(existsSync(path), asset).toBe(true);
       if (existsSync(path)) expect(readFileSync(path, "utf8"), asset).not.toMatch(/\p{Script=Han}/u);

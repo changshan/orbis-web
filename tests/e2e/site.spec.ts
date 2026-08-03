@@ -25,29 +25,14 @@ test("根域名自动进入本地化首页并可手动切换语言", async ({ br
   await context.close();
 });
 
-test("Hero 右侧图形容器使用透明背景", async ({ page }) => {
-  await page.goto("/zh/");
-  await expect(page.locator(".home-hero-figure")).toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
-});
-
-test("Hero 使用重新生成的 1.1 倍雷达图且不依赖 CSS 缩放", async ({ page }) => {
+test("Hero 用线框警报样机并标注为示例", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/zh/");
-  const image = page.locator(".home-hero-figure img");
-  await expect(image).toHaveAttribute("width", "656");
-  await expect(image).toHaveAttribute("height", "704");
-  await expect(image).toHaveCSS("transform", "none");
-  await expect
-    .poll(() => image.evaluate((element: HTMLImageElement) => [element.naturalWidth, element.naturalHeight]))
-    .toEqual([656, 704]);
-  await expect
-    .poll(() =>
-      image.evaluate((element) => {
-        const rect = element.getBoundingClientRect();
-        return [Math.round(rect.width), Math.round(rect.height)];
-      }),
-    )
-    .toEqual([656, 704]);
+  const card = page.locator(".hero-figure .alert-card");
+  await expect(card).toBeVisible();
+  await expect(card.locator(".alert-sample")).toHaveText("示例");
+  await expect(page.locator(".hero-figure img")).toHaveCount(0);
+  await expect(page.locator(".home-hero")).toHaveCSS("border-bottom-color", "rgb(226, 161, 68)");
 });
 
 test("深浅背景通过装饰层平滑过渡", async ({ page }) => {

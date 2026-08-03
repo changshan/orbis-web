@@ -24,11 +24,11 @@ for (const r of required) if (!files.some((f) => rel(f) === r)) fail(`missing ${
 
 const expectedAssets = [
   "assets/global.css", "assets/lang.js", "assets/feedback.js",
-  "assets/home/hero-radar.png", "assets/home/risk-earthquake.svg",
+  "assets/home/risk-earthquake.svg",
   "assets/home/risk-rain.svg", "assets/home/risk-heatwave.svg",
   "assets/home/risk-flood.svg", "assets/home/risk-wildfire.svg",
   "assets/home/risk-tornado.svg", "assets/home/relevance.png",
-  "assets/home/clarity.png", "assets/home/hero-radar.en.svg",
+  "assets/home/clarity.png",
   "assets/home/relevance.en.svg", "assets/home/clarity.en.svg"
 ];
 const fingerprintPattern = /\.[a-f0-9]{12}\.[^./]+$/;
