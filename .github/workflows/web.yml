@@ -6,8 +6,6 @@ on:
   workflow_dispatch: {}
 permissions:
   contents: read
-env:
-  PUBLIC_SITE_ORIGIN: "https://myorbis.xyz"
 concurrency:
   group: web-${{ github.ref }}
   cancel-in-progress: true
@@ -23,6 +21,7 @@ jobs:
       - run: npm run check
       - run: npm run test:unit
       - run: npm run build
+        env: { PUBLIC_SITE_ORIGIN: "https://myorbis.xyz" }
       - run: npm run test:e2e
   preview:
     needs: verify
@@ -35,6 +34,7 @@ jobs:
         with: { node-version: 22, cache: npm, cache-dependency-path: package-lock.json }
       - run: npm ci
       - run: npm run build
+        env: { PUBLIC_SITE_ORIGIN: "https://myorbis.xyz" }
       - run: npx wrangler versions upload
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -51,6 +51,7 @@ jobs:
         with: { node-version: 22, cache: npm, cache-dependency-path: package-lock.json }
       - run: npm ci
       - run: npm run build
+        env: { PUBLIC_SITE_ORIGIN: "https://myorbis.xyz" }
       - run: npx wrangler deploy
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
