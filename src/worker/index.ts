@@ -6,7 +6,7 @@ import { validateFeedback } from "./validation";
 // VERIFIED (Task 0 spike, 2026-07-21): the send_email binding accepts this
 // object shape { to, from, subject, text, html } — confirmed by real successful
 // sends (ok:true) from spike@myorbis.xyz to the verified destination once the
-// domain was active. No MIME fallback needed. See web/.github-notes.md for current operating guidance.
+// domain was active. No MIME fallback needed. See docs/deployment.md for current operating guidance.
 export interface EmailBinding { send(message: { to: string; from: string; subject: string; text: string; html: string }): Promise<unknown>; }
 export interface RateBinding { limit(input: { key: string }): Promise<{ success: boolean }>; }
 export interface WorkerEnv {
