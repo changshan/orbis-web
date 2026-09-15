@@ -1,4 +1,4 @@
-node_modules/
+# 通用依赖与密钥规则见根目录 .gitignore。
 dist/
 .wrangler/
 playwright-report/
