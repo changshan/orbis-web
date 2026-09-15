@@ -1,7 +1,7 @@
 # Orbis Web 部署 runbook（v2 单 Worker）
 
 1. 在团队密钥管理中记录：正式 HTTPS 域名、Cloudflare Account ID、Worker 名 `orbis-web`、Email Service 发件地址、唯一项目收件邮箱。
-2. Cloudflare DNS 绑定自定义域名到 Worker `orbis-web`；`workers.dev` 不作为正式入口。GitHub 环境 `web-preview` / `web-production` 设置 `PUBLIC_SITE_ORIGIN` 为正式 origin（预览环境可用 workers.dev origin）。
+2. Cloudflare DNS 绑定自定义域名到 Worker `orbis-web`；`workers.dev` 不作为正式入口。公开且固定的 canonical origin `https://myorbis.xyz` 在工作流中维护，预览构建也使用该正式 origin，避免搜索引擎把临时预览地址当成 canonical。
 3. Email Service：完成发件域名接入（SPF/DKIM/DMARC 通过），验证唯一收件邮箱；在 Cloudflare 控制台把 `EMAIL` binding 的 destination 限制为该邮箱。
 4. Worker secrets：`npx wrangler secret put FEEDBACK_SENDER`、`npx wrangler secret put FEEDBACK_DESTINATION`。
 5. GitHub secrets `CLOUDFLARE_API_TOKEN`（限 Workers Scripts:Edit + Workers Routes:Edit）与 `CLOUDFLARE_ACCOUNT_ID`：设为 repo 级即两个环境（`web-preview` / `web-production`）共用;若要按环境隔离权限,则在两个环境下各自配置一份。`web-production` 环境按需开启审批保护(私有仓库需付费套餐或改为公开仓库;免费私有仓库无此规则,即为 main 合并自动部署)。
