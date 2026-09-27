@@ -11,19 +11,12 @@ test("原生表单提交并收到本地化 HTML 回执", async ({ page }) => {
   await expect(page.getByRole("heading", { name: "谢谢，反馈已发送。" })).toBeVisible();
 });
 
-test("无 JS 时品牌内容完整可读", async ({ page }) => {
+test("无 JS 时 0.2 说明、下载入口与反馈表单可用", async ({ page }) => {
   await page.goto("/zh/");
-  await expect(page.locator("h1")).toContainText("你的安全");
-  await expect(page.locator(".home-risks")).toContainText("龙卷风");
-  await expect(page.locator("#principles li")).toHaveCount(3);
-  await expect(page.locator("#boundary")).toContainText("Orbis 不替代");
-});
-
-test("无 JS 时首页能力与反馈表单完整可用", async ({ page }) => {
-  await page.goto("/zh/");
-  await expect(page.locator("#relevance")).toBeVisible();
-  await expect(page.locator("#clarity")).toBeVisible();
-  await expect(page.locator("#clarity .clarity-list li")).toHaveCount(4);
-  await expect(page.locator("#clarity")).toContainText("首先关注什么");
+  await expect(page.locator("h1")).toContainText("关注重要地点");
+  await expect(page.locator("#how-it-works li")).toHaveCount(4);
+  await expect(page.locator("#plans")).toContainText("新版规划");
+  await expect(page.locator("#boundary")).toContainText("不预测灾害");
+  await expect(page.locator(".hero-cta")).toHaveAttribute("href", "https://apps.apple.com/us/app/myorbis/id6812221807");
   await expect(page.getByLabel("你的反馈")).toBeVisible();
 });

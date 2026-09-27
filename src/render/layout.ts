@@ -1,4 +1,4 @@
-import { localizedPath, siteOrigin, type Locale, type LocalizedPage } from "../config/site";
+import { APP_STORE_URL, localizedPath, siteOrigin, type Locale, type LocalizedPage } from "../config/site";
 import type { WebsiteContent } from "../content/types";
 import { escapeHtml as esc } from "./html";
 
@@ -35,7 +35,7 @@ ${scripts.map((s) => `<script src="${s}" defer></script>`).join("\n")}
 </html>`;
 }
 
-function sectionHref(locale: Locale, page: LocalizedPage, section: "principles" | "feedback"): string {
+function sectionHref(locale: Locale, page: LocalizedPage, section: "how-it-works" | "principles" | "feedback"): string {
   return page === "home" ? `#${section}` : `${localizedPath(locale, "home")}#${section}`;
 }
 
@@ -43,9 +43,10 @@ export function renderHeader(locale: Locale, page: LocalizedPage, content: Websi
   const alt: Locale = locale === "zh" ? "en" : "zh";
   return `<header class="site-header">
 <div class="header-inner">
-<a class="brand" href="${localizedPath(locale, "home")}" aria-label="${esc(content.nav.homeAria)}"><span class="brand-mark" aria-hidden="true"></span><span>ORBIS</span></a>
+<a class="brand" href="${localizedPath(locale, "home")}" aria-label="${esc(content.nav.homeAria)}"><img class="brand-mark" src="/assets/brand-mark-32.svg" width="32" height="32" alt="" aria-hidden="true" /><span>ORBIS</span></a>
 <nav class="site-nav" aria-label="${esc(content.nav.primaryAria)}">
 <a href="${localizedPath(locale, "home")}"${page === "home" ? ' aria-current="page"' : ""}>${esc(content.nav.why)}</a>
+<a href="${sectionHref(locale, page, "how-it-works")}">${esc(content.nav.how)}</a>
 <a href="${sectionHref(locale, page, "principles")}">${esc(content.nav.principles)}</a>
 <a href="${sectionHref(locale, page, "feedback")}">${esc(content.nav.feedback)}</a>
 <a href="${localizedPath(locale, "privacy")}">${esc(content.nav.privacy)}</a>
@@ -59,7 +60,7 @@ export function renderFooter(locale: Locale, page: LocalizedPage, content: Websi
   return `<footer class="site-footer">
 <div class="footer-inner">
 <p>${esc(content.footer.boundary)}</p>
-<p><a href="${localizedPath(locale, "home")}">${esc(content.nav.why)}</a> · <a href="${sectionHref(locale, page, "feedback")}">${esc(content.nav.feedback)}</a> · <a href="${localizedPath(locale, "privacy")}">${esc(content.nav.privacy)}</a> · ${esc(content.footer.copyright)}</p>
+<p><a href="${localizedPath(locale, "home")}">${esc(content.nav.why)}</a> · <a href="${sectionHref(locale, page, "feedback")}">${esc(content.nav.feedback)}</a> · <a href="${localizedPath(locale, "privacy")}">${esc(content.nav.privacy)}</a> · <a class="footer-download" href="${APP_STORE_URL}" target="_blank" rel="noopener noreferrer">${esc(content.nav.download)}</a> · ${esc(content.footer.copyright)}</p>
 </div>
 </footer>`;
 }

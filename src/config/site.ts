@@ -1,3 +1,5 @@
+export const APP_STORE_URL = "https://apps.apple.com/us/app/myorbis/id6812221807";
+
 export const SITE = { name: "Orbis", defaultLocale: "en", locales: ["zh", "en"] } as const;
 export type Locale = (typeof SITE.locales)[number];
 export type LocalizedPage = "home" | "privacy";

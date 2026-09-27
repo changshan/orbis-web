@@ -2,112 +2,74 @@ import type { WebsiteContent } from "./types";
 
 export const zh = {
   meta: {
-    title: "Orbis｜你的安全，时刻守护",
-    description: "了解 Orbis 如何围绕守护地点判断风险相关性，并清晰呈现真正必要的提醒。"
+    title: "Orbis｜关注重要地点与行程的灾害预警",
+    description: "Orbis 围绕你确认的地点与时间呈现相关官方灾害预警，并清晰标示来源与提醒边界。"
   },
   nav: {
-    why: "为何 Orbis", principles: "我们的原则", feedback: "反馈", privacy: "隐私",
-    skip: "跳到主要内容", langLabel: "English",
+    why: "为何 Orbis", how: "如何使用", principles: "我们的原则", feedback: "反馈", privacy: "隐私",
+    download: "在 App Store 下载", skip: "跳到主要内容", langLabel: "English",
     homeAria: "Orbis 首页", primaryAria: "主导航"
   },
   hero: {
-    title: "你的安全，时刻守护",
-    titleLines: ["你的安全，", "时刻守护"],
-    body: "Orbis 围绕你选择的地点，理解不同风险是否相关，并在重要变化发生时，提供简洁、可信的信息。",
-    action: "了解 Orbis 如何判断",
-    metrics: [
-      { value: "1", label: "守护地点" },
-      { value: "6", label: "风险类型" },
-      { value: "4", label: "关键信息" }
+    eyebrow: "ORBIS · OFFICIAL ALERTS, MADE RELEVANT",
+    titleLines: ["关注重要地点，", "掌握相关预警。"],
+    body: "Orbis 让你关注在意的地点，查看与之相关的官方灾害预警。新版规划将支持长期关注与按时间安排的行程提醒。",
+    learn: "了解使用方式",
+    boundary: "Orbis 不替代当地官方预警、政府指令或紧急服务。遇到紧急情况，请联系当地紧急服务。"
+  },
+  preview: {
+    tag: "新版规划 · 行程示意",
+    title: "上午米兰，下午罗马",
+    firstPlace: "米兰", firstTime: "09:00—12:00 · 当地时间",
+    secondPlace: "罗马", secondTime: "14:00—18:00 · 当地时间",
+    routeNote: "只关注确认的地点和时间段，不监控沿途。"
+  },
+  how: {
+    title: "从安排到提醒，步骤清晰",
+    intro: "新版规划中的创建流程由你确认地点和时间后才会生效；自然语言不可用时仍可手动创建。",
+    steps: [
+      { title: "自然语言描述", body: "AI 自动识别地点和行程，生成待确认的关注草稿。" },
+      { title: "确认地点与时间", body: "检查具体地点、实际日期与当地时区，必要时修改草稿。" },
+      { title: "持续关注", body: "长期地点持续关注；行程按已确认的地点和时间段分别关注。" },
+      { title: "查看相关提醒", body: "在相关官方预警出现或明显变化时，查看地点、时间与预警原文。" }
+    ]
+  },
+  plans: {
+    tag: "0.2 新版规划",
+    title: "两种安排，一种清晰的关注方式",
+    intro: "选择你在意的地点，并决定关注多久。每个地点的关注状态由你管理。",
+    items: [
+      { title: "长期关注地点", body: "适合家人所在城市等长期在意的地点；可主动暂停、恢复或删除。" },
+      { title: "单次或多节点行程", body: "为每个地点确认时间段；行程结束后停止关注，不自动延伸到沿途。" }
     ],
-    boundary: {
-      tag: "BOUNDARY",
-      note: "Orbis 不替代当地官方预警、政府指令或紧急服务。遇到紧急情况，请立即联系当地紧急服务。"
-    }
+    note: "新版功能随 0.2 发布进度开放；当前可用功能以 App 内为准。"
   },
   alertSample: {
-    sampleTag: "示例",
-    nowLabel: "现在",
-    levelLabel: "LEVEL 2 · 注意",
-    headLabel: "ALERT · 暴雨",
-    indexLabel: "01 / 02 / 03 / 04",
-    hazard: "暴雨",
-    whatValue: "暴雨 · 注意",
-    where: "与你在意的地点相关",
-    whenLabel: "WHEN",
-    when: "今晚开始",
-    updatedLabel: "UPDATED",
-    updated: "刚刚",
-    actionLabel: "FIRST ACTION / 首先关注",
-    action: "减少不必要的户外安排，并留意当地官方信息。",
-    sourceNote: "来源与完整信息可查看",
-    boundaryNote: "不替代官方预警或紧急服务",
-    fieldLabels: { what: "01 WHAT", where: "02 WHERE", when: "03 WHEN", action: "04 FIRST ACTION / 首先关注" }
-  },
-  risks: {
-    title: "各种风险，全面感知",
-    note: "展示可纳入 Orbis 判断框架的风险类型；实际可用类型取决于当地信息源与服务范围。",
-    items: [
-      { key: "earthquake", code: "R-01", name: "地震", term: "EARTHQUAKE" },
-      { key: "rain", code: "R-02", name: "暴雨", term: "HEAVY RAIN" },
-      { key: "heatwave", code: "R-03", name: "热浪", term: "HEATWAVE" },
-      { key: "flood", code: "R-04", name: "洪水", term: "FLOOD" },
-      { key: "wildfire", code: "R-05", name: "山火", term: "WILDFIRE" },
-      { key: "tornado", code: "R-06", name: "龙卷风", term: "TORNADO" }
-    ],
-    severity: {
-      label: "SEVERITY",
-      levels: [
-        { tone: "watch", text: "关注 · 变化在记录中" },
-        { tone: "alert", text: "注意 · 与你的地点相关" },
-        { tone: "urgent", text: "紧急 · 需要立即处理" }
-      ]
-    }
-  },
-  relevance: {
-    title: "保留真正必要的提醒",
-    body: "Orbis 结合守护地点、影响范围和风险程度，过滤与你无关的信息。",
-    factors: [
-      { name: "地点", term: "PLACE" },
-      { name: "范围", term: "RANGE" },
-      { name: "程度", term: "SEVERITY" }
-    ],
-    diagram: {
-      caption: "INCOMING SIGNALS → ONE RELEVANT ALERT",
-      rows: [
-        { label: "远处事件", verdict: "OUT", pass: false },
-        { label: "影响范围外", verdict: "OUT", pass: false },
-        { label: "与你可能相关", verdict: "PASS", pass: true }
-      ],
-      sourceTitle: "守护地点",
-      sourceSub: "地点 × 范围 × 程度",
-      resultTag: "RELEVANT",
-      resultText: "与你相关的风险变化"
-    }
-  },
-  clarity: {
-    title: "重要信息，永不遗漏",
-    body: "灾害类型、影响地点、关键时间和首要行动，按照重要程度呈现。",
-    items: [
-      { index: "01", title: "发生了什么", body: "灾害类型与风险程度" },
-      { index: "02", title: "影响哪里", body: "与你选择地点的关系" },
-      { index: "03", title: "关键时间", body: "发生、开始或更新时间" },
-      { index: "04", title: "首先关注什么", body: "审核后的固定行动表达" }
-    ]
+    sampleTag: "示例 · 非实时预警",
+    title: "每条提醒，讲清关键事实",
+    body: "提醒强度是 Orbis 对官方等级的机械映射；官方等级、发布机构与原文仍需并列可见。",
+    intensityLabel: "ORBIS 提醒强度", intensity: "注意",
+    officialLabel: "官方原文等级", officialLevel: "暴雨橙色预警（示例）",
+    placeLabel: "关注地点", place: "米兰",
+    timeLabel: "有效时间", time: "今天 20:00 前（示例）",
+    sourceLabel: "发布机构", source: "以实际官方预警为准",
+    actionLabel: "首先关注", action: "减少不必要的户外安排，并留意当地官方信息。",
+    foot: "示例仅用于展示信息结构；实际预警以原始发布机构的信息为准。"
   },
   principles: {
     title: "三条原则",
     items: [
-      { tag: "RELEVANT", title: "相关", body: "只关注与你在意的地点真正相关的信息。" },
-      { tag: "CLEAR", title: "清晰", body: "让重要信息可以被快速理解。" },
-      { tag: "TRUSTED", title: "可信", body: "保持克制，诚实表达来源、边界与不确定性。" }
+      { tag: "RELEVANT", title: "相关", body: "围绕你确认的地点和时间呈现相关预警。" },
+      { tag: "CLEAR", title: "清晰", body: "让地点、时间、官方等级与提醒原因容易理解。" },
+      { tag: "TRUSTED", title: "可信", body: "标明来源、时效与不确定性，明确说明能力边界。" }
     ]
   },
   boundary: {
     title: "可信，也包括明确边界。",
-    body: "Orbis 对信息来源、不确定性和能力范围保持透明。Orbis 不替代当地官方预警、政府指令或紧急服务；遇到紧急情况，请立即联系当地紧急服务。",
-    rules: ["来源可见 · 保留官方入口", "不确定性可见 · 不包装成确定", "行动保持克制 · 不预测、不保证"]
+    body: "Orbis 只依据已接入的官方或权威机构预警提供提醒，不预测灾害，也不保证覆盖所有事件或通知必达。来源不可用或过期时应如实显示状态，不将其表达为安全。",
+    rules: ["官方来源与原文可见", "只关注已确认的地点与时间", "不替代官方预警或紧急服务"]
   },
+  download: { title: "扫码下载 Orbis", body: "用手机扫描二维码打开 App Store；也可以点击二维码。", qrAlt: "扫描二维码，在 App Store 下载 Orbis" },
   feedback: {
     title: "直接告诉我们", body: "建议、问题，或任何你希望 Orbis 知道的事。",
     messageLabel: "你的反馈", messagePlaceholder: "写下你的建议或问题",
