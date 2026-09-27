@@ -33,7 +33,8 @@ describe("双语内容", () => {
     expect(CONTENT.zh.how.title).toBe("智能生成提醒， 让你更安心");
     expect(CONTENT.zh.how.intro).toBe("大模型驱动流程创建，提醒清晰明了");
     expect(CONTENT.zh.plans.title).toBe("两种安排，一种关注方式");
-    expect(CONTENT.zh.alertSample.body).toBe("提醒强度来源于风险的等级定义，参考官方的等级定义");
+    expect(CONTENT.zh.alertSample.body).toBe("提醒强度来源于风险的等级定义，参考各国官方权威的阈值定义");
+    expect(CONTENT.en.alertSample.body).toBe("Alert intensity follows risk level definitions and references authoritative thresholds published by each country’s official agencies.");
     expect(CONTENT.zh.alertSample.foot).toBe("仅为示例，以实际信息效果为准。");
     expect(CONTENT.zh.boundary.body).toBe("Orbis 数据来源于官方和权威机构，提供全面的风险事件覆盖和预警通知。来源不可用或过期时如实显示，并提供清晰说明。");
     for (const c of [CONTENT.zh, CONTENT.en]) {

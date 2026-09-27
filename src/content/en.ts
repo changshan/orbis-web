@@ -44,7 +44,7 @@ export const en = {
   },
   alertSample: {
     title: "Every alert should explain the facts",
-    body: "Alert intensity follows risk level definitions, informed by official classifications.",
+    body: "Alert intensity follows risk level definitions and references authoritative thresholds published by each country’s official agencies.",
     intensityLabel: "ORBIS INTENSITY", intensity: "Elevated",
     officialLabel: "OFFICIAL LEVEL", officialLevel: "Orange heavy rain alert (example)",
     placeLabel: "PLACE", place: "Milan",
