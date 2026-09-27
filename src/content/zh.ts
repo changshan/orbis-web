@@ -44,7 +44,7 @@ export const zh = {
   },
   alertSample: {
     title: "每条提醒，讲清关键事实",
-    body: "提醒强度来源于风险的等级定义，参考各国官方权威的阈值定义",
+    body: "提醒强度依赖于科学的风险等级定义，参考各国官方发布的权威数据",
     intensityLabel: "ORBIS 提醒强度", intensity: "注意",
     officialLabel: "官方原文等级", officialLevel: "暴雨橙色预警（示例）",
     placeLabel: "关注地点", place: "米兰",
