@@ -12,21 +12,21 @@ export const en = {
   },
   hero: {
     eyebrow: "ORBIS · OFFICIAL ALERTS, MADE RELEVANT",
-    titleLines: ["Watch the places", "that matter to you."],
-    body: "Orbis helps you follow places you care about and see relevant official disaster alerts. A planned update will add long-term places and time-based trips.",
+    titleLines: ["Follow important places and trips,", "and stay informed about relevant alerts."],
+    body: "Orbis helps you follow places you care about and see relevant official disaster alerts. Follow places long term and receive trip alerts based on your schedule.",
     learn: "See how it works",
-    boundary: "Orbis does not replace local official alerts, government instructions, or emergency services. In an emergency, contact local emergency services."
+    boundary: "Orbis provides broader, more timely alerts without replacing official emergency services."
   },
   preview: {
-    tag: "PLANNED UPDATE · TRIP EXAMPLE",
+    tag: "AI-GENERATED TRIP",
     title: "Milan in the morning, Rome in the afternoon",
     firstPlace: "Milan", firstTime: "09:00–12:00 · local time",
     secondPlace: "Rome", secondTime: "14:00–18:00 · local time",
-    routeNote: "Orbis watches confirmed places and time periods; it does not monitor the route between them."
+    routeNote: "Follow confirmed places and time periods across your entire trip."
   },
   how: {
-    title: "A clear path from plans to alerts",
-    intro: "In the planned update, monitoring starts after you confirm places and times. You can still create them manually when natural-language input is unavailable.",
+    title: "Intelligent alerts for greater peace of mind",
+    intro: "An AI-powered flow creates clear, easy-to-follow alerts.",
     steps: [
       { title: "Describe in natural language", body: "AI identifies places and trip details from your description, then creates a draft for you to confirm." },
       { title: "Confirm places and times", body: "Review the actual dates, specific places, and local time zones, then edit as needed." },
@@ -35,26 +35,23 @@ export const en = {
     ]
   },
   plans: {
-    tag: "PLANNED FOR 0.2",
     title: "Two ways to keep watch",
     intro: "Choose the places you care about and how long to follow them. You control each place's status.",
     items: [
       { title: "Long-term places", body: "For places that matter over time, such as where family lives. Pause, resume, or delete them yourself." },
       { title: "Single or multi-stop trips", body: "Confirm a time period for each stop. Monitoring ends with the trip and does not extend along the route." }
     ],
-    note: "New features will open as version 0.2 is released. See the app for what is available now."
   },
   alertSample: {
-    sampleTag: "SAMPLE · NOT A LIVE ALERT",
     title: "Every alert should explain the facts",
-    body: "Orbis intensity is mechanically mapped from the official level. The original level, issuing authority, and wording remain visible alongside it.",
+    body: "Alert intensity follows risk level definitions, informed by official classifications.",
     intensityLabel: "ORBIS INTENSITY", intensity: "Elevated",
     officialLabel: "OFFICIAL LEVEL", officialLevel: "Orange heavy rain alert (example)",
     placeLabel: "PLACE", place: "Milan",
     timeLabel: "VALID UNTIL", time: "Today at 20:00 (example)",
     sourceLabel: "ISSUING AUTHORITY", source: "See the actual official alert",
     actionLabel: "FIRST ACTION", action: "Limit unnecessary outdoor plans and follow local official information.",
-    foot: "This sample shows the information structure. Actual alerts are governed by their original issuing authority."
+    foot: "For illustration only; actual information may differ."
   },
   principles: {
     title: "Three principles",
@@ -66,7 +63,7 @@ export const en = {
   },
   boundary: {
     title: "Trust includes clear limits.",
-    body: "Orbis uses alerts from connected official or authoritative sources. It does not predict disasters or guarantee every event is covered or every notification is delivered. Unavailable or stale sources must not be presented as safety.",
+    body: "Orbis draws on official and authoritative sources to provide comprehensive coverage of risk events and alert notifications. When a source is unavailable or stale, we show its status and provide a clear explanation.",
     rules: ["Official source and wording stay visible", "Only confirmed places and times are watched", "Not a replacement for official alerts or emergency services"]
   },
   download: { title: "Get Orbis on the App Store", body: "Scan the QR code with your phone, or select it to open the App Store.", qrAlt: "QR code to download Orbis on the App Store" },
@@ -94,5 +91,5 @@ export const en = {
       { title: "Infrastructure", body: "Cloudflare processes request metadata needed to provide the site and prevent abuse under its service terms. Orbis does not write full IP addresses, feedback messages, or contact details to application logs." }
     ]
   },
-  footer: { boundary: "Not a replacement for official alerts or emergency services", copyright: "© Orbis" }
+  footer: { copyright: "© Orbis" }
 } satisfies WebsiteContent;

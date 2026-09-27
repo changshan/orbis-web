@@ -20,7 +20,7 @@ describe("0.2 website story", () => {
     }
   });
 
-  it("explains confirmed places and times without suggesting route monitoring", () => {
+  it("explains confirmed places and times across the trip", () => {
     const zh = renderHome("zh");
     const en = renderHome("en");
     for (const html of [zh, en]) {
@@ -31,16 +31,15 @@ describe("0.2 website story", () => {
       expect(html).not.toContain('class="hero-metrics"');
       expect(html).not.toContain('class="risk-card"');
     }
-    expect(zh).toContain("只关注确认的地点和时间段");
-    expect(zh).toContain("不监控沿途");
-    expect(en).toContain("confirmed places and time periods");
-    expect(en).toContain("not monitor the route between them");
+    expect(zh).toContain("关注确认的地点和时间段，掌握全部行程。");
+    expect(en).toContain("Follow confirmed places and time periods across your entire trip.");
   });
 
-  it("marks the illustrative alert and distinguishes Orbis intensity from official wording", () => {
+  it("keeps the example disclaimer without an empty sample header", () => {
     for (const locale of ["zh", "en"] as const) {
       const html = renderHome(locale);
-      expect(html).toContain('class="alert-sample mono"');
+      expect(html).not.toContain('class="example-head"');
+      expect(html).toContain(locale === "zh" ? "仅为示例，以实际信息效果为准。" : "For illustration only; actual information may differ.");
       expect(html).toContain('class="official-level"');
       expect(html).toContain('class="orbis-intensity"');
       expect(html).toContain('id="boundary"');

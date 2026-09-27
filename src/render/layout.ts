@@ -59,7 +59,6 @@ export function renderHeader(locale: Locale, page: LocalizedPage, content: Websi
 export function renderFooter(locale: Locale, page: LocalizedPage, content: WebsiteContent): string {
   return `<footer class="site-footer">
 <div class="footer-inner">
-<p>${esc(content.footer.boundary)}</p>
 <p><a href="${localizedPath(locale, "home")}">${esc(content.nav.why)}</a> · <a href="${sectionHref(locale, page, "feedback")}">${esc(content.nav.feedback)}</a> · <a href="${localizedPath(locale, "privacy")}">${esc(content.nav.privacy)}</a> · <a class="footer-download" href="${APP_STORE_URL}" target="_blank" rel="noopener noreferrer">${esc(content.nav.download)}</a> · ${esc(content.footer.copyright)}</p>
 </div>
 </footer>`;

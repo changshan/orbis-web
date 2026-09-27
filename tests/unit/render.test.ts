@@ -21,17 +21,20 @@ describe("renderHome", () => {
       expect(html).not.toContain('id="risks"');
       expect(html).not.toContain('class="hero-metrics"');
     }
-    expect(zh).toContain("只关注确认的地点和时间段");
-    expect(en).toContain("confirmed places and time periods");
+    expect(zh).toContain("关注确认的地点和时间段，掌握全部行程。");
+    expect(en).toContain("confirmed places and time periods across your entire trip");
   });
 
   it("下载入口、示例与官方等级均可见", () => {
     for (const html of [zh, en]) {
       expect(html.split(`href="${APP_URL}"`)).toHaveLength(4);
-      expect(html).toContain('class="alert-sample mono"');
+      expect(html).not.toContain('class="example-head"');
+      expect(html).not.toContain('class="release-note"');
+      expect(html).not.toContain('class="alert-sample mono"');
       expect(html).toContain('class="official-level"');
       expect(html).toContain('class="orbis-intensity"');
       expect(html).toContain('class="hero-boundary"');
+      expect(html).not.toContain("不替代官方预警或紧急服务</p>");
       expect(html).not.toMatch(/<script(?![^>]*\ssrc=)/i);
       expect(html).not.toMatch(/<style/i);
     }

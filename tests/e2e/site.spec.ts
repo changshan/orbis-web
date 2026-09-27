@@ -11,7 +11,8 @@ for (const locale of ["zh", "en"] as const) {
     await expect(page.locator("h1")).toBeVisible();
     await expect(page.locator("#how-it-works li")).toHaveCount(4);
     await expect(page.locator("#plans .plan-card")).toHaveCount(2);
-    await expect(page.locator("#alert-example .alert-sample")).toBeVisible();
+    await expect(page.locator("#alert-example .example-head")).toHaveCount(0);
+    await expect(page.locator("#plans .release-note")).toHaveCount(0);
     await expect(page.locator(".risk-card")).toHaveCount(0);
     await expect(page.locator(".site-nav .nav-download")).toHaveCount(0);
     await expect(page.locator(".hero-cta")).toHaveAttribute("href", APP_URL);
@@ -38,12 +39,24 @@ test("根域名自动进入本地化首页并可手动切换语言", async ({ br
   await context.close();
 });
 
-test("行程示意标明不监控沿途且预警示例并列呈现等级", async ({ page }) => {
+test("行程预览和预警示例展示更新文案", async ({ page }) => {
   await page.goto("/zh/");
-  await expect(page.locator(".plan-preview")).toContainText("不监控沿途");
-  await expect(page.locator(".example-card .alert-sample")).toContainText("非实时预警");
+  await expect(page.locator(".plan-preview")).toContainText("AI 生成行程");
+  await expect(page.locator(".plan-preview")).toContainText("掌握全部行程");
+  await expect(page.locator(".example-card figcaption")).toContainText("仅为示例，以实际信息效果为准。");
   await expect(page.locator(".official-level")).toBeVisible();
   await expect(page.locator(".orbis-intensity")).toBeVisible();
+  await expect(page.locator(".site-footer")).not.toContainText("不替代官方预警或紧急服务");
+});
+
+test("桌面预警说明与示例卡片顶部对齐", async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto("/zh/");
+  const [introTop, cardTop] = await Promise.all([
+    page.locator(".alert-intro").evaluate((el) => el.getBoundingClientRect().top),
+    page.locator(".example-card").evaluate((el) => el.getBoundingClientRect().top)
+  ]);
+  expect(Math.abs(introTop - cardTop)).toBeLessThanOrEqual(1);
 });
 
 test("320px 无横向滚动且下载入口可用", async ({ page }) => {
@@ -52,6 +65,9 @@ test("320px 无横向滚动且下载入口可用", async ({ page }) => {
   await expect(page.locator(".site-nav .nav-download")).toHaveCount(0);
   await expect(page.locator("#download img")).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(true);
+  const title = page.locator("#plans-title");
+  await expect(title).toHaveText("两种安排，一种关注方式");
+  expect(await title.evaluate((el) => el.getBoundingClientRect().height <= parseFloat(getComputedStyle(el).lineHeight) * 1.1)).toBe(true);
 });
 
 test("反馈控件与导航保留双层高对比度焦点", async ({ page }) => {

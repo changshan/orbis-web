@@ -60,12 +60,9 @@ export interface WebsiteContent {
   plans: {
     title: string;
     intro: string;
-    tag: string;
     items: readonly [{ title: string; body: string }, { title: string; body: string }];
-    note: string;
   };
   alertSample: {
-    sampleTag: string;
     title: string;
     body: string;
     intensityLabel: string;
@@ -94,5 +91,5 @@ export interface WebsiteContent {
   feedback: FeedbackContent;
   download: { title: string; body: string; qrAlt: string };
   privacy: PrivacyContent;
-  footer: { boundary: string; copyright: string };
+  footer: { copyright: string };
 }
