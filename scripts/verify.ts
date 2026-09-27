@@ -2,6 +2,7 @@ import { readdirSync, readFileSync } from "node:fs";
 import { extname, join, relative, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import { gzipSync } from "node:zlib";
+import { APP_STORE_URL } from "../src/config/site";
 
 const root = fileURLToPath(new URL("..", import.meta.url));
 const dist = join(root, "dist");
@@ -22,12 +23,7 @@ const required = [
 ];
 for (const r of required) if (!files.some((f) => rel(f) === r)) fail(`missing ${r}`);
 
-const expectedAssets = [
-  "assets/global.css", "assets/lang.js", "assets/feedback.js",
-  "assets/home/risk-earthquake.svg", "assets/home/risk-rain.svg",
-  "assets/home/risk-heatwave.svg", "assets/home/risk-flood.svg",
-  "assets/home/risk-wildfire.svg", "assets/home/risk-tornado.svg"
-];
+const expectedAssets = ["assets/global.css", "assets/lang.js", "assets/feedback.js", "assets/app-store-qr.png", "assets/brand-mark-32.svg"];
 const fingerprintPattern = /\.[a-f0-9]{12}\.[^./]+$/;
 const escapeRegExp = (value: string): string => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 for (const logicalAsset of expectedAssets) {
@@ -56,7 +52,7 @@ for (const file of files) {
     // Both an inline <style> element and a style="…" attribute violate style-src 'self'.
     if (/<style/i.test(html) || /\sstyle\s*=["']/i.test(html)) fail(`inline style in ${rel(file)}`);
     // Strip the only allowed absolute URLs (canonical/hreflang), then reject any other external src/href in either quote style.
-    const withoutMeta = html.replace(/rel=["'](?:canonical|alternate)["'][^>]*/gi, "");
+    const withoutMeta = html.replace(/rel=["'](?:canonical|alternate)["'][^>]*/gi, "").replaceAll(`href="${APP_STORE_URL}"`, "");
     if (/(?:src|href)=["']https?:\/\//i.test(withoutMeta)) fail(`external resource in ${rel(file)}`);
     for (const reference of html.match(/\/assets\/[^"' <>)]+/g) ?? []) {
       const assetPath = reference.slice(1);

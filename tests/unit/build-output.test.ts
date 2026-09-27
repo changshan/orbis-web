@@ -40,6 +40,8 @@ describe("build output", () => {
     expect(existsSync(hashedAsset("dist/assets", "global", "css"))).toBe(true);
     expect(existsSync(hashedAsset("dist/assets", "lang", "js"))).toBe(true);
     expect(existsSync(hashedAsset("dist/assets", "feedback", "js"))).toBe(true);
+    expect(existsSync(hashedAsset("dist/assets", "app-store-qr", "png"))).toBe(true);
+    expect(existsSync(hashedAsset("dist/assets", "brand-mark-32", "svg"))).toBe(true);
     for (const asset of walk("dist/assets")) {
       expect(basename(asset), asset).toMatch(HASHED_FILENAME);
     }
@@ -49,16 +51,18 @@ describe("build output", () => {
   it("中英文首页是新的唯一能力页面", () => {
     const zh = readFileSync("dist/zh/index.html", "utf8");
     const en = readFileSync("dist/en/index.html", "utf8");
-    expect(zh).toContain("<title>Orbis｜你的安全，时刻守护</title>");
-    expect(en).toContain("<title>Orbis | Keeping watch over your safety</title>");
+    expect(zh).toContain("<title>Orbis｜关注重要地点与行程的灾害预警</title>");
+    expect(en).toContain("<title>Orbis | Disaster alerts for the places and trips that matter</title>");
     for (const html of [zh, en]) {
-      expect(html.match(/class="risk-card"/g)).toHaveLength(6);
+      expect(html.match(/class="plan-card"/g)).toHaveLength(2);
+      expect(html).toContain('id="how-it-works"');
+      expect(html).toContain("https://apps.apple.com/us/app/myorbis/id6812221807");
       expect(html).toContain('id="principles"');
       expect(html).toContain("data-feedback-form");
     }
     const css = readFileSync(hashedAsset("dist/assets", "global", "css"), "utf8");
     expect(css).toContain("--control-border:#7F8A91");
-    expect(css).toContain(":focus-visible{outline:2px solid #fff;outline-offset:2px;box-shadow:0 0 0 4px var(--text)}");
+    expect(css).toContain(":focus-visible{outline:2px solid #fff;outline-offset:2px;box-shadow:0 0 0 4px var(--ink)}");
     expect(css).toContain("border:1px solid var(--control-border)");
     for (const page of walk("dist").filter((file) => file.endsWith(".html"))) {
       const html = readFileSync(page, "utf8");
@@ -68,15 +72,15 @@ describe("build output", () => {
       }
     }
   });
-  it("样式表暴露改版后的设计令牌与线框工具类", () => {
+  it("样式表使用 0.2 天空与浅色内容区的设计令牌", () => {
     const css = readFileSync(hashedAsset("dist/assets", "global", "css"), "utf8");
-    expect(css).toContain("--lamp-ink:#7B5422");
-    expect(css).toContain("--field-bg:#FFFFFF");
-    expect(css).toContain("--dash:#C8C9C3");
-    expect(css).toContain("--night-line:#2A3843");
-    expect(css).not.toContain("rgba(237,234,227,.12)");
-    expect(css).toContain(".corner.tl");
-    expect(css).toContain(".corner.br");
+    expect(css).toContain("--paper:#F2F7FC");
+    expect(css).toContain("--text:#16202B");
+    expect(css).toContain("--brand-blue:#1C6BB0");
+    expect(css).toContain("--sky-deep:#1F5E9E");
+    expect(css).toContain("--official-orange:#E2701A");
+    expect(css).toContain(".preview-sky");
+    expect(css).toContain(".official-level{color:var(--official-orange-dark)}");
   });
   it("sitemap 与 robots 使用构建 origin且不包含旧产品页", () => {
     const sitemap = readFileSync("dist/sitemap.xml", "utf8");
