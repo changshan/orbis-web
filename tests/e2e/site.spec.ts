@@ -49,6 +49,16 @@ test("行程预览和预警示例展示更新文案", async ({ page }) => {
   await expect(page.locator(".site-footer")).not.toContainText("不替代官方预警或紧急服务");
 });
 
+test("桌面预警说明与示例卡片顶部对齐", async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto("/zh/");
+  const [introTop, cardTop] = await Promise.all([
+    page.locator(".alert-intro").evaluate((el) => el.getBoundingClientRect().top),
+    page.locator(".example-card").evaluate((el) => el.getBoundingClientRect().top)
+  ]);
+  expect(Math.abs(introTop - cardTop)).toBeLessThanOrEqual(1);
+});
+
 test("320px 无横向滚动且下载入口可用", async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 800 });
   await page.goto("/zh/");
