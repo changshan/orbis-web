@@ -55,6 +55,9 @@ test("320px 无横向滚动且下载入口可用", async ({ page }) => {
   await expect(page.locator(".site-nav .nav-download")).toHaveCount(0);
   await expect(page.locator("#download img")).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(true);
+  const title = page.locator("#plans-title");
+  await expect(title).toHaveText("两种安排，一种关注方式");
+  expect(await title.evaluate((el) => el.getBoundingClientRect().height <= parseFloat(getComputedStyle(el).lineHeight) * 1.1)).toBe(true);
 });
 
 test("反馈控件与导航保留双层高对比度焦点", async ({ page }) => {
