@@ -12,21 +12,21 @@ export const zh = {
   },
   hero: {
     eyebrow: "ORBIS · OFFICIAL ALERTS, MADE RELEVANT",
-    titleLines: ["关注重要地点，", "掌握相关预警。"],
-    body: "Orbis 让你关注在意的地点，查看与之相关的官方灾害预警。新版规划将支持长期关注与按时间安排的行程提醒。",
+    titleLines: ["关注重要地点和行程，", "掌握相关预警。"],
+    body: "Orbis 让你关注在意的地点，查看与之相关的官方灾害预警。支持长期关注与按时间安排的行程提醒。",
     learn: "了解使用方式",
-    boundary: "Orbis 不替代当地官方预警、政府指令或紧急服务。遇到紧急情况，请联系当地紧急服务。"
+    boundary: "Orbis提供更全面、更及时的预警，不替代官方紧急服务。"
   },
   preview: {
-    tag: "新版规划 · 行程示意",
+    tag: "AI 生成行程",
     title: "上午米兰，下午罗马",
     firstPlace: "米兰", firstTime: "09:00—12:00 · 当地时间",
     secondPlace: "罗马", secondTime: "14:00—18:00 · 当地时间",
-    routeNote: "只关注确认的地点和时间段，不监控沿途。"
+    routeNote: "关注确认的地点和时间段，掌握全部行程。"
   },
   how: {
-    title: "从安排到提醒，步骤清晰",
-    intro: "新版规划中的创建流程由你确认地点和时间后才会生效；自然语言不可用时仍可手动创建。",
+    title: "智能生成提醒， 让你更安心",
+    intro: "大模型驱动流程创建，提醒清晰明了",
     steps: [
       { title: "自然语言描述", body: "AI 自动识别地点和行程，生成待确认的关注草稿。" },
       { title: "确认地点与时间", body: "检查具体地点、实际日期与当地时区，必要时修改草稿。" },
@@ -35,26 +35,23 @@ export const zh = {
     ]
   },
   plans: {
-    tag: "0.2 新版规划",
     title: "两种安排，一种清晰的关注方式",
     intro: "选择你在意的地点，并决定关注多久。每个地点的关注状态由你管理。",
     items: [
       { title: "长期关注地点", body: "适合家人所在城市等长期在意的地点；可主动暂停、恢复或删除。" },
       { title: "单次或多节点行程", body: "为每个地点确认时间段；行程结束后停止关注，不自动延伸到沿途。" }
     ],
-    note: "新版功能随 0.2 发布进度开放；当前可用功能以 App 内为准。"
   },
   alertSample: {
-    sampleTag: "示例 · 非实时预警",
     title: "每条提醒，讲清关键事实",
-    body: "提醒强度是 Orbis 对官方等级的机械映射；官方等级、发布机构与原文仍需并列可见。",
+    body: "提醒强度来源于风险的等级定义，参考官方的等级定义",
     intensityLabel: "ORBIS 提醒强度", intensity: "注意",
     officialLabel: "官方原文等级", officialLevel: "暴雨橙色预警（示例）",
     placeLabel: "关注地点", place: "米兰",
     timeLabel: "有效时间", time: "今天 20:00 前（示例）",
     sourceLabel: "发布机构", source: "以实际官方预警为准",
     actionLabel: "首先关注", action: "减少不必要的户外安排，并留意当地官方信息。",
-    foot: "示例仅用于展示信息结构；实际预警以原始发布机构的信息为准。"
+    foot: "仅为示例，以实际信息效果为准。"
   },
   principles: {
     title: "三条原则",
@@ -66,7 +63,7 @@ export const zh = {
   },
   boundary: {
     title: "可信，也包括明确边界。",
-    body: "Orbis 只依据已接入的官方或权威机构预警提供提醒，不预测灾害，也不保证覆盖所有事件或通知必达。来源不可用或过期时应如实显示状态，不将其表达为安全。",
+    body: "Orbis 数据来源于官方和权威机构，提供全面的风险事件覆盖和预警通知。来源不可用或过期时如实显示，并提供清晰说明。",
     rules: ["官方来源与原文可见", "只关注已确认的地点与时间", "不替代官方预警或紧急服务"]
   },
   download: { title: "扫码下载 Orbis", body: "用手机扫描二维码打开 App Store；也可以点击二维码。", qrAlt: "扫描二维码，在 App Store 下载 Orbis" },
@@ -93,5 +90,5 @@ export const zh = {
       { title: "基础设施", body: "Cloudflare 会按照其服务条款处理提供网站和防止滥用所需的请求元数据。Orbis 不把完整 IP、反馈正文或联系方式写入应用日志。" }
     ]
   },
-  footer: { boundary: "不替代官方预警或紧急服务", copyright: "© Orbis" }
+  footer: { copyright: "© Orbis" }
 } satisfies WebsiteContent;

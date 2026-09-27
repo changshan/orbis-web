@@ -22,7 +22,6 @@ function renderExample(c: WebsiteContent): string {
   return `<section class="home-alert" id="alert-example" aria-labelledby="alert-title">
 <div class="alert-intro"><span class="eyebrow mono">OFFICIAL SIGNAL / ORBIS CONTEXT</span><h2 id="alert-title">${esc(a.title)}</h2><p>${esc(a.body)}</p></div>
 <figure class="example-card">
-<div class="example-head"><span class="alert-sample mono">${esc(a.sampleTag)}</span></div>
 <div class="example-levels"><div><span class="mono">${esc(a.intensityLabel)}</span><strong class="orbis-intensity">${esc(a.intensity)}</strong></div><div><span class="mono">${esc(a.officialLabel)}</span><strong class="official-level">${esc(a.officialLevel)}</strong></div></div>
 <dl class="example-facts"><div><dt>${esc(a.placeLabel)}</dt><dd>${esc(a.place)}</dd></div><div><dt>${esc(a.timeLabel)}</dt><dd>${esc(a.time)}</dd></div><div><dt>${esc(a.sourceLabel)}</dt><dd>${esc(a.source)}</dd></div></dl>
 <div class="example-action"><span class="mono">${esc(a.actionLabel)}</span><p>${esc(a.action)}</p></div>
@@ -52,7 +51,7 @@ export function renderHome(locale: Locale): string {
 <p class="hero-boundary"><span class="mono">BOUNDARY</span><span>${esc(c.hero.boundary)}</span></p>
 </section>
 <section class="home-how" id="how-it-works" aria-labelledby="how-title"><div class="section-heading"><span class="eyebrow mono">HOW IT WORKS</span><h2 id="how-title">${esc(c.how.title)}</h2><p>${esc(c.how.intro)}</p></div><ol class="step-grid">${steps}</ol></section>
-<section class="home-plans" id="plans" aria-labelledby="plans-title"><div class="section-heading"><span class="eyebrow mono">${esc(c.plans.tag)}</span><h2 id="plans-title">${esc(c.plans.title)}</h2><p>${esc(c.plans.intro)}</p></div><div class="plan-grid">${plans}</div><p class="release-note">${esc(c.plans.note)}</p></section>
+<section class="home-plans" id="plans" aria-labelledby="plans-title"><div class="section-heading"><h2 id="plans-title">${esc(c.plans.title)}</h2><p>${esc(c.plans.intro)}</p></div><div class="plan-grid">${plans}</div></section>
 ${renderExample(c)}
 ${renderPrinciples(c)}
 <aside class="home-boundary" id="boundary" aria-labelledby="boundary-title"><h2 id="boundary-title">${esc(c.boundary.title)}</h2><p>${esc(c.boundary.body)}</p><ul>${rules}</ul></aside>
