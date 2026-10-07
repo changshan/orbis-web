@@ -1,4 +1,4 @@
-import type { Locale } from "../config/site";
+import { CONTACT_EMAIL, type Locale } from "../config/site";
 import type { WebsiteContent } from "../content/types";
 import { escapeHtml as esc } from "./html";
 
@@ -8,6 +8,7 @@ export function renderFeedbackSection(locale: Locale, content: WebsiteContent): 
 <div class="fb-intro">
 <h2 id="feedback-title">${esc(c.title)}</h2>
 <p class="fb-body">${esc(c.body)}</p>
+<p class="fb-email">${esc(c.emailLead)} <a href="mailto:${CONTACT_EMAIL}">${CONTACT_EMAIL}</a></p>
 </div>
 <form class="fb-form" method="post" action="/api/feedback" novalidate data-feedback-form
  data-sending="${esc(c.sending)}" data-success="${esc(c.success)}" data-validation="${esc(c.validation)}"

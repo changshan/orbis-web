@@ -57,6 +57,15 @@ describe("renderHome", () => {
     expect(en).toContain('aria-label="Primary navigation"');
   });
 
+  it("反馈区留有联系邮箱（App Store 支持网址指向这里）", () => {
+    for (const html of [zh, en]) {
+      expect(html).toContain('<section class="home-feedback" id="feedback"');
+      expect(html).toContain('<a href="mailto:lics0613@gmail.com">lics0613@gmail.com</a>');
+    }
+    expect(zh).toContain("也可以发邮件到");
+    expect(en).toContain("Or email us at");
+  });
+
   it("canonical 与 hreflang 指向真实首页", () => {
     expect(zh).toContain('rel="canonical" href="http://localhost:8788/zh/"');
     expect(zh).toContain('hreflang="en" href="http://localhost:8788/en/"');
