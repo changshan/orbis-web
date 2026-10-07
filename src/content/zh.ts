@@ -68,7 +68,7 @@ export const zh = {
   },
   download: { title: "扫码下载 Orbis", body: "用手机扫描二维码打开 App Store；也可以点击二维码。", qrAlt: "扫描二维码，在 App Store 下载 Orbis" },
   feedback: {
-    title: "直接告诉我们", body: "建议、问题，或任何你希望 Orbis 知道的事。",
+    title: "直接告诉我们", body: "建议、问题，或任何你希望 Orbis 知道的事。", emailLead: "也可以发邮件到",
     messageLabel: "你的反馈", messagePlaceholder: "写下你的建议或问题",
     contactLabel: "联系方式（选填）", contactPlaceholder: "邮箱、电话、微信、Telegram…",
     hint: "联系方式仅用于回复本次反馈，不填写也可以提交。请不要发送密码、身份证件、精确住址或紧急求助信息；紧急情况请联系当地紧急服务。",

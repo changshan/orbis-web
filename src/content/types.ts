@@ -1,6 +1,8 @@
 export interface FeedbackContent {
   title: string;
   body: string;
+  /** 邮箱链接前的引导语，如“也可以发邮件到”。 */
+  emailLead: string;
   messageLabel: string;
   messagePlaceholder: string;
   contactLabel: string;

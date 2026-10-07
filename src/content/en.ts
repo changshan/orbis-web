@@ -68,7 +68,7 @@ export const en = {
   },
   download: { title: "Get Orbis on the App Store", body: "Scan the QR code with your phone, or select it to open the App Store.", qrAlt: "QR code to download Orbis on the App Store" },
   feedback: {
-    title: "Tell us what you think", body: "Share a suggestion, a concern, or anything you want Orbis to know.",
+    title: "Tell us what you think", body: "Share a suggestion, a concern, or anything you want Orbis to know.", emailLead: "Or email us at",
     messageLabel: "Your feedback", messagePlaceholder: "Write your suggestion or concern",
     contactLabel: "Contact details (optional)", contactPlaceholder: "Email, phone, WeChat, Telegram…",
     hint: "Contact details are used only to reply to this feedback. You can submit without them. Do not send passwords, identity documents, exact addresses, or emergency requests—contact local emergency services in an emergency.",
