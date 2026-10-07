@@ -85,6 +85,10 @@ describe("其余页面", () => {
     expect(privacy).toContain("不替代官方预警渠道");
     expect(privacy).toContain("反馈邮件最长保留 90 天");
     expect(englishPrivacy).toContain("Feedback email is retained for no more than 90 days");
+    // AI 创建已开放（2026-10-07），不再写“开放后适用”
+    expect(privacy).not.toContain("开放后适用");
+    expect(englishPrivacy).not.toContain("once the feature is available");
+    expect(privacy).toContain("<p>如果你选择用文字描述安排");
     // 中英文结构一致，页面上没有未填的占位
     expect(privacy.match(/<h2/g)!.length).toBe(englishPrivacy.match(/<h2/g)!.length);
     expect(privacy.match(/<h2/g)!.length).toBeGreaterThanOrEqual(11);
