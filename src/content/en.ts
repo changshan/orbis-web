@@ -149,7 +149,7 @@ export const en = {
       },
       {
         "title": "When you create with AI",
-        "body": "This applies once the feature is available. If you choose to describe your plans in text and have AI turn them into a draft of places and times, Orbis sends the text you enter and the current time and time zone to a third-party AI service, after you agree: installations from the mainland China App Store send it to DeepSeek, processed within mainland China; other regions send it to a DeepSeek model hosted on Alibaba Cloud's international (Singapore) service. This content is used only to create the draft, and the AI provider processes it under its own privacy policy. Orbis keeps your original text for 30 days, only to investigate recognition problems. You can withdraw consent in Settings at any time and create manually instead."
+        "body": "If you choose to describe your plans in text and have AI turn them into a draft of places and times, Orbis sends the text you enter and the current time and time zone to a third-party AI service, after you agree: installations from the mainland China App Store send it to DeepSeek, processed within mainland China; other regions send it to a DeepSeek model hosted on Alibaba Cloud's international (Singapore) service. This content is used only to create the draft, and the AI provider processes it under its own privacy policy. Orbis keeps your original text for 30 days, only to investigate recognition problems. You can withdraw consent in Settings at any time and create manually instead."
       },
       {
         "title": "Where data is stored and who can access it",
