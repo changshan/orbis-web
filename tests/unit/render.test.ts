@@ -65,12 +65,30 @@ describe("renderHome", () => {
 });
 
 describe("其余页面", () => {
-  it("隐私页保留反馈隐私说明与本地化导航", () => {
+  it("隐私页是 App 隐私政策，并保留网站反馈说明与本地化导航", () => {
     const privacy = renderPrivacy("zh");
     const englishPrivacy = renderPrivacy("en");
-    expect(privacy.match(/<h2/g)!.length).toBeGreaterThanOrEqual(4);
-    expect(englishPrivacy).toContain("Privacy notice");
-    expect(privacy).toContain("<title>隐私说明 | Orbis</title>");
+    expect(privacy).toContain("<title>隐私政策 | Orbis</title>");
+    expect(englishPrivacy).toContain("<title>Privacy Policy | Orbis</title>");
+    expect(privacy).toContain("<h1>Orbis 隐私政策</h1>");
+    expect(englishPrivacy).toContain("<h1>Orbis Privacy Policy</h1>");
+    // 存放地与访问地（规划 §3）：两地分开写，其他地区写明在新加坡存放并访问
+    expect(privacy).toContain("阿里云中国（乌兰察布）");
+    expect(privacy).toContain("数据存放在阿里云新加坡，并在新加坡访问");
+    expect(englishPrivacy).toContain("stored on Alibaba Cloud in Singapore and accessed in Singapore");
+    // 数据清单用表格，删除方式用列表
+    expect(privacy.match(/<table/g)!.length).toBe(2);
+    expect(englishPrivacy.match(/<table/g)!.length).toBe(2);
+    expect(privacy).toContain("<th scope=\"col\">保存多久</th>");
+    expect(privacy).toMatch(/<ul>\s*<li>删除一个地点或行程/);
+    // 不承诺替代官方预警；网站反馈的说明仍在
+    expect(privacy).toContain("不替代官方预警渠道");
+    expect(privacy).toContain("反馈邮件最长保留 90 天");
+    expect(englishPrivacy).toContain("Feedback email is retained for no more than 90 days");
+    // 中英文结构一致，页面上没有未填的占位
+    expect(privacy.match(/<h2/g)!.length).toBe(englishPrivacy.match(/<h2/g)!.length);
+    expect(privacy.match(/<h2/g)!.length).toBeGreaterThanOrEqual(11);
+    for (const html of [privacy, englishPrivacy]) expect(html).not.toMatch(/[{}]|待确认|pending/i);
     expect(privacy).toContain('href="/zh/#how-it-works"');
     expect(privacy).toContain('class="lang-switch" href="/en/privacy/"');
     expect(privacy).toContain(`href="${APP_URL}"`);

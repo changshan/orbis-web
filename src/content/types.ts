@@ -15,11 +15,22 @@ export interface FeedbackContent {
   uncertain: string;
 }
 
+export interface PrivacySection {
+  title: string;
+  body?: string;
+  items?: ReadonlyArray<string>;
+  table?: { head: ReadonlyArray<string>; rows: ReadonlyArray<ReadonlyArray<string>> };
+  /** 列表或表格之后的一句补充。 */
+  after?: string;
+}
+
 export interface PrivacyContent {
   meta: { title: string; description: string };
   title: string;
   intro: string;
-  sections: ReadonlyArray<{ title: string; body: string }>;
+  /** 生效日期一行，发布时更新。 */
+  effective: string;
+  sections: ReadonlyArray<PrivacySection>;
 }
 
 export interface WebsiteContent {
