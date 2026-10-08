@@ -1,6 +1,6 @@
 export const APP_STORE_URL = "https://apps.apple.com/us/app/myorbis/id6812221807";
 /** 对外联系邮箱：与 App 隐私页、隐私政策里的一致。 */
-export const CONTACT_EMAIL = "lics0613@gmail.com";
+export const CONTACT_EMAIL = "support@myorbis.xyz";
 
 export const SITE = { name: "Orbis", defaultLocale: "en", locales: ["zh", "en"] } as const;
 export type Locale = (typeof SITE.locales)[number];

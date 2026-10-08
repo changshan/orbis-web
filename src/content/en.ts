@@ -85,7 +85,7 @@ export const en = {
     },
     "title": "Orbis Privacy Policy",
     "effective": "Effective date: 7 October 2026",
-    "intro": "Orbis lets you follow the places you care about and alerts you when official agencies issue hazard warnings for them. This policy explains what data Orbis keeps, where it is stored, how long it is kept, and how you can delete it. Contact: lics0613@gmail.com.",
+    "intro": "Orbis lets you follow the places you care about and alerts you when official agencies issue hazard warnings for them. This policy explains what data Orbis keeps, where it is stored, how long it is kept, and how you can delete it. Contact: support@myorbis.xyz.",
     "sections": [
       {
         "title": "No accounts",
@@ -205,7 +205,7 @@ export const en = {
       },
       {
         "title": "Your rights",
-        "body": "You can see all your places, trips and settings in the app and change or delete them at any time. Orbis has no accounts, and we cannot tell from an email which data is yours, so viewing, correcting and deleting are done through the app rather than by email. For other questions, write to lics0613@gmail.com. If you are in the EU or Switzerland, you also have the right to complain to your local data protection authority."
+        "body": "You can see all your places, trips and settings in the app and change or delete them at any time. Orbis has no accounts, and we cannot tell from an email which data is yours, so viewing, correcting and deleting are done through the app rather than by email. For other questions, write to support@myorbis.xyz. If you are in the EU or Switzerland, you also have the right to complain to your local data protection authority."
       },
       {
         "title": "Where alert content comes from",
