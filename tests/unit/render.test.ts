@@ -60,7 +60,7 @@ describe("renderHome", () => {
   it("反馈区留有联系邮箱（App Store 支持网址指向这里）", () => {
     for (const html of [zh, en]) {
       expect(html).toContain('<section class="home-feedback" id="feedback"');
-      expect(html).toContain('<a href="mailto:lics0613@gmail.com">lics0613@gmail.com</a>');
+      expect(html).toContain('<a href="mailto:support@myorbis.xyz">support@myorbis.xyz</a>');
     }
     expect(zh).toContain("也可以发邮件到");
     expect(en).toContain("Or email us at");
@@ -90,6 +90,11 @@ describe("其余页面", () => {
     expect(englishPrivacy.match(/<table/g)!.length).toBe(2);
     expect(privacy).toContain("<th scope=\"col\">保存多久</th>");
     expect(privacy).toMatch(/<ul>\s*<li>删除一个地点或行程/);
+    // 联系邮箱与反馈区一致，开头与“你的权利”各一处
+    for (const html of [privacy, englishPrivacy]) {
+      expect(html.match(/support@myorbis\.xyz/g)!.length).toBe(2);
+      expect(html).not.toContain("@gmail.com");
+    }
     // 不承诺替代官方预警；网站反馈的说明仍在
     expect(privacy).toContain("不替代官方预警渠道");
     expect(privacy).toContain("反馈邮件最长保留 90 天");
