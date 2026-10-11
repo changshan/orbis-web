@@ -84,7 +84,7 @@ export const en = {
       "description": "What data Orbis keeps, where it is stored, how long it is kept, and how you can delete it."
     },
     "title": "Orbis Privacy Policy",
-    "effective": "Effective date: 7 October 2026",
+    "effective": "Effective date: 11 October 2026",
     "intro": "Orbis lets you follow the places you care about and alerts you when official agencies issue hazard warnings for them. This policy explains what data Orbis keeps, where it is stored, how long it is kept, and how you can delete it. Contact: support@myorbis.xyz.",
     "sections": [
       {
@@ -140,7 +140,7 @@ export const en = {
       },
       {
         "title": "Location",
-        "body": "Orbis checks your location once, only when you tap to use your current location. It does not locate you in the background and does not store your movements or precise address.",
+        "body": "Orbis turns on location by default when it starts, to show local weather and official alerts where you are. It does not locate you in the background and does not store your movements or precise address.",
         "items": [
           "To find your city: outside mainland China, the app sends coordinates rounded to about 1 km to our server to match a city, and the server does not store them; in mainland China, only the place name resolved by the system is sent.",
           "To show local weather: weather is fetched on your device from Apple's weather service, and Orbis servers do not receive that location."
