@@ -86,7 +86,7 @@ describe("build output", () => {
     expect(css).toContain(".hero-shot");
     expect(css).toContain(".shot-track{display:flex;overflow-x:auto;scroll-snap-type:x mandatory");
     expect(css).toContain(".shot-dots[hidden]{display:none}");
-    expect(css).toMatch(/\.shot-slide figcaption\{[^}]*font-weight:600/);
+    expect(css).toMatch(/\.shot-slide figcaption\{[^}]*font-weight:700/);
     expect(css).not.toContain(".preview-sky");
     expect(css).not.toContain(".plan-preview");
     expect(css).toContain(".official-level{color:var(--official-orange-dark)}");
