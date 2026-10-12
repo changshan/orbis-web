@@ -57,13 +57,7 @@ export interface WebsiteContent {
     boundary: string;
   };
   preview: {
-    tag: string;
-    title: string;
-    firstPlace: string;
-    firstTime: string;
-    secondPlace: string;
-    secondTime: string;
-    routeNote: string;
+    alt: string;
   };
   how: {
     title: string;

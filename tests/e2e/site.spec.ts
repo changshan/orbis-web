@@ -39,10 +39,12 @@ test("根域名自动进入本地化首页并可手动切换语言", async ({ br
   await context.close();
 });
 
-test("行程预览和预警示例展示更新文案", async ({ page }) => {
+test("首屏截图和预警示例展示更新文案", async ({ page }) => {
   await page.goto("/zh/");
-  await expect(page.locator(".plan-preview")).toContainText("AI 生成行程");
-  await expect(page.locator(".plan-preview")).toContainText("掌握全部行程");
+  const shot = page.locator(".hero-shot img");
+  await expect(shot).toBeVisible();
+  await expect.poll(() => shot.evaluate((img: HTMLImageElement) => img.naturalWidth)).toBe(720);
+  await expect(shot).toHaveAttribute("alt", /罗马/);
   await expect(page.locator(".example-card figcaption")).toContainText("仅为示例，以实际信息效果为准。");
   await expect(page.locator(".official-level")).toBeVisible();
   await expect(page.locator(".orbis-intensity")).toBeVisible();

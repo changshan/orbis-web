@@ -42,6 +42,7 @@ describe("build output", () => {
     expect(existsSync(hashedAsset("dist/assets", "feedback", "js"))).toBe(true);
     expect(existsSync(hashedAsset("dist/assets", "app-store-qr", "png"))).toBe(true);
     expect(existsSync(hashedAsset("dist/assets", "brand-mark-32", "svg"))).toBe(true);
+    expect(existsSync(hashedAsset("dist/assets", "hero-review-draft", "webp"))).toBe(true);
     for (const asset of walk("dist/assets")) {
       expect(basename(asset), asset).toMatch(HASHED_FILENAME);
     }
@@ -79,7 +80,9 @@ describe("build output", () => {
     expect(css).toContain("--brand-blue:#1C6BB0");
     expect(css).toContain("--sky-deep:#1F5E9E");
     expect(css).toContain("--official-orange:#E2701A");
-    expect(css).toContain(".preview-sky");
+    expect(css).toContain(".hero-shot");
+    expect(css).not.toContain(".preview-sky");
+    expect(css).not.toContain(".plan-preview");
     expect(css).toContain(".official-level{color:var(--official-orange-dark)}");
   });
   it("sitemap 与 robots 使用构建 origin且不包含旧产品页", () => {

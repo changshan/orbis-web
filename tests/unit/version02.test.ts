@@ -31,8 +31,8 @@ describe("0.2 website story", () => {
       expect(html).not.toContain('class="hero-metrics"');
       expect(html).not.toContain('class="risk-card"');
     }
-    expect(zh).toContain("关注确认的地点和时间段，掌握全部行程。");
-    expect(en).toContain("Follow confirmed places and time periods across your entire trip.");
+    expect(zh).toContain('class="hero-shot"');
+    expect(en).toContain('class="hero-shot"');
   });
 
   it("keeps the example disclaimer without an empty sample header", () => {

@@ -18,11 +18,7 @@ export const zh = {
     boundary: "Orbis提供更全面、更及时的预警，不替代官方紧急服务。"
   },
   preview: {
-    tag: "AI 生成行程",
-    title: "上午米兰，下午罗马",
-    firstPlace: "米兰", firstTime: "09:00—12:00 · 当地时间",
-    secondPlace: "罗马", secondTime: "14:00—18:00 · 当地时间",
-    routeNote: "关注确认的地点和时间段，掌握全部行程。"
+    alt: "Orbis 确认行程草稿的界面（英文）：罗马 10 月 20 日至 23 日，随后米兰至 26 日，每一站都列出当地时间的开始与结束时间。"
   },
   how: {
     title: "智能生成提醒， 让你更安心",
