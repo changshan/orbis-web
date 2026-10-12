@@ -47,6 +47,8 @@ test("首屏截图和预警示例展示更新文案", async ({ page }) => {
   for (const shot of await shots.all()) {
     await expect.poll(() => shot.evaluate((img: HTMLImageElement) => img.naturalWidth)).toBe(720);
   }
+  await expect(shots.first()).toHaveAttribute("src", /hero-home-zh\./);
+  await expect(shots.first()).toHaveAttribute("alt", /三亚/);
   await expect(page.locator(".hero-shot .shot-tag")).toHaveText(["持续关注", "查看相关提醒", "AI 生成行程"]);
   await expect(page.locator(".hero-shot figcaption").nth(1)).toContainText("仅为示例，以实际信息效果为准。");
   await expect(page.locator(".hero-shot figcaption").nth(2)).toContainText("关注确认的地点和时间段，掌握全部行程。");
@@ -57,6 +59,17 @@ test("首屏截图和预警示例展示更新文案", async ({ page }) => {
 });
 
 const slideIndex = (track: HTMLElement): number => Math.round(track.scrollLeft / track.clientWidth);
+
+test("英文页的首屏截图用英文界面的图", async ({ page }) => {
+  await page.goto("/en/");
+  const shots = page.locator(".hero-shot img");
+  await expect(shots).toHaveCount(3);
+  for (const shot of await shots.all()) {
+    await expect(shot).toHaveAttribute("src", /-en\.[a-f0-9]{12}\.webp$/);
+    await expect.poll(() => shot.evaluate((img: HTMLImageElement) => img.naturalWidth)).toBe(720);
+  }
+  await expect(shots.first()).toHaveAttribute("alt", /Philadelphia/);
+});
 
 test("首屏轮播可用圆点切换，减少动态效果时不自动播放", async ({ page }) => {
   await page.goto("/zh/");

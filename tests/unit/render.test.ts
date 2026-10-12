@@ -23,17 +23,17 @@ describe("renderHome", () => {
     }
   });
 
-  it("首屏轮播首页、预警详情、AI 草稿三张真实截图，预警一张标明示例", () => {
+  it("首屏轮播首页、预警详情、AI 草稿三张截图，中英文页各用本语言的图", () => {
     const expected = {
       zh: [
         ["hero-home", "首页", "持续关注", "长期地点持续关注；行程按已确认的地点和时间段分别关注。"],
         ["hero-alert", "预警详情", "查看相关提醒", "仅为示例，以实际信息效果为准。"],
-        ["hero-review-draft", "罗马", "AI 生成行程", "关注确认的地点和时间段，掌握全部行程。"]
+        ["hero-review-draft", "上海", "AI 生成行程", "关注确认的地点和时间段，掌握全部行程。"]
       ],
       en: [
         ["hero-home", "home screen", "Keep watch", "Follow a place long term, or watch each confirmed trip stop during its scheduled time period."],
         ["hero-alert", "alert detail", "Read relevant alerts", "For illustration only; actual information may differ."],
-        ["hero-review-draft", "Rome", "AI-GENERATED TRIP", "Follow confirmed places and time periods across your entire trip."]
+        ["hero-review-draft", "Seattle", "AI-GENERATED TRIP", "Follow confirmed places and time periods across your entire trip."]
       ]
     } as const;
     for (const [html, locale] of [[zh, "zh"], [en, "en"]] as const) {
@@ -43,7 +43,7 @@ describe("renderHome", () => {
       expect(slides).toHaveLength(3);
       slides.forEach((slide, index) => {
         const [image, alt, tag, note] = expected[locale][index]!;
-        expect(slide).toContain(`src="/assets/${image}.webp" width="720" height="997"`);
+        expect(slide).toContain(`src="/assets/${image}-${locale}.webp" width="720" height="997"`);
         expect(slide).toMatch(new RegExp(`alt="[^"]*${alt}[^"]*"`));
         expect(slide.includes('loading="lazy"')).toBe(index > 0);
         expect(slide).toContain(`<figcaption><span class="shot-tag mono">${tag}</span>${note}</figcaption>`);
@@ -53,6 +53,7 @@ describe("renderHome", () => {
       expect(html).toContain('src="/assets/carousel.js"');
       expect(html).not.toContain("plan-preview");
       expect(html).not.toContain("preview-stops");
+      expect(html).not.toContain(`-${locale === "zh" ? "en" : "zh"}.webp`);
       expect(html).not.toContain("hero-describe");
       expect(html).not.toContain("hero-privacy");
     }

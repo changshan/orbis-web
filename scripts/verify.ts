@@ -23,7 +23,7 @@ const required = [
 ];
 for (const r of required) if (!files.some((f) => rel(f) === r)) fail(`missing ${r}`);
 
-const expectedAssets = ["assets/global.css", "assets/lang.js", "assets/feedback.js", "assets/app-store-qr.png", "assets/brand-mark-32.svg", "assets/hero-review-draft.webp", "assets/hero-home.webp", "assets/hero-alert.webp", "assets/carousel.js"];
+const expectedAssets = ["assets/global.css", "assets/lang.js", "assets/feedback.js", "assets/app-store-qr.png", "assets/brand-mark-32.svg", "assets/hero-home-zh.webp", "assets/hero-alert-zh.webp", "assets/hero-review-draft-zh.webp", "assets/hero-home-en.webp", "assets/hero-alert-en.webp", "assets/hero-review-draft-en.webp", "assets/carousel.js"];
 const fingerprintPattern = /\.[a-f0-9]{12}\.[^./]+$/;
 const escapeRegExp = (value: string): string => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 for (const logicalAsset of expectedAssets) {

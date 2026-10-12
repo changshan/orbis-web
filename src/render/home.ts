@@ -5,15 +5,15 @@ import { escapeHtml as esc } from "./html";
 import { renderFeedbackSection } from "./feedback";
 import { pageDocument } from "./layout";
 
-function renderPreview(c: WebsiteContent): string {
+function renderPreview(locale: Locale, c: WebsiteContent): string {
   const [, , watchStep, alertStep] = c.how.steps;
-  // The alert slide is a real past warning, so its note is the example disclaimer.
+  // Each locale has its own screenshots. The alert slide is a real past warning, so its note is the example disclaimer.
   const slides = [
     { image: "hero-home", alt: c.preview.homeAlt, tag: watchStep!.title, note: watchStep!.body },
     { image: "hero-alert", alt: c.preview.alertAlt, tag: alertStep!.title, note: c.alertSample.foot },
     { image: "hero-review-draft", alt: c.preview.alt, tag: c.preview.tag, note: c.preview.routeNote }
   ];
-  const figures = slides.map((slide, index) => `<figure class="shot-slide"><img src="/assets/${slide.image}.webp" width="720" height="997"${index > 0 ? ' loading="lazy"' : ""} alt="${esc(slide.alt)}" /><figcaption><span class="shot-tag mono">${esc(slide.tag)}</span>${esc(slide.note)}</figcaption></figure>`).join("");
+  const figures = slides.map((slide, index) => `<figure class="shot-slide"><img src="/assets/${slide.image}-${locale}.webp" width="720" height="997"${index > 0 ? ' loading="lazy"' : ""} alt="${esc(slide.alt)}" /><figcaption><span class="shot-tag mono">${esc(slide.tag)}</span>${esc(slide.note)}</figcaption></figure>`).join("");
   const dots = slides.map((slide, index) => `<button type="button" aria-label="${index + 1} / ${slides.length} · ${esc(slide.tag)}"></button>`).join("");
   return `<div class="hero-shot" data-carousel><div class="shot-track" tabindex="0" role="group" aria-label="${esc(c.preview.label)}">${figures}</div><div class="shot-dots" hidden>${dots}</div></div>`;
 }
@@ -47,7 +47,7 @@ export function renderHome(locale: Locale): string {
 <div class="hero-grid">
 <div class="hero-copy"><p class="eyebrow mono">${esc(c.hero.eyebrow)}</p><h1 id="home-title">${c.hero.titleLines.map((line) => `<span>${esc(line)}</span>`).join("")}</h1><p class="hero-lede">${esc(c.hero.body)}</p>
 <div class="hero-actions"><a class="hero-cta" href="${APP_STORE_URL}" target="_blank" rel="noopener noreferrer">${esc(c.nav.download)} <span aria-hidden="true">↗</span></a><a class="hero-secondary" href="#how-it-works">${esc(c.hero.learn)} <span aria-hidden="true">↓</span></a></div></div>
-<div class="hero-figure">${renderPreview(c)}</div>
+<div class="hero-figure">${renderPreview(locale, c)}</div>
 </div>
 <p class="hero-boundary"><span class="mono">BOUNDARY</span><span>${esc(c.hero.boundary)}</span></p>
 </section>
