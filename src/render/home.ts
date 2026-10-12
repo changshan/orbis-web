@@ -6,11 +6,12 @@ import { renderFeedbackSection } from "./feedback";
 import { pageDocument } from "./layout";
 
 function renderPreview(c: WebsiteContent): string {
-  const firstStep = c.how.steps[0]!;
+  const [, , watchStep, alertStep] = c.how.steps;
+  // The alert slide is a real past warning, so its note is the example disclaimer.
   const slides = [
-    { image: "hero-describe", alt: c.preview.describeAlt, tag: firstStep.title, note: firstStep.body },
-    { image: "hero-review-draft", alt: c.preview.alt, tag: c.preview.tag, note: c.preview.routeNote },
-    { image: "hero-privacy", alt: c.preview.privacyAlt, tag: c.nav.privacy, note: c.privacy.meta.description }
+    { image: "hero-home", alt: c.preview.homeAlt, tag: watchStep!.title, note: watchStep!.body },
+    { image: "hero-alert", alt: c.preview.alertAlt, tag: alertStep!.title, note: c.alertSample.foot },
+    { image: "hero-review-draft", alt: c.preview.alt, tag: c.preview.tag, note: c.preview.routeNote }
   ];
   const figures = slides.map((slide, index) => `<figure class="shot-slide"><img src="/assets/${slide.image}.webp" width="720" height="997"${index > 0 ? ' loading="lazy"' : ""} alt="${esc(slide.alt)}" /><figcaption><span class="shot-tag mono">${esc(slide.tag)}</span>${esc(slide.note)}</figcaption></figure>`).join("");
   const dots = slides.map((slide, index) => `<button type="button" aria-label="${index + 1} / ${slides.length} · ${esc(slide.tag)}"></button>`).join("");

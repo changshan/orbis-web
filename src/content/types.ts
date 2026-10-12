@@ -58,11 +58,11 @@ export interface WebsiteContent {
   };
   preview: {
     label: string;
-    describeAlt: string;
+    homeAlt: string;
+    alertAlt: string;
     alt: string;
     tag: string;
     routeNote: string;
-    privacyAlt: string;
   };
   how: {
     title: string;

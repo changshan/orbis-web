@@ -23,17 +23,17 @@ describe("renderHome", () => {
     }
   });
 
-  it("首屏轮播三张真实截图，各带标签和说明，不再画行程卡片", () => {
+  it("首屏轮播首页、预警详情、AI 草稿三张真实截图，预警一张标明示例", () => {
     const expected = {
       zh: [
-        ["hero-describe", "输入框", "自然语言描述", "AI 自动识别地点和行程，生成待确认的关注草稿。"],
-        ["hero-review-draft", "罗马", "AI 生成行程", "关注确认的地点和时间段，掌握全部行程。"],
-        ["hero-privacy", "隐私", "隐私", "Orbis 保存哪些数据、存在哪里、保存多久，以及你如何删除。"]
+        ["hero-home", "首页", "持续关注", "长期地点持续关注；行程按已确认的地点和时间段分别关注。"],
+        ["hero-alert", "预警详情", "查看相关提醒", "仅为示例，以实际信息效果为准。"],
+        ["hero-review-draft", "罗马", "AI 生成行程", "关注确认的地点和时间段，掌握全部行程。"]
       ],
       en: [
-        ["hero-describe", "text box", "Describe in natural language", "AI identifies places and trip details from your description, then creates a draft for you to confirm."],
-        ["hero-review-draft", "Rome", "AI-GENERATED TRIP", "Follow confirmed places and time periods across your entire trip."],
-        ["hero-privacy", "privacy", "Privacy", "What data Orbis keeps, where it is stored, how long it is kept, and how you can delete it."]
+        ["hero-home", "home screen", "Keep watch", "Follow a place long term, or watch each confirmed trip stop during its scheduled time period."],
+        ["hero-alert", "alert detail", "Read relevant alerts", "For illustration only; actual information may differ."],
+        ["hero-review-draft", "Rome", "AI-GENERATED TRIP", "Follow confirmed places and time periods across your entire trip."]
       ]
     } as const;
     for (const [html, locale] of [[zh, "zh"], [en, "en"]] as const) {
@@ -53,6 +53,8 @@ describe("renderHome", () => {
       expect(html).toContain('src="/assets/carousel.js"');
       expect(html).not.toContain("plan-preview");
       expect(html).not.toContain("preview-stops");
+      expect(html).not.toContain("hero-describe");
+      expect(html).not.toContain("hero-privacy");
     }
   });
 

@@ -41,8 +41,8 @@ describe("build output", () => {
     expect(existsSync(hashedAsset("dist/assets", "lang", "js"))).toBe(true);
     expect(existsSync(hashedAsset("dist/assets", "feedback", "js"))).toBe(true);
     expect(existsSync(hashedAsset("dist/assets", "carousel", "js"))).toBe(true);
-    expect(existsSync(hashedAsset("dist/assets", "hero-describe", "webp"))).toBe(true);
-    expect(existsSync(hashedAsset("dist/assets", "hero-privacy", "webp"))).toBe(true);
+    expect(existsSync(hashedAsset("dist/assets", "hero-home", "webp"))).toBe(true);
+    expect(existsSync(hashedAsset("dist/assets", "hero-alert", "webp"))).toBe(true);
     expect(existsSync(hashedAsset("dist/assets", "app-store-qr", "png"))).toBe(true);
     expect(existsSync(hashedAsset("dist/assets", "brand-mark-32", "svg"))).toBe(true);
     expect(existsSync(hashedAsset("dist/assets", "hero-review-draft", "webp"))).toBe(true);

@@ -47,8 +47,9 @@ test("首屏截图和预警示例展示更新文案", async ({ page }) => {
   for (const shot of await shots.all()) {
     await expect.poll(() => shot.evaluate((img: HTMLImageElement) => img.naturalWidth)).toBe(720);
   }
-  await expect(page.locator(".hero-shot .shot-tag")).toHaveText(["自然语言描述", "AI 生成行程", "隐私"]);
-  await expect(page.locator(".hero-shot figcaption").nth(1)).toContainText("关注确认的地点和时间段，掌握全部行程。");
+  await expect(page.locator(".hero-shot .shot-tag")).toHaveText(["持续关注", "查看相关提醒", "AI 生成行程"]);
+  await expect(page.locator(".hero-shot figcaption").nth(1)).toContainText("仅为示例，以实际信息效果为准。");
+  await expect(page.locator(".hero-shot figcaption").nth(2)).toContainText("关注确认的地点和时间段，掌握全部行程。");
   await expect(page.locator(".example-card figcaption")).toContainText("仅为示例，以实际信息效果为准。");
   await expect(page.locator(".official-level")).toBeVisible();
   await expect(page.locator(".orbis-intensity")).toBeVisible();
@@ -83,6 +84,20 @@ test("首屏轮播自动切换，鼠标停在上面时暂停", async ({ browser 
   await page.locator(".hero-shot").hover();
   await page.waitForTimeout(6000);
   expect(await track.evaluate(slideIndex)).toBe(1);
+  await context.close();
+});
+
+test("手动切换后首屏轮播先停留，再继续自动切换", async ({ browser }) => {
+  const context = await browser.newContext({ reducedMotion: "no-preference" });
+  const page = await context.newPage();
+  await page.goto("/zh/");
+  const track = page.locator(".shot-track");
+  await page.locator(".shot-dots button").nth(1).click();
+  await page.mouse.move(5, 5);
+  await expect.poll(() => track.evaluate(slideIndex)).toBe(1);
+  await page.waitForTimeout(6500);
+  expect(await track.evaluate(slideIndex)).toBe(1);
+  await expect.poll(() => track.evaluate(slideIndex), { timeout: 5000 }).toBe(2);
   await context.close();
 });
 

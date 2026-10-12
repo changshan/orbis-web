@@ -19,11 +19,11 @@ export const en = {
   },
   preview: {
     label: "Orbis app screens",
-    describeAlt: "Orbis trip planning screen: a text box holding the sentence about Rome from October 20 to 23, then Milan until the 26th, with a Create button.",
+    homeAlt: "Orbis home screen: a new-alert banner and current weather at the top, then watched places, with an orange wind warning for Cagliari and no alerts for Dongcheng District.",
+    alertAlt: "Orbis alert detail for an orange wind warning in Sardinia: a map of Cagliari, the official area and validity, three safety steps, a link to the official text and feedback buttons.",
     alt: "Orbis screen for reviewing a trip draft: Rome from October 20 to 23, then Milan until the 26th, each with start and end times in local time.",
     tag: "AI-GENERATED TRIP",
-    routeNote: "Follow confirmed places and time periods across your entire trip.",
-    privacyAlt: "Orbis privacy screen listing what is kept: watched places and trips, settings, a push address and up to 30 days of alert history, with no account."
+    routeNote: "Follow confirmed places and time periods across your entire trip."
   },
   how: {
     title: "Intelligent alerts for greater peace of mind",
