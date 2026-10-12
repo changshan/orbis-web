@@ -15,6 +15,10 @@ describe("双语内容", () => {
       expect("risks" in c).toBe(false);
       expect("product" in c).toBe(false);
     }
+    for (const c of [CONTENT.zh, CONTENT.en]) {
+      expect(Object.keys(c.preview)).toEqual(["alt", "tag", "routeNote"]);
+      expect(c.preview.alt).toMatch(/Rome|罗马/);
+    }
     expect(CONTENT.zh.preview.routeNote).toBe("关注确认的地点和时间段，掌握全部行程。");
     expect(CONTENT.en.preview.routeNote).toBe("Follow confirmed places and time periods across your entire trip.");
     expect(JSON.stringify(CONTENT)).not.toMatch(/Critical Alerts|预测地震|保证安全|不会漏报/i);
@@ -30,6 +34,7 @@ describe("双语内容", () => {
     expect(CONTENT.zh.hero.body).toContain("支持长期关注与按时间安排的行程提醒。");
     expect(CONTENT.zh.hero.boundary).toBe("Orbis提供更全面、更及时的预警，不替代官方紧急服务。");
     expect(CONTENT.zh.preview.tag).toBe("AI 生成行程");
+    expect(CONTENT.en.preview.tag).toBe("AI-GENERATED TRIP");
     expect(CONTENT.zh.how.title).toBe("智能生成提醒， 让你更安心");
     expect(CONTENT.zh.how.intro).toBe("大模型驱动流程创建，提醒清晰明了");
     expect(CONTENT.zh.plans.title).toBe("两种安排，一种关注方式");

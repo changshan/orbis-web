@@ -21,8 +21,22 @@ describe("renderHome", () => {
       expect(html).not.toContain('id="risks"');
       expect(html).not.toContain('class="hero-metrics"');
     }
-    expect(zh).toContain("关注确认的地点和时间段，掌握全部行程。");
-    expect(en).toContain("confirmed places and time periods across your entire trip");
+  });
+
+  it("首屏用确认草稿的真实截图，不再画行程卡片", () => {
+    for (const [html, alt, tag, note] of [
+      [zh, "罗马", "AI 生成行程", "关注确认的地点和时间段，掌握全部行程。"],
+      [en, "Rome", "AI-GENERATED TRIP", "Follow confirmed places and time periods across your entire trip."]
+    ] as const) {
+      const figure = html.match(/<figure class="hero-shot">.*?<\/figure>/s)?.[0] ?? "";
+      expect(figure).toContain('src="/assets/hero-review-draft.webp"');
+      expect(figure).toContain('width="720" height="997"');
+      expect(figure).toMatch(new RegExp(`alt="[^"]*${alt}[^"]*"`));
+      expect(figure).not.toContain("loading=");
+      expect(figure).toContain(`<figcaption><span class="shot-tag mono">${tag}</span>${note}</figcaption>`);
+      expect(html).not.toContain("plan-preview");
+      expect(html).not.toContain("preview-stops");
+    }
   });
 
   it("下载入口、示例与官方等级均可见", () => {

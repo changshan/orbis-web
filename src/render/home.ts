@@ -6,15 +6,7 @@ import { renderFeedbackSection } from "./feedback";
 import { pageDocument } from "./layout";
 
 function renderPreview(c: WebsiteContent): string {
-  return `<figure class="plan-preview">
-<div class="preview-sky"><div class="preview-head"><span class="mono">${esc(c.preview.tag)}</span></div><div class="preview-orbit" aria-hidden="true"><span></span><span></span><span></span></div></div>
-<div class="preview-surface"><figcaption>${esc(c.preview.title)}</figcaption>
-<ol class="preview-stops">
-<li><span class="stop-dot" aria-hidden="true"></span><div><strong>${esc(c.preview.firstPlace)}</strong><small>${esc(c.preview.firstTime)}</small></div></li>
-<li><span class="stop-dot" aria-hidden="true"></span><div><strong>${esc(c.preview.secondPlace)}</strong><small>${esc(c.preview.secondTime)}</small></div></li>
-</ol>
-<p class="preview-note">${esc(c.preview.routeNote)}</p></div>
-</figure>`;
+  return `<figure class="hero-shot"><img src="/assets/hero-review-draft.webp" width="720" height="997" alt="${esc(c.preview.alt)}" /><figcaption><span class="shot-tag mono">${esc(c.preview.tag)}</span>${esc(c.preview.routeNote)}</figcaption></figure>`;
 }
 
 function renderExample(c: WebsiteContent): string {
