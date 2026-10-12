@@ -23,17 +23,34 @@ describe("renderHome", () => {
     }
   });
 
-  it("首屏用确认草稿的真实截图，不再画行程卡片", () => {
-    for (const [html, alt, tag, note] of [
-      [zh, "罗马", "AI 生成行程", "关注确认的地点和时间段，掌握全部行程。"],
-      [en, "Rome", "AI-GENERATED TRIP", "Follow confirmed places and time periods across your entire trip."]
-    ] as const) {
-      const figure = html.match(/<figure class="hero-shot">.*?<\/figure>/s)?.[0] ?? "";
-      expect(figure).toContain('src="/assets/hero-review-draft.webp"');
-      expect(figure).toContain('width="720" height="997"');
-      expect(figure).toMatch(new RegExp(`alt="[^"]*${alt}[^"]*"`));
-      expect(figure).not.toContain("loading=");
-      expect(figure).toContain(`<figcaption><span class="shot-tag mono">${tag}</span>${note}</figcaption>`);
+  it("首屏轮播三张真实截图，各带标签和说明，不再画行程卡片", () => {
+    const expected = {
+      zh: [
+        ["hero-describe", "输入框", "自然语言描述", "AI 自动识别地点和行程，生成待确认的关注草稿。"],
+        ["hero-review-draft", "罗马", "AI 生成行程", "关注确认的地点和时间段，掌握全部行程。"],
+        ["hero-privacy", "隐私", "隐私", "Orbis 保存哪些数据、存在哪里、保存多久，以及你如何删除。"]
+      ],
+      en: [
+        ["hero-describe", "text box", "Describe in natural language", "AI identifies places and trip details from your description, then creates a draft for you to confirm."],
+        ["hero-review-draft", "Rome", "AI-GENERATED TRIP", "Follow confirmed places and time periods across your entire trip."],
+        ["hero-privacy", "privacy", "Privacy", "What data Orbis keeps, where it is stored, how long it is kept, and how you can delete it."]
+      ]
+    } as const;
+    for (const [html, locale] of [[zh, "zh"], [en, "en"]] as const) {
+      const carousel = html.match(/<div class="hero-shot" data-carousel>.*?<\/div><\/div>/s)?.[0] ?? "";
+      expect(carousel).toMatch(/<div class="shot-track" tabindex="0" role="group" aria-label="[^"]+">/);
+      const slides = carousel.match(/<figure class="shot-slide">.*?<\/figure>/gs) ?? [];
+      expect(slides).toHaveLength(3);
+      slides.forEach((slide, index) => {
+        const [image, alt, tag, note] = expected[locale][index]!;
+        expect(slide).toContain(`src="/assets/${image}.webp" width="720" height="997"`);
+        expect(slide).toMatch(new RegExp(`alt="[^"]*${alt}[^"]*"`));
+        expect(slide.includes('loading="lazy"')).toBe(index > 0);
+        expect(slide).toContain(`<figcaption><span class="shot-tag mono">${tag}</span>${note}</figcaption>`);
+      });
+      expect(carousel).toContain('<div class="shot-dots" hidden>');
+      expect(carousel.match(/<button type="button" aria-label="[^"]+"><\/button>/g)).toHaveLength(3);
+      expect(html).toContain('src="/assets/carousel.js"');
       expect(html).not.toContain("plan-preview");
       expect(html).not.toContain("preview-stops");
     }

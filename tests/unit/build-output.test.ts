@@ -40,6 +40,9 @@ describe("build output", () => {
     expect(existsSync(hashedAsset("dist/assets", "global", "css"))).toBe(true);
     expect(existsSync(hashedAsset("dist/assets", "lang", "js"))).toBe(true);
     expect(existsSync(hashedAsset("dist/assets", "feedback", "js"))).toBe(true);
+    expect(existsSync(hashedAsset("dist/assets", "carousel", "js"))).toBe(true);
+    expect(existsSync(hashedAsset("dist/assets", "hero-describe", "webp"))).toBe(true);
+    expect(existsSync(hashedAsset("dist/assets", "hero-privacy", "webp"))).toBe(true);
     expect(existsSync(hashedAsset("dist/assets", "app-store-qr", "png"))).toBe(true);
     expect(existsSync(hashedAsset("dist/assets", "brand-mark-32", "svg"))).toBe(true);
     expect(existsSync(hashedAsset("dist/assets", "hero-review-draft", "webp"))).toBe(true);
@@ -81,6 +84,8 @@ describe("build output", () => {
     expect(css).toContain("--sky-deep:#1F5E9E");
     expect(css).toContain("--official-orange:#E2701A");
     expect(css).toContain(".hero-shot");
+    expect(css).toContain(".shot-track{display:flex;overflow-x:auto;scroll-snap-type:x mandatory");
+    expect(css).toContain(".shot-dots[hidden]{display:none}");
     expect(css).not.toContain(".preview-sky");
     expect(css).not.toContain(".plan-preview");
     expect(css).toContain(".official-level{color:var(--official-orange-dark)}");

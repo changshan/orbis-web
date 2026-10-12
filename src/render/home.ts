@@ -6,7 +6,15 @@ import { renderFeedbackSection } from "./feedback";
 import { pageDocument } from "./layout";
 
 function renderPreview(c: WebsiteContent): string {
-  return `<figure class="hero-shot"><img src="/assets/hero-review-draft.webp" width="720" height="997" alt="${esc(c.preview.alt)}" /><figcaption><span class="shot-tag mono">${esc(c.preview.tag)}</span>${esc(c.preview.routeNote)}</figcaption></figure>`;
+  const firstStep = c.how.steps[0]!;
+  const slides = [
+    { image: "hero-describe", alt: c.preview.describeAlt, tag: firstStep.title, note: firstStep.body },
+    { image: "hero-review-draft", alt: c.preview.alt, tag: c.preview.tag, note: c.preview.routeNote },
+    { image: "hero-privacy", alt: c.preview.privacyAlt, tag: c.nav.privacy, note: c.privacy.meta.description }
+  ];
+  const figures = slides.map((slide, index) => `<figure class="shot-slide"><img src="/assets/${slide.image}.webp" width="720" height="997"${index > 0 ? ' loading="lazy"' : ""} alt="${esc(slide.alt)}" /><figcaption><span class="shot-tag mono">${esc(slide.tag)}</span>${esc(slide.note)}</figcaption></figure>`).join("");
+  const dots = slides.map((slide, index) => `<button type="button" aria-label="${index + 1} / ${slides.length} · ${esc(slide.tag)}"></button>`).join("");
+  return `<div class="hero-shot" data-carousel><div class="shot-track" tabindex="0" role="group" aria-label="${esc(c.preview.label)}">${figures}</div><div class="shot-dots" hidden>${dots}</div></div>`;
 }
 
 function renderExample(c: WebsiteContent): string {
@@ -49,5 +57,5 @@ ${renderPrinciples(c)}
 <aside class="home-boundary" id="boundary" aria-labelledby="boundary-title"><h2 id="boundary-title">${esc(c.boundary.title)}</h2><p>${esc(c.boundary.body)}</p><ul>${rules}</ul></aside>
 ${renderFeedbackSection(locale, c)}
 <section class="home-download" id="download" aria-labelledby="download-title"><div class="download-inner"><div class="download-copy"><span class="eyebrow mono">APP STORE</span><h2 id="download-title">${esc(c.download.title)}</h2><p>${esc(c.download.body)}</p></div><a class="download-qr" href="${APP_STORE_URL}" target="_blank" rel="noopener noreferrer"><img src="/assets/app-store-qr.png" width="216" height="216" loading="lazy" decoding="async" alt="${esc(c.download.qrAlt)}" /></a></div></section>`;
-  return pageDocument(locale, "home", c, main, ["/assets/feedback.js"]);
+  return pageDocument(locale, "home", c, main, ["/assets/feedback.js", "/assets/carousel.js"]);
 }

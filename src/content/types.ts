@@ -57,9 +57,12 @@ export interface WebsiteContent {
     boundary: string;
   };
   preview: {
+    label: string;
+    describeAlt: string;
     alt: string;
     tag: string;
     routeNote: string;
+    privacyAlt: string;
   };
   how: {
     title: string;

@@ -15,6 +15,11 @@ test("无 JS 时新版说明、下载入口与反馈表单可用", async ({ page
   await page.goto("/zh/");
   await expect(page.locator("h1")).toContainText("关注重要地点");
   await expect(page.locator("#how-it-works li")).toHaveCount(4);
+  await expect(page.locator(".hero-shot img")).toHaveCount(3);
+  await expect(page.locator(".shot-dots")).toBeHidden();
+  const track = page.locator(".shot-track");
+  await track.evaluate((element) => element.scrollTo({ left: element.clientWidth * 2 }));
+  await expect(page.locator(".hero-shot img").nth(2)).toBeInViewport();
   await expect(page.locator("#plans")).not.toContainText("新版规划");
   await expect(page.locator("#boundary")).toContainText("来源不可用或过期时如实显示");
   await expect(page.locator(".hero-cta")).toHaveAttribute("href", "https://apps.apple.com/us/app/myorbis/id6812221807");

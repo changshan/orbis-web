@@ -16,8 +16,10 @@ describe("双语内容", () => {
       expect("product" in c).toBe(false);
     }
     for (const c of [CONTENT.zh, CONTENT.en]) {
-      expect(Object.keys(c.preview)).toEqual(["alt", "tag", "routeNote"]);
+      expect(Object.keys(c.preview)).toEqual(["label", "describeAlt", "alt", "tag", "routeNote", "privacyAlt"]);
       expect(c.preview.alt).toMatch(/Rome|罗马/);
+      expect(c.preview.describeAlt).toMatch(/Rome|罗马/);
+      expect(c.preview.privacyAlt).toMatch(/30/);
     }
     expect(CONTENT.zh.preview.routeNote).toBe("关注确认的地点和时间段，掌握全部行程。");
     expect(CONTENT.en.preview.routeNote).toBe("Follow confirmed places and time periods across your entire trip.");
