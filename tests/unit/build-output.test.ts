@@ -41,11 +41,13 @@ describe("build output", () => {
     expect(existsSync(hashedAsset("dist/assets", "lang", "js"))).toBe(true);
     expect(existsSync(hashedAsset("dist/assets", "feedback", "js"))).toBe(true);
     expect(existsSync(hashedAsset("dist/assets", "carousel", "js"))).toBe(true);
-    expect(existsSync(hashedAsset("dist/assets", "hero-home", "webp"))).toBe(true);
-    expect(existsSync(hashedAsset("dist/assets", "hero-alert", "webp"))).toBe(true);
     expect(existsSync(hashedAsset("dist/assets", "app-store-qr", "png"))).toBe(true);
     expect(existsSync(hashedAsset("dist/assets", "brand-mark-32", "svg"))).toBe(true);
-    expect(existsSync(hashedAsset("dist/assets", "hero-review-draft", "webp"))).toBe(true);
+    for (const image of ["hero-home", "hero-alert", "hero-review-draft"]) {
+      for (const locale of ["zh", "en"]) {
+        expect(existsSync(hashedAsset("dist/assets", `${image}-${locale}`, "webp"))).toBe(true);
+      }
+    }
     for (const asset of walk("dist/assets")) {
       expect(basename(asset), asset).toMatch(HASHED_FILENAME);
     }

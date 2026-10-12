@@ -17,9 +17,10 @@ describe("双语内容", () => {
     }
     for (const c of [CONTENT.zh, CONTENT.en]) {
       expect(Object.keys(c.preview)).toEqual(["label", "homeAlt", "alertAlt", "alt", "tag", "routeNote"]);
-      expect(c.preview.alt).toMatch(/Rome|罗马/);
-      expect(c.preview.homeAlt).toMatch(/Cagliari|卡利亚里/);
-      expect(c.preview.alertAlt).toMatch(/Sardinia|撒丁岛/);
+      expect(c.preview.alt).toMatch(/Seattle|上海/);
+      expect(c.preview.homeAlt).toMatch(/Philadelphia|三亚/);
+      expect(c.preview.alertAlt).toMatch(/Philadelphia|三亚/);
+      expect(JSON.stringify(c.preview)).not.toMatch(/英文|Rome|罗马|Cagliari|卡利亚里|Sardinia|撒丁岛/);
     }
     expect(CONTENT.zh.preview.routeNote).toBe("关注确认的地点和时间段，掌握全部行程。");
     expect(CONTENT.en.preview.routeNote).toBe("Follow confirmed places and time periods across your entire trip.");
