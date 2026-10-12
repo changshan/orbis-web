@@ -157,8 +157,10 @@ h3{font-weight:650;letter-spacing:-.025em}
 .hero-secondary{border-color:rgba(255,255,255,.5);color:#fff}
 .hero-secondary:hover{border-color:#fff;background:rgba(255,255,255,.1)}
 .hero-figure{display:flex;justify-content:center}
-.hero-shot{margin:0;width:min(100%,360px);overflow:hidden;border:1px solid rgba(255,255,255,.7);border-radius:40px;background:#F2F7FC;box-shadow:0 30px 70px rgba(19,58,96,.28)}
+.hero-shot{margin:0;width:min(100%,360px);overflow:hidden;border:1px solid rgba(255,255,255,.7);border-radius:28px;background:#F2F7FC;box-shadow:0 30px 70px rgba(19,58,96,.28)}
 .hero-shot img{display:block;width:100%;height:auto}
+.hero-shot figcaption{border-top:1px solid var(--hairline);padding:14px 22px 18px;color:#3D4D5E;font-size:13px;line-height:1.5}
+.shot-tag{display:block;margin-bottom:4px;color:var(--lamp-ink);font-weight:700}
 .hero-boundary{position:relative;z-index:1;border-color:rgba(255,255,255,.25);color:#DCECF7}
 .hero-boundary .mono{color:#DCECF7}
 .home-how,.home-plans,.home-alert,.home-principles,.home-feedback{padding-block:clamp(72px,8vw,108px)}
@@ -203,6 +205,6 @@ button.submit:hover{background:#15578F}
 .download-qr{border-radius:9px;box-shadow:0 16px 40px rgba(8,29,56,.25)}
 @keyframes sky-breathe{50%{opacity:.48;transform:scale(1.04)}}
 @media(max-width:1000px){.hero-grid{grid-template-columns:1fr}.hero-figure{max-width:580px;justify-content:flex-start}.hero-shot{width:min(100%,340px)}}
-@media(max-width:640px){.header-inner{min-height:64px}.brand-mark{width:28px;height:28px}.hero-grid{padding-block:60px 48px}.home-hero{background:linear-gradient(155deg,#1F5E9E 0%,#3E82C0 70%,#80B3D9 100%)}.hero-figure{max-width:none;justify-content:center}.hero-shot{width:min(88%,340px);border-radius:36px}.step-grid{gap:12px}.step-grid li{padding:24px}.step-index{margin-bottom:18px}.example-levels{padding:16px;gap:10px}.example-facts>div+div{border-color:#E3ECF5}}
+@media(max-width:640px){.header-inner{min-height:64px}.brand-mark{width:28px;height:28px}.hero-grid{padding-block:60px 48px}.home-hero{background:linear-gradient(155deg,#1F5E9E 0%,#3E82C0 70%,#80B3D9 100%)}.hero-figure{max-width:none;justify-content:center}.hero-shot{width:min(88%,340px);border-radius:26px}.step-grid{gap:12px}.step-grid li{padding:24px}.step-index{margin-bottom:18px}.example-levels{padding:16px;gap:10px}.example-facts>div+div{border-color:#E3ECF5}}
 @media(max-width:360px){.brand-mark{width:26px;height:26px}}
 @media(prefers-reduced-motion:reduce){.home-hero:before{animation:none}}

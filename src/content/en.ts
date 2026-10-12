@@ -18,7 +18,9 @@ export const en = {
     boundary: "Orbis provides broader, more timely alerts without replacing official emergency services."
   },
   preview: {
-    alt: "Orbis screen for reviewing a trip draft: Rome from October 20 to 23, then Milan until the 26th, each with start and end times in local time."
+    alt: "Orbis screen for reviewing a trip draft: Rome from October 20 to 23, then Milan until the 26th, each with start and end times in local time.",
+    tag: "AI-GENERATED TRIP",
+    routeNote: "Follow confirmed places and time periods across your entire trip."
   },
   how: {
     title: "Intelligent alerts for greater peace of mind",

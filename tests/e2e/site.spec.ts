@@ -45,6 +45,8 @@ test("首屏截图和预警示例展示更新文案", async ({ page }) => {
   await expect(shot).toBeVisible();
   await expect.poll(() => shot.evaluate((img: HTMLImageElement) => img.naturalWidth)).toBe(720);
   await expect(shot).toHaveAttribute("alt", /罗马/);
+  await expect(page.locator(".hero-shot .shot-tag")).toHaveText("AI 生成行程");
+  await expect(page.locator(".hero-shot figcaption")).toContainText("关注确认的地点和时间段，掌握全部行程。");
   await expect(page.locator(".example-card figcaption")).toContainText("仅为示例，以实际信息效果为准。");
   await expect(page.locator(".official-level")).toBeVisible();
   await expect(page.locator(".orbis-intensity")).toBeVisible();

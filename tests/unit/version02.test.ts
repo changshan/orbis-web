@@ -33,6 +33,8 @@ describe("0.2 website story", () => {
     }
     expect(zh).toContain('class="hero-shot"');
     expect(en).toContain('class="hero-shot"');
+    expect(zh).toContain("关注确认的地点和时间段，掌握全部行程。");
+    expect(en).toContain("Follow confirmed places and time periods across your entire trip.");
   });
 
   it("keeps the example disclaimer without an empty sample header", () => {

@@ -6,7 +6,7 @@ import { renderFeedbackSection } from "./feedback";
 import { pageDocument } from "./layout";
 
 function renderPreview(c: WebsiteContent): string {
-  return `<figure class="hero-shot"><img src="/assets/hero-review-draft.webp" width="720" height="1096" alt="${esc(c.preview.alt)}" /></figure>`;
+  return `<figure class="hero-shot"><img src="/assets/hero-review-draft.webp" width="720" height="997" alt="${esc(c.preview.alt)}" /><figcaption><span class="shot-tag mono">${esc(c.preview.tag)}</span>${esc(c.preview.routeNote)}</figcaption></figure>`;
 }
 
 function renderExample(c: WebsiteContent): string {

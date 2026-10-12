@@ -58,6 +58,8 @@ export interface WebsiteContent {
   };
   preview: {
     alt: string;
+    tag: string;
+    routeNote: string;
   };
   how: {
     title: string;
