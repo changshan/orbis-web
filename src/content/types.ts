@@ -57,6 +57,9 @@ export interface WebsiteContent {
     boundary: string;
   };
   preview: {
+    label: string;
+    homeAlt: string;
+    alertAlt: string;
     alt: string;
     tag: string;
     routeNote: string;

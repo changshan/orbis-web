@@ -70,7 +70,7 @@ for (const locale of SITE.locales) {
 
 cpSync(join(root, "src/styles/global.css"), join(dist, "assets/global.css"));
 buildSync({
-  entryPoints: [join(root, "src/client/lang.ts"), join(root, "src/client/feedback.ts")],
+  entryPoints: [join(root, "src/client/lang.ts"), join(root, "src/client/feedback.ts"), join(root, "src/client/carousel.ts")],
   outdir: join(dist, "assets"),
   bundle: true, minify: true, format: "iife", target: "es2020"
 });

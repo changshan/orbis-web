@@ -18,6 +18,9 @@ export const en = {
     boundary: "Orbis provides broader, more timely alerts without replacing official emergency services."
   },
   preview: {
+    label: "Orbis app screens",
+    homeAlt: "Orbis home screen: a new-alert banner and current weather at the top, then watched places, with an orange wind warning for Cagliari and no alerts for Dongcheng District.",
+    alertAlt: "Orbis alert detail for an orange wind warning in Sardinia: a map of Cagliari, the official area and validity, three safety steps, a link to the official text and feedback buttons.",
     alt: "Orbis screen for reviewing a trip draft: Rome from October 20 to 23, then Milan until the 26th, each with start and end times in local time.",
     tag: "AI-GENERATED TRIP",
     routeNote: "Follow confirmed places and time periods across your entire trip."

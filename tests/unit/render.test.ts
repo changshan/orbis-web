@@ -23,19 +23,38 @@ describe("renderHome", () => {
     }
   });
 
-  it("首屏用确认草稿的真实截图，不再画行程卡片", () => {
-    for (const [html, alt, tag, note] of [
-      [zh, "罗马", "AI 生成行程", "关注确认的地点和时间段，掌握全部行程。"],
-      [en, "Rome", "AI-GENERATED TRIP", "Follow confirmed places and time periods across your entire trip."]
-    ] as const) {
-      const figure = html.match(/<figure class="hero-shot">.*?<\/figure>/s)?.[0] ?? "";
-      expect(figure).toContain('src="/assets/hero-review-draft.webp"');
-      expect(figure).toContain('width="720" height="997"');
-      expect(figure).toMatch(new RegExp(`alt="[^"]*${alt}[^"]*"`));
-      expect(figure).not.toContain("loading=");
-      expect(figure).toContain(`<figcaption><span class="shot-tag mono">${tag}</span>${note}</figcaption>`);
+  it("首屏轮播首页、预警详情、AI 草稿三张真实截图，预警一张标明示例", () => {
+    const expected = {
+      zh: [
+        ["hero-home", "首页", "持续关注", "长期地点持续关注；行程按已确认的地点和时间段分别关注。"],
+        ["hero-alert", "预警详情", "查看相关提醒", "仅为示例，以实际信息效果为准。"],
+        ["hero-review-draft", "罗马", "AI 生成行程", "关注确认的地点和时间段，掌握全部行程。"]
+      ],
+      en: [
+        ["hero-home", "home screen", "Keep watch", "Follow a place long term, or watch each confirmed trip stop during its scheduled time period."],
+        ["hero-alert", "alert detail", "Read relevant alerts", "For illustration only; actual information may differ."],
+        ["hero-review-draft", "Rome", "AI-GENERATED TRIP", "Follow confirmed places and time periods across your entire trip."]
+      ]
+    } as const;
+    for (const [html, locale] of [[zh, "zh"], [en, "en"]] as const) {
+      const carousel = html.match(/<div class="hero-shot" data-carousel>.*?<\/div><\/div>/s)?.[0] ?? "";
+      expect(carousel).toMatch(/<div class="shot-track" tabindex="0" role="group" aria-label="[^"]+">/);
+      const slides = carousel.match(/<figure class="shot-slide">.*?<\/figure>/gs) ?? [];
+      expect(slides).toHaveLength(3);
+      slides.forEach((slide, index) => {
+        const [image, alt, tag, note] = expected[locale][index]!;
+        expect(slide).toContain(`src="/assets/${image}.webp" width="720" height="997"`);
+        expect(slide).toMatch(new RegExp(`alt="[^"]*${alt}[^"]*"`));
+        expect(slide.includes('loading="lazy"')).toBe(index > 0);
+        expect(slide).toContain(`<figcaption><span class="shot-tag mono">${tag}</span>${note}</figcaption>`);
+      });
+      expect(carousel).toContain('<div class="shot-dots" hidden>');
+      expect(carousel.match(/<button type="button" aria-label="[^"]+"><\/button>/g)).toHaveLength(3);
+      expect(html).toContain('src="/assets/carousel.js"');
       expect(html).not.toContain("plan-preview");
       expect(html).not.toContain("preview-stops");
+      expect(html).not.toContain("hero-describe");
+      expect(html).not.toContain("hero-privacy");
     }
   });
 
