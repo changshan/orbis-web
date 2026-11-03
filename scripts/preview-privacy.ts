@@ -4,7 +4,7 @@ export async function checkPreviewPrivacy(env:Record<string,string|undefined>,se
  const account=env.CLOUDFLARE_ACCOUNT_ID,token=env.CLOUDFLARE_API_TOKEN;
  if(!account||!/^[0-9a-f]{32}$/.test(account)||!token)throw unavailable();
  try{
-  const response=await send(new Request(`https://api.cloudflare.com/client/v4/accounts/${account}/workers/scripts/orbis-web/settings`,{method:"GET",headers:{authorization:`Bearer ${token}`,accept:"application/json"},redirect:"error",signal:AbortSignal.timeout(5000)}));
+  const response=await send(new Request(`https://api.cloudflare.com/client/v4/accounts/${account}/workers/scripts/orbis-web/script-settings`,{method:"GET",headers:{authorization:`Bearer ${token}`,accept:"application/json"},redirect:"error",signal:AbortSignal.timeout(5000)}));
   if(response.status!==200){await response.body?.cancel();throw unavailable();}
   const reader=response.body?.getReader();if(!reader)throw unavailable();
   const bytes=new Uint8Array(262144);let length=0;

@@ -12,3 +12,23 @@
 10. 项目邮箱设置 90 天自动删除 Orbis 反馈邮件，指定季度核查负责人。
 11. 回滚：`npx wrangler rollback`（回上一版本），回滚后重复第 6 步验证。
 12. 发布前手动质检（结果记录在发布 PR）：桌面 Safari + iPhone Safari 冒烟（键盘/触控、断点、200% 缩放、语言切换）；DevTools Lighthouse 四项 ≥ 90。
+
+
+## 不经 CI 的独立预览
+
+用户明确授权后，先在本地完成受影响检查，再上传固定的独立 Worker；不要用默认配置部署来代替预览。
+
+```sh
+npm run check
+npm run test:unit
+PUBLIC_SITE_ORIGIN=https://myorbis.xyz npm run build
+WRANGLER_SEND_METRICS=false npx wrangler deploy --config wrangler.preview.jsonc --dry-run --outdir /private/tmp/orbis-web-preview-bundle
+npm run test:vision-runtime -- /private/tmp/orbis-web-preview-bundle/entry.js /private/tmp/orbis-web-preview-runtime.json assume-role
+WRANGLER_SEND_METRICS=false npx wrangler deploy --config wrangler.preview.jsonc
+```
+
+`wrangler.preview.jsonc` 固定使用 `orbis-web-preview-vision`、独立的两个 DO 命名空间、空自定义路由、无 EMAIL/限流/secret 绑定；`ORBIS_PREVIEW=true` 在访问反馈绑定之前返回 503，`VISION_ENABLED=false`。首次创建带 DO 迁移的 Worker 使用 deploy；此命令只发布独立预览，不替换生产 `orbis-web`。
+
+上传后通过官方 [非版本化设置 API](https://developers.cloudflare.com/api/resources/workers/subresources/scripts/subresources/settings/methods/get/)（`/script-settings`）及控制台核对日志/追踪关闭、没有生产路由或邮件绑定，并比较生产部署及设置未变。2026-11-03 该账号在关闭采集时返回 `observability:null`，控制台明确显示 Workers Logs、Workers Traces 已禁用；CI 预检仍保守拒绝缺少明确布尔值的设置，不因此放宽共享生产版本预览条件。只读检查预览页面、CSP、健康及 Vision 关闭态；真实反馈发送另需明确授权。
+
+当前预览：https://orbis-web-preview-vision.lics0613.workers.dev/zh/ 。生产未发布，真实 CN/Turnstile 接入与平台日志 canary 仍待验收。

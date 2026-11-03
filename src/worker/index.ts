@@ -18,6 +18,8 @@ export interface WorkerEnv {
   FEEDBACK_DESTINATION: string;
 }
 
+type RuntimeEnvironment=(WorkerEnv & {ORBIS_PREVIEW?:"false"}) | {ORBIS_PREVIEW:"true"};
+
 type FeedbackOutcome="validation_error"|"rate_limited"|"admission_unavailable"|"ignored"|"sent"|"delivery_unavailable";
 function observeFeedback(requestId:string,status:number,outcome:FeedbackOutcome):void {
   // Fixed fields only: never emit the request, IP, submitted text or upstream exception.
@@ -28,7 +30,7 @@ function observeFeedback(requestId:string,status:number,outcome:FeedbackOutcome)
 }
 
 export default {
-  async fetch(request: Request, env: WorkerEnv & VisionEnvironment): Promise<Response> {
+  async fetch(request: Request, env: RuntimeEnvironment & VisionEnvironment): Promise<Response> {
     const url = new URL(request.url);
     if (url.pathname === "/api/vision" || url.pathname.startsWith("/api/vision/")) return handleVision(request, env);
     if (url.pathname === "/api/health") {
@@ -41,6 +43,10 @@ export default {
     }
 
     const id = crypto.randomUUID();
+    if(env.ORBIS_PREVIEW==="true"){
+      const response=publicResponse(request,503,{ok:false,code:"delivery_unavailable",requestId:id});
+      response.headers.set("x-orbis-preview","true");return response;
+    }
     const ip = request.headers.get("cf-connecting-ip") ?? "unknown";
     try {
       if (!(await env.FEEDBACK_RATE_LIMIT.limit({ key: ip })).success) {

@@ -16,7 +16,7 @@ describe("preview upload checks existing non-versioned privacy settings",()=>{
  it("accepts explicitly disabled collection or redacted custom logs without traces/invocation logs",async()=>{
   for(const settings of [{enabled:true,logs:{enabled:false},traces:{enabled:false}},{enabled:true,redact_query_string:true,logs:{enabled:true,invocation_logs:false},traces:{enabled:false}}]){
    const send=current(settings);await expect(checkPreviewPrivacy(env,send)).resolves.toBeUndefined();
-   const request=send.mock.calls[0]![0] as Request;expect(request.url).toBe("https://api.cloudflare.com/client/v4/accounts/"+env.CLOUDFLARE_ACCOUNT_ID+"/workers/scripts/orbis-web/settings");expect(request.method).toBe("GET");expect(request.redirect).toBe("error");
+   const request=send.mock.calls[0]![0] as Request;expect(request.url).toBe("https://api.cloudflare.com/client/v4/accounts/"+env.CLOUDFLARE_ACCOUNT_ID+"/workers/scripts/orbis-web/script-settings");expect(request.method).toBe("GET");expect(request.redirect).toBe("error");
   }
  });
  it("fails closed for missing identity, API failure and oversized metadata",async()=>{

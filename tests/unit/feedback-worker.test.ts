@@ -17,6 +17,13 @@ const jsonRequest = (body: unknown) => new Request("https://orbis.example/api/fe
 });
 
 describe("Feedback Worker", () => {
+  it("isolated previews reject feedback before touching any external binding",async()=>{
+    const error=vi.spyOn(console,"error").mockImplementation(()=>undefined);
+    try{
+      const response=await worker.fetch(jsonRequest({locale:"en",message:"synthetic preview message"}),{ORBIS_PREVIEW:"true"});
+      expect(response.status).toBe(503);expect(response.headers.get("x-orbis-preview")).toBe("true");expect(error).not.toHaveBeenCalled();
+    }finally{error.mockRestore();}
+  });
   it("validation and rate rejection remain observable without request contents", async()=>{
     const log=vi.spyOn(console,"log").mockImplementation(()=>undefined);
     try{

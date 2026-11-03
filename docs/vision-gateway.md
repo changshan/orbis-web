@@ -40,7 +40,7 @@ WRANGLER_SEND_METRICS=false npx wrangler deploy --dry-run --outdir /private/tmp/
 npm run test:vision-runtime -- /private/tmp/orbis-vision-web-bundle/entry.js /private/tmp/orbis-vision-web-runtime-results.json
 ```
 
-最后一步在本地 workerd + SQLite 中运行，所有 CN/Siteverify 出站都由替身接收，未配置真实凭据也不会访问真实服务。当前 74 个单测及 assume-role 模式 14 个运行时场景通过，包含 12 个同键并发冷请求只回源一次、缓存前鉴权/限流、游标封装、挑战上下文与单次使用、预览路径关闭、字段隔离及持久熔断。真实 FC 网关校验、真实 Turnstile、跨地域恢复与线上入口旁路未验证。页面/导航未改，未运行静态浏览器 E2E。
+最后一步在本地 workerd + SQLite 中运行，所有 CN/Siteverify 出站都由替身接收，未配置真实凭据也不会访问真实服务。当前 76 个单测及 assume-role 模式 14 个运行时场景通过，包含 12 个同键并发冷请求只回源一次、缓存前鉴权/限流、游标封装、挑战上下文与单次使用、预览路径关闭、字段隔离及持久熔断。真实 FC 网关校验、真实 Turnstile、跨地域恢复与线上入口旁路未验证。页面/导航未改，未运行静态浏览器 E2E。
 
 共享契约的唯一维护位置仍在 Orbis 的 `shared/vision/openapi.yaml`。更新时用 canonical 文件生成校验代码，禁止手改 generated 文件：
 
@@ -53,7 +53,7 @@ npx wrangler types src/worker/vision/bindings.generated.d.ts --env-interface Vis
 
 ## 仍需真实环境验收
 
-尚未部署/上传预览、创建 DO 或 Turnstile widget、设置真实源站或临时凭据，也未改线上 WAF。Cloudflare 域名 DDoS/WAF/规则额度和费用需按实际账号套餐核验。CN 的签名 trigger、默认/别名/自定义/预览所有地址的匿名旁路、最小 RAM 调用范围及 真实 STS 角色与续期，都必须与 W10 实际读端联合验证后才允许公共访问；当前官方 API 文档对细粒度调用资源的描述需现场核对，不以宽泛 `*` 权限代替最小授权。
+已上传隔离预览并创建其独立 DO 命名空间；尚未创建 Turnstile widget、设置真实源站或临时凭据，也未改线上 WAF。Cloudflare 域名 DDoS/WAF/规则额度和费用需按实际账号套餐核验。CN 的签名 trigger、默认/别名/自定义/预览所有地址的匿名旁路、最小 RAM 调用范围及 真实 STS 角色与续期，都必须与 W10 实际读端联合验证后才允许公共访问；当前官方 API 文档对细粒度调用资源的描述需现场核对，不以宽泛 `*` 权限代替最小授权。
 
 Orbis 仓库的真实 NWS 全目录映射已构建/打包；生产采集 provider/CN 的本地装配已实现，真实云端接入和容量/成本/SLS 联合验收仍未完成。官网挑战 UI 与正式页面不在本轮实现范围。
 
@@ -64,9 +64,9 @@ Orbis 仓库的真实 NWS 全目录映射已构建/打包；生产采集 provide
 
 2026-11-03 实施补充：官方 `@alicloud/sts20150401@1.2.0` 已接入，显式 CommonJS shim 同时支持 Node 与 workerd。新增内存续期、并发合并、失败退避与到期关闭单测；本地 workerd/SQLite 14 项通过，所有出站由合成夹具截获，验证首次签发及近过期续期共 2 次，不代表真实云端权限通过。最初续期批次 66 项单测通过；后续工具链与隐私收尾为 74 项单测通过，完整及运行依赖 audit 均为 0。
 
-真实接入阻塞：Orbis `.env` 和 Serverless `default` 两套现有身份均在创建 `orbis-vision-worker` 时返回 RAM `403 NoPermission`。尚未创建真实专用角色、签发用户或设置 Worker secrets；没有发布网站或预览。资源权限材料见 Orbis `server/deploy/vision/README.md`；生产匿名旁路、错误角色/过期 STS 与私有 OSS 拒绝测试仍待云端资源就绪后验收。
+真实接入阻塞：Orbis `.env` 和 Serverless `default` 两套现有身份均在创建 `orbis-vision-worker` 时返回 RAM `403 NoPermission`。尚未创建真实专用角色、签发用户或设置 Worker secrets；没有发布生产网站。资源权限材料见 Orbis `server/deploy/vision/README.md`；生产匿名旁路、错误角色/过期 STS 与私有 OSS 拒绝测试仍待云端资源就绪后验收。
 
 签发前后均核对持久回源租约。全局 DO 只传递短期凭据和预算结果，源站请求及响应继续由缓存分片处理，避免把响应正文集中到单一协调器。
 
 
-当前仍未发布官网或预览。既有两套阿里云身份创建专用角色均 403，最新只读 `wrangler whoami` 也确认本地尚未登录 Cloudflare；本地 API 替身和生成配置不作为真实平台权限/日志通过证据。公开联验、canary、压测/费用/告警和 CDN/WAF 套餐仍需真实环境。
+2026-11-03 后续：用户完成 Cloudflare OAuth，并授权绕过 CI 直接上传独立预览。已创建 `orbis-web-preview-vision` 及两个独立 DO 命名空间，未配置生产路由或真实发信绑定；反馈在访问外部绑定前关闭，Vision 保持关闭。真实 API 关闭态回读 `observability:null`，控制台明确显示 Workers Logs / Traces 已禁用；生产部署及设置摘要未变。预检改为读取官方非版本化 `/script-settings`，不放宽 CI 的失败关闭策略。新增隔离配置/反馈回归及真实接口路径断言，76 单测、类型、构建、dry-run 和 14 本地 workerd 场景通过。预览地址与复现步骤见 [部署 runbook](deployment.md#不经-ci-的独立预览)。两套阿里云身份创建专用角色仍均 403；公开联验、日志 canary、压测/费用/告警和 CDN/WAF 套餐仍待验收。
