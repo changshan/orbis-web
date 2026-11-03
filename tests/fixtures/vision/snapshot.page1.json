@@ -1,0 +1,94 @@
+{
+  "schemaVersion": 1,
+  "streamEpoch": "synthetic-epoch-1",
+  "catalogVersion": "2026-10.3",
+  "language": "en",
+  "serverTime": 1793491200000,
+  "viewSequence": 40,
+  "readStatus": {
+    "state": "ready",
+    "isStale": false,
+    "generatedAt": 1793491200000,
+    "reason": null
+  },
+  "sourceHealth": [
+    {
+      "sourceId": "usgs",
+      "feedId": "all-day",
+      "isStale": false,
+      "status": "ok",
+      "lastSuccessAt": 1793491200000,
+      "contentUpdatedAt": 1793491200000
+    }
+  ],
+  "snapshotId": "synthetic-snapshot-40",
+  "events": [
+    {
+      "schemaVersion": 1,
+      "eventId": "usgs:SYNTHETIC-EVENT-001",
+      "recordVersion": 1,
+      "sourceId": "usgs",
+      "hazardType": "earthquake",
+      "productKind": "earthquakeReport",
+      "sourceSeverity": "M 2.5",
+      "authority": {
+        "name": "Synthetic Authority"
+      },
+      "attribution": {
+        "text": "Synthetic contract sample"
+      },
+      "displayRules": {
+        "verbatim": false,
+        "showUpdatedAt": true
+      },
+      "countryCodes": [
+        "GB"
+      ],
+      "areaDescription": "Synthetic impact area",
+      "displayPoint": {
+        "longitude": -0.12,
+        "latitude": 51.5
+      },
+      "displayPointMethod": "sourcePoint",
+      "locationQuality": "sourceProvided",
+      "publishedAt": null,
+      "sourceUpdatedAt": 1793491200000,
+      "sourceRetrievedAt": 1793491200000,
+      "lifecycleStatus": "active",
+      "statusReason": "sourceReported",
+      "statusChangedAt": 1793491200000,
+      "displayUntil": 1793577540000,
+      "qualityFlags": [],
+      "headline": {
+        "language": "en",
+        "text": "Synthetic contract sample",
+        "isFallback": false
+      }
+    }
+  ],
+  "cities": [
+    {
+      "placeKey": "GB:geonames:2643743",
+      "catalogVersion": "2026-10.3",
+      "countryCode": "GB",
+      "name": {
+        "language": "en",
+        "text": "London",
+        "isFallback": false
+      },
+      "point": {
+        "latitude": 51.5085,
+        "longitude": -0.1257
+      },
+      "events": [
+        {
+          "eventId": "usgs:SYNTHETIC-EVENT-001",
+          "recordVersion": 1
+        }
+      ]
+    }
+  ],
+  "hasMore": true,
+  "nextPageToken": "SYNTHETIC_PAGE_40_2",
+  "resumeCursor": "SYNTHETIC_CURSOR_40"
+}

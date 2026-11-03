@@ -1,0 +1,121 @@
+{
+  "schemaVersion": 1,
+  "streamEpoch": "synthetic-epoch-1",
+  "catalogVersion": "2026-10.3",
+  "language": "en",
+  "serverTime": 1793491230000,
+  "viewSequence": 42,
+  "readStatus": {
+    "state": "ready",
+    "isStale": false,
+    "generatedAt": 1793491230000,
+    "reason": null
+  },
+  "sourceHealth": [
+    {
+      "sourceId": "usgs",
+      "feedId": "all-day",
+      "isStale": false,
+      "status": "ok",
+      "lastSuccessAt": 1793491200000,
+      "contentUpdatedAt": 1793491200000
+    }
+  ],
+  "fromSequence": 40,
+  "throughSequence": 41,
+  "changes": [
+    {
+      "sequence": 41,
+      "commitGroupId": "synthetic-group-41",
+      "commitGroupEndSequence": 41,
+      "eventId": "usgs:SYNTHETIC-EVENT-001",
+      "recordVersion": 2,
+      "operation": "upsert",
+      "reason": "areaChanged",
+      "committedAt": 1793491210000,
+      "beforePoint": {
+        "longitude": -0.12,
+        "latitude": 51.5
+      },
+      "afterPoint": {
+        "longitude": -0.12,
+        "latitude": 51.5
+      },
+      "event": {
+        "schemaVersion": 1,
+        "eventId": "usgs:SYNTHETIC-EVENT-001",
+        "recordVersion": 2,
+        "sourceId": "usgs",
+        "hazardType": "earthquake",
+        "productKind": "earthquakeReport",
+        "sourceSeverity": "M 2.5",
+        "authority": {
+          "name": "Synthetic Authority"
+        },
+        "attribution": {
+          "text": "Synthetic contract sample"
+        },
+        "displayRules": {
+          "verbatim": false,
+          "showUpdatedAt": true
+        },
+        "countryCodes": [
+          "GB"
+        ],
+        "areaDescription": "Synthetic moved impact area",
+        "displayPoint": {
+          "longitude": -0.12,
+          "latitude": 51.5
+        },
+        "displayPointMethod": "sourcePoint",
+        "locationQuality": "sourceProvided",
+        "publishedAt": null,
+        "sourceUpdatedAt": 1793491200000,
+        "sourceRetrievedAt": 1793491200000,
+        "lifecycleStatus": "active",
+        "statusReason": "sourceReported",
+        "statusChangedAt": 1793491200000,
+        "displayUntil": 1793577540000,
+        "qualityFlags": [],
+        "headline": {
+          "language": "en",
+          "text": "Synthetic contract sample",
+          "isFallback": false
+        }
+      },
+      "cityMutations": [
+        {
+          "operation": "remove",
+          "placeKey": "GB:geonames:2643743"
+        },
+        {
+          "operation": "upsert",
+          "placeKey": "GB:geonames:2643123",
+          "city": {
+            "placeKey": "GB:geonames:2643123",
+            "catalogVersion": "2026-10.3",
+            "countryCode": "GB",
+            "name": {
+              "language": "en",
+              "text": "Manchester",
+              "isFallback": false
+            },
+            "point": {
+              "latitude": 53.4809,
+              "longitude": -2.2374
+            },
+            "events": [
+              {
+                "eventId": "usgs:SYNTHETIC-EVENT-001",
+                "recordVersion": 2
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "nextCursor": "SYNTHETIC_CURSOR_41",
+  "hasMore": true,
+  "resetRequired": false
+}

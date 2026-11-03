@@ -12,16 +12,30 @@
     "test": "npm run test:unit",
     "test:unit": "vitest run",
     "test:e2e": "playwright test",
-    "dev": "npm run build && wrangler dev"
+    "dev": "npm run build && wrangler dev",
+    "test:vision-runtime": "tsx scripts/test-vision-runtime.ts",
+    "generate:vision-contract": "tsx scripts/generate-vision-contract.ts",
+    "check:vision-preview": "tsx scripts/check-vision-preview.ts"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^5.20260714.1",
+    "@cloudflare/workers-types": "5.20261103.1",
     "@playwright/test": "^1.55.0",
     "@types/node": "^26.1.1",
     "esbuild": "^0.25.0",
+    "miniflare": "5.20261102.0-beta",
     "tsx": "^4.19.0",
     "typescript": "^5.9.0",
-    "vitest": "^3.2.0",
-    "wrangler": "^4.127.1"
+    "vitest": "4.1.12",
+    "wrangler": "4.156.2",
+    "yaml": "2.9.1"
+  },
+  "dependencies": {
+    "@alicloud/openapi-core": "1.0.8",
+    "@alicloud/openapi-util": "0.3.3",
+    "@alicloud/sts20150401": "1.2.0",
+    "@alicloud/tea-typescript": "1.8.0",
+    "@darabonba/typescript": "1.0.5",
+    "ajv": "8.20.0",
+    "ajv-formats": "3.0.1"
   }
 }

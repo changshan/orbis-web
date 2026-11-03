@@ -17,6 +17,31 @@ const jsonRequest = (body: unknown) => new Request("https://orbis.example/api/fe
 });
 
 describe("Feedback Worker", () => {
+  it("validation and rate rejection remain observable without request contents", async()=>{
+    const log=vi.spyOn(console,"log").mockImplementation(()=>undefined);
+    try{
+      const invalid=new Request("https://orbis.example/api/feedback?cursor=PRIVATE_QUERY",{method:"POST",headers:{"content-type":"application/json","cf-connecting-ip":"203.0.113.9",cookie:"PRIVATE_COOKIE",authorization:"PRIVATE_AUTH"},body:JSON.stringify({locale:"en",message:"",contact:"PRIVATE_CONTACT"})});
+      expect((await worker.fetch(invalid,env())).status).toBe(400);
+      const limited=env({FEEDBACK_RATE_LIMIT:{limit:vi.fn().mockResolvedValue({success:false})}});
+      expect((await worker.fetch(jsonRequest({locale:"en",message:"PRIVATE_BODY"}),limited)).status).toBe(429);
+      const events=log.mock.calls.map(([line])=>JSON.parse(String(line)));
+      expect(events).toEqual([expect.objectContaining({area:"feedback",status:400,outcome:"validation_error"}),expect.objectContaining({area:"feedback",status:429,outcome:"rate_limited"})]);
+      const serialized=JSON.stringify(events);for(const secret of ["PRIVATE_QUERY","PRIVATE_COOKIE","PRIVATE_AUTH","PRIVATE_CONTACT","PRIVATE_BODY","203.0.113.9"])expect(serialized).not.toContain(secret);
+    }finally{log.mockRestore();}
+  });
+  it("a failed admission binding fails closed without leaking the binding error",async()=>{
+    const error=vi.spyOn(console,"error").mockImplementation(()=>undefined);
+    try{
+      const e=env({FEEDBACK_RATE_LIMIT:{limit:vi.fn().mockRejectedValue(new Error("PRIVATE_BINDING_ERROR"))}});
+      const response=await worker.fetch(jsonRequest({locale:"en",message:"PRIVATE_BODY"}),e);
+      expect(response.status).toBe(503);expect(e.EMAIL.send).not.toHaveBeenCalled();
+      expect(JSON.stringify(error.mock.calls)).not.toContain("PRIVATE_BINDING_ERROR");expect(error).toHaveBeenCalledTimes(1);
+    }finally{error.mockRestore();}
+  });
+  it("logging failure does not turn a delivered feedback submission into an error",async()=>{
+    const log=vi.spyOn(console,"log").mockImplementation(()=>{throw new Error("synthetic log sink failure");});
+    try{const response=await worker.fetch(jsonRequest({locale:"en",message:"Useful"}),env());expect(response.status).toBe(200);}finally{log.mockRestore();}
+  });
   it("health 返回 no-store 且不发信", async () => {
     const e = env();
     const res = await worker.fetch(new Request("https://orbis.example/api/health"), e);

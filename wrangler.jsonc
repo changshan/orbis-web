@@ -1,8 +1,13 @@
 {
   "$schema": "./node_modules/wrangler/config-schema.json",
   "name": "orbis-web",
-  "main": "src/worker/index.ts",
+  "main": "src/worker/entry.ts",
   "compatibility_date": "2026-07-20",
+  "compatibility_flags": ["nodejs_compat"],
+  "vars": {"VISION_ENABLED":"false","VISION_PUBLIC_ORIGIN":"https://myorbis.xyz","VISION_CN_ORIGIN":"","VISION_LIMITS":"","VISION_SESSION_EPOCH":"", "VISION_CREDENTIAL_MODE":"assume-role", "VISION_FC_ROLE_ARN":""},
+  "secrets": {"required":["FEEDBACK_SENDER","FEEDBACK_DESTINATION","VISION_GATEWAY_KEY","VISION_TURNSTILE_SECRET","VISION_STS_ACCESS_KEY_ID","VISION_STS_ACCESS_KEY_SECRET"]},
+  "durable_objects": {"bindings":[{"name":"VISION_QUOTA","class_name":"VisionQuota"},{"name":"VISION_CACHE","class_name":"VisionCacheShard"}]},
+  "migrations": [{"tag":"vision-gateway-v1","new_sqlite_classes":["VisionQuota","VisionCacheShard"]}],
   // 正式入口为 apex 自定义域名;`wrangler deploy`(生产)会绑定它,
   // 预览用的 `wrangler versions upload` 不受影响(仍走 workers.dev 版本预览 URL)。
   "routes": [{ "pattern": "myorbis.xyz", "custom_domain": true }],
@@ -11,7 +16,7 @@
     "not_found_handling": "404-page",
     "run_worker_first": ["/api/*"]
   },
-  "observability": { "enabled": true, "head_sampling_rate": 0.1 },
+  "observability": { "enabled": true, "redact_query_string": true, "head_sampling_rate": 0.1, "logs": { "enabled": false, "invocation_logs": false }, "traces": { "enabled": false } },
   "ratelimits": [{ "name": "FEEDBACK_RATE_LIMIT", "namespace_id": "1001", "simple": { "limit": 3, "period": 60 } }],
   "send_email": [{ "name": "EMAIL" }]
 }

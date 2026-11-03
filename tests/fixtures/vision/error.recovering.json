@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "code": "RECOVERING",
+  "message": "Synthetic error sample",
+  "requestId": "SYNTHETIC_REQUEST",
+  "serverTime": 1793491200000,
+  "resetRequired": false,
+  "retryAfterSeconds": 10
+}
