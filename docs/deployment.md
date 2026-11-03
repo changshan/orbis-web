@@ -32,3 +32,5 @@ WRANGLER_SEND_METRICS=false npx wrangler deploy --config wrangler.preview.jsonc
 上传后通过官方 [非版本化设置 API](https://developers.cloudflare.com/api/resources/workers/subresources/scripts/subresources/settings/methods/get/)（`/script-settings`）及控制台核对日志/追踪关闭、没有生产路由或邮件绑定，并比较生产部署及设置未变。2026-11-03 该账号在关闭采集时返回 `observability:null`，控制台明确显示 Workers Logs、Workers Traces 已禁用；CI 预检仍保守拒绝缺少明确布尔值的设置，不因此放宽共享生产版本预览条件。只读检查预览页面、CSP、健康及 Vision 关闭态；真实反馈发送另需明确授权。
 
 当前预览：https://orbis-web-preview-vision.lics0613.workers.dev/zh/ 。生产未发布，真实 CN/Turnstile 接入与平台日志 canary 仍待验收。
+
+访问组件与本地恢复/云验收命令见 [Vision 会话组件与验收工具](vision-client-and-acceptance.md)。云验收默认 plan，无自动部署、真实反馈或生产开关变更。

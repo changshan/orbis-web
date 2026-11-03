@@ -70,3 +70,6 @@ Orbis 仓库的真实 NWS 全目录映射已构建/打包；生产采集 provide
 
 
 2026-11-03 后续：用户完成 Cloudflare OAuth，并授权绕过 CI 直接上传独立预览。已创建 `orbis-web-preview-vision` 及两个独立 DO 命名空间，未配置生产路由或真实发信绑定；反馈在访问外部绑定前关闭，Vision 保持关闭。真实 API 关闭态回读 `observability:null`，控制台明确显示 Workers Logs / Traces 已禁用；生产部署及设置摘要未变。预检改为读取官方非版本化 `/script-settings`，不放宽 CI 的失败关闭策略。新增隔离配置/反馈回归及真实接口路径断言，76 单测、类型、构建、dry-run 和 14 本地 workerd 场景通过。预览地址与复现步骤见 [部署 runbook](deployment.md#不经-ci-的独立预览)。两套阿里云身份创建专用角色仍均 403；公开联验、日志 canary、压测/费用/告警和 CDN/WAF 套餐仍待验收。
+
+
+2026-11-03 组件与验收工具补充：已完成可挂载的中英文会话/挑战组件、8 项真实本地 workerd/SQLite 负载恢复场景，以及默认只生成计划的只读云端验收脚本。正式地图页面挂载与真实云验收仍待后续接入，未修改生产入口或放宽全站 CSP。当前 95 单测、27 浏览器用例通过；详见 [会话组件、本地恢复与只读云验收](vision-client-and-acceptance.md)。

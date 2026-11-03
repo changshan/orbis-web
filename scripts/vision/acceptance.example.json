@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "gateway": "https://myorbis.xyz",
+  "origins": {
+    "default": ["https://synthetic.cn-wulanchabu.fcapp.run/api/vision/snapshot"],
+    "alias": [],
+    "version": [],
+    "custom": [],
+    "preview": []
+  },
+  "absentKinds": ["alias", "version", "custom", "preview"],
+  "deniedTargets": [
+    {"id": "other-function", "url": "https://synthetic-other.cn-wulanchabu.fcapp.run/api/vision/snapshot"},
+    {"id": "other-region", "url": "https://synthetic-other.ap-southeast-1.fcapp.run/api/vision/snapshot"}
+  ],
+  "privateObjects": [
+    {"id": "synthetic-object", "url": "https://synthetic.oss-cn-wulanchabu.aliyuncs.com/vision-verify/access/synthetic.json"}
+  ]
+}
