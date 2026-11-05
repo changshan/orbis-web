@@ -57,3 +57,12 @@ describe("read-only cloud acceptance",()=>{
   for(const bad of [{...evidence,runId:"old-run"},{...evidence,exportComplete:false},{...evidence,records:[]},{...evidence,platformRecords:[]},{...evidence,platformRecords:[{}]},{...evidence,platformRecords:[null]},{...evidence,platformRecords:[{request:{authorization:"PRIVATE"}}]},{...evidence,records:[...evidence.records,{request:{url:"https://example.test/?cursor=synthetic-canary"}}]},{...evidence,records:[{area:"vision",status:400,outcome:"gateway",ip:"203.0.113.8"}]}])expect(checkLogCanary(bad,runId,["synthetic-canary"])).toBe(false);
  });
 });
+
+
+it('allows only fixed quota classifications while preserving the complete-log field whitelist',()=>{
+ const positive={area:'vision',status:400,outcome:'gateway'};
+ for(const outcome of ['quota_ip','quota_session','quota_origin_concurrency','quota_origin_budget','quota_origin_breaker']){
+  const quota={area:'vision',status:429,outcome};const e={schemaVersion:1,runId:'synthetic',exportComplete:true,platformRecords:[{message:positive},{message:quota}],records:[positive,quota]};
+  expect(checkLogCanary(e,'synthetic',['synthetic-marker'])).toBe(true);expect(checkLogCanary({...e,records:[positive,{...quota,ip:'203.0.113.8'}]},'synthetic',['synthetic-marker'])).toBe(false);
+ }
+});

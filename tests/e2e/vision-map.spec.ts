@@ -49,7 +49,7 @@ test('public map loads live protocol, keeps a degraded warning, and isolates det
 test('theme changes preserve filter, selection, and list position',async({page})=>{
  await setup(page);await page.goto('/en/vision/');await expect(page.locator('#map-loading')).toBeHidden({timeout:20000});
  await page.locator('#list-toggle').click();await page.locator('#search').fill('London');await page.locator('[data-hazard="earthquake"]').click();await page.locator('.city-row').click();
- for(const name of ['Dark','Simple','Standard']){
+ for(const name of ['Dark','Standard']){
   await page.locator('#basemap-picker summary').click();await page.getByRole('button',{name,exact:true}).click();
   await expect(page.locator('#map-loading')).toBeHidden({timeout:20000});await expect(page.locator('.filters [data-hazard] .filter-icon svg')).toHaveCount(5);await expect(page.locator('#search')).toHaveValue('London');await expect(page.locator('#detail')).toBeVisible();await expect(page.locator('[data-hazard="earthquake"]')).toHaveAttribute('aria-pressed','true');
  }
@@ -80,22 +80,22 @@ test('unsafe source URLs fail closed while summaries remain readable',async({pag
 
 test('shared header keeps ORBIS typography and a divider before Vision',async({page})=>{
  await setup(page);
- for(const width of [1280,390]){
+ for(const width of [1280,390,360]){
   await page.setViewportSize({width,height:844});await page.goto('/zh/');
   const typography=()=>page.locator('.brand').evaluate(el=>{const s=getComputedStyle(el);return {font:s.fontFamily,size:s.fontSize,weight:s.fontWeight,spacing:s.letterSpacing};});
   const home=await typography();await page.getByRole('link',{name:'Vision',exact:true}).click();
-  expect(await typography()).toEqual(home);
+  expect(await typography()).toEqual(home);expect(await page.locator('.vision-entry').evaluate(el=>getComputedStyle(el).fontSize)).toBe(home.size);
   await expect(page.locator('.vision-notice')).toHaveCount(0);
   const header=await page.locator('.site-header').boundingBox(),workspace=await page.locator('.workspace').boundingBox();
   expect(workspace!.y).toBeCloseTo(header!.y+header!.height,0);
   await expect(page.locator('.brand-divider')).toBeVisible();await expect(page.locator('.brand-divider')).toHaveText('|');
   const brand=await page.locator('.brand').boundingBox(),divider=await page.locator('.brand-divider').boundingBox(),vision=await page.locator('.vision-entry').boundingBox();
-  expect(divider!.x).toBeGreaterThanOrEqual(brand!.x+brand!.width);expect(divider!.x-(brand!.x+brand!.width)).toBeLessThanOrEqual(12);expect(vision!.x-(divider!.x+divider!.width)).toBeLessThanOrEqual(12);
+  expect(divider!.x).toBeGreaterThanOrEqual(brand!.x+brand!.width);expect(divider!.x-(brand!.x+brand!.width)).toBeLessThanOrEqual(6.5);expect(vision!.x-(divider!.x+divider!.width)).toBeLessThanOrEqual(6.5);
  }
 });
 test('map removes optional MapLibre credit while retaining data attribution across themes',async({page})=>{
  await setup(page);await page.goto('/en/vision/');await expect(page.locator('#map-loading')).toBeHidden({timeout:20000});
- for(const name of [null,'Dark','Simple','Standard']){
+ for(const name of [null,'Dark','Standard']){
   if(name){await page.locator('#basemap-picker summary').click();await page.getByRole('button',{name,exact:true}).click();await expect(page.locator('#map-loading')).toBeHidden({timeout:20000});}
   const credit=page.locator('.map-attribution');await expect(credit).toHaveText('© OpenMapTiles © OpenStreetMap');await expect(credit.locator('a')).toHaveCount(2);await expect(page.locator('.maplibregl-ctrl-attrib-button,.maplibregl-ctrl-attrib summary')).toHaveCount(0);
  }
@@ -113,8 +113,18 @@ test('vector basemaps actually paint geography after each layer switch',async({p
    return count;
   },image);
  };
- for(const name of [null,'Dark','Simple','Standard']){
+ for(const name of [null,'Dark','Standard']){
   if(name){await page.locator('#basemap-picker summary').click();await page.getByRole('button',{name,exact:true}).click();}
   await expect.poll(greenPixels,{timeout:12000}).toBeGreaterThan(500);
  }
+});
+
+
+test('connection failures use the live-alert radar instead of a left status and retry button',async({page})=>{
+ await setup(page);let reads=0;
+ await page.route('**/api/vision/snapshot?**',async route=>{reads++;if(reads<=3){await route.fulfill({status:503,json:{code:'UNAVAILABLE',retryAfterSeconds:1}});return;}const data=fixture('snapshot.ok');data.events.forEach((event:any)=>event.displayUntil=Date.now()+600000);await route.fulfill({json:data});});
+ await page.goto('/en/vision/');const toggle=page.locator('#list-toggle');await expect(toggle).toHaveAttribute('data-connection','error',{timeout:10000});
+ await expect(page.locator('.map-status,.connection,#retry-data')).toHaveCount(0);await expect(toggle.locator('.signal-broken')).toBeVisible();await expect(toggle).toHaveAttribute('title',/connection|retry|interrupted/i);
+ await toggle.click();await expect(page.locator('.city-row')).toHaveCount(1,{timeout:10000});await page.locator('#panel-close').click();await expect(toggle).not.toHaveAttribute('data-connection','error');
+ await page.locator('#basemap-picker summary').click();await expect(page.locator('#basemap-picker button')).toHaveCount(2);await expect(page.getByRole('button',{name:'Simple',exact:true})).toHaveCount(0);
 });

@@ -1,6 +1,7 @@
 import { getAuthorization } from "./aliyun-sign.cjs";
 import { Request as TeaRequest } from "@alicloud/tea-typescript";
 import { SnapshotResponse,ChangesResponse,CityResponse,VisionError } from "./contract.generated.cjs";
+import { failure } from "./gateway";
 import type { Envelope,Target } from "./gateway";
 import type { Settings } from "./config";
 export async function boundedText(response:Response,maxBytes:number):Promise<string>{
@@ -20,6 +21,11 @@ export async function fetchOrigin(config:Settings,target:Target,send:(request:Re
  const response=await send(new Request(url,{method:"GET",headers,redirect:"manual",signal:AbortSignal.timeout(config.limits.originTimeoutMs)}));
  if(![200,400,404,409,410,429,503].includes(response.status)){await response.body?.cancel();throw new Error("unexpected origin status");}
  const body=await boundedText(response,config.limits.maxResponseBytes);const parsed:unknown=JSON.parse(body);
+ // FC rejects before the handler when its fixed concurrency is full. Do not expose that platform envelope.
+ if(response.status===429 && response.headers.get("x-fc-error-type")==="FCCommonError" && parsed && typeof parsed==="object" && !Array.isArray(parsed)){
+  const value=parsed as Record<string,unknown>;
+  if(Object.keys(value).length===3 && Object.keys(value).every(k=>["Code","Message","RequestId"].includes(k)) && value.Code==="ResourceExhausted" && typeof value.Message==="string" && typeof value.RequestId==="string")return {status:429,body:await failure(429,"RATE_LIMITED").text()};
+ }
  const validate=response.status===200?({snapshot:SnapshotResponse,changes:ChangesResponse,city:CityResponse}[target.kind]):VisionError;
  if(!validate(parsed)){
   const error=(validate as typeof validate & {errors?:{instancePath?:unknown;keyword?:unknown}[]}).errors?.[0];

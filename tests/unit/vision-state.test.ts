@@ -32,3 +32,10 @@ describe("Vision durable admission/cache state",()=>{
   c.put("oversized","x".repeat(20),10,10,2,8);expect(c.get("oversized",11)).toBeUndefined();
  });
 });
+
+
+it('distinguishes bounded origin rejection categories without exposing durable keys',()=>{
+ const q=new QuotaCore(sql()),limits={originPerMinute:10,originPerDay:1,originConcurrent:1,breakerFailures:1,breakerCooldownMs:100};
+ const first=q.reserve(limits,0);expect(q.reserve(limits,1)).toEqual({status:429,reason:'concurrency'});q.finish(first.lease!,true,false,2,limits);expect(q.reserve(limits,3)).toEqual({status:429,reason:'budget'});
+ const other=new QuotaCore(sql()),lease=other.reserve(limits,0);other.finish(lease.lease!,false,false,1,limits);expect(other.reserve(limits,2)).toEqual({status:503,reason:'breaker'});
+});

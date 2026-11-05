@@ -221,4 +221,6 @@ button.submit:hover{background:#15578F}
 
 .site-nav .brand-divider{font-size:18px;font-weight:400;line-height:1;color:var(--night-muted);opacity:.6;user-select:none}
 
-.header-inner{column-gap:10px}.site-nav .vision-lockup{display:flex;align-items:center;gap:10px;margin-right:auto}
+.header-inner{column-gap:6px}.site-nav .vision-lockup{display:flex;align-items:center;gap:6px;margin-right:auto}
+
+.site-nav a.vision-entry{font-size:15px;font-weight:650}@media(max-width:360px){.site-nav a.vision-entry{font-size:13px}}

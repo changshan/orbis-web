@@ -36,7 +36,7 @@ export class VisionCacheShard extends DurableObject<VisionBindings>{
  }
  private async fill(key:string,target:Target,c:Settings):Promise<Envelope>{
   const global=this.env.VISION_QUOTA.getByName("origin-and-mint-budget");const permit=await global.reserve();
-  if(!permit.lease)return {status:permit.status,body:await failure(permit.status,permit.status===429?"RATE_LIMITED":"UNAVAILABLE").text()};
+  if(!permit.lease)return {status:permit.status,quotaReason:permit.reason,body:await failure(permit.status,permit.status===429?"RATE_LIMITED":"UNAVAILABLE").text()};
   let received=false;let stage:DependencyReason="credentials";
   try{
    const signed=c.credentialMode==="assume-role"?{...c,...await global.credentialsFor(permit.lease)}:c;

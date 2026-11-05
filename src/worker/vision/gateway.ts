@@ -2,7 +2,8 @@ import { Buffer } from "node:buffer";
 import { PlaceKey, VisionError } from "./contract.generated.cjs";
 export interface GatewayConfig { publicOrigin:string; epoch:string; key:string; sessionMs:number; }
 export type DependencyReason="storage"|"rpc"|"context"|"overloaded"|"resource"|"transport"|"dependency"|"credentials"|"origin_transport"|"origin_contract"|"origin_response"|"breaker"|"cache_busy";
-export interface Envelope { status:number; body:string; failureReason?:DependencyReason; }
+export type QuotaReason="concurrency"|"budget"|"breaker";
+export interface Envelope { status:number; body:string; failureReason?:DependencyReason; quotaReason?:QuotaReason; }
 function dependencyReason(error:unknown):DependencyReason {
  const message=error instanceof Error?error.message:"";
  return /SQL|sqlite|storage/i.test(message)?"storage":/different request|I\/O.*context/i.test(message)?"context":/RPC|serializ|clone/i.test(message)?"rpc":/overload/i.test(message)?"overloaded":/CPU|memory|resource limit/i.test(message)?"resource":/timeout|connection|network/i.test(message)?"transport":"dependency";
@@ -11,6 +12,7 @@ export interface Target { kind:"snapshot"|"changes"|"city"; target:string; langu
 export interface GatewayPorts {
  now():number;
  onUnavailable?(reason:DependencyReason):void;
+ onQuota?(reason:QuotaReason,status:number):void;
  admit(sid:string,request:Request,kind:string):Promise<boolean>;
  load(target:Target):Promise<Envelope>;
  issue(request:Request):Promise<boolean>;
@@ -105,7 +107,7 @@ export async function gateway(request:Request,config:GatewayConfig,ports:Gateway
   if(tokens.length!==1)return failure(401,"UNAUTHORIZED",ports.now());
   const session=await codec.verify(tokens[0]!.slice("__Host-vision=".length),"session");
   if(!await ports.admit(session.sid!,request,target.kind))return failure(429,"RATE_LIMITED",ports.now());
-  const result=await ports.load(target);if(result.status===503)ports.onUnavailable?.(result.failureReason??"dependency");if(result.status!==200)return publicResponse(result);
+  const result=await ports.load(target);if(result.quotaReason&&["concurrency","budget","breaker"].includes(result.quotaReason))ports.onQuota?.(result.quotaReason,result.status);if(result.status===503)ports.onUnavailable?.(result.failureReason??"dependency");if(result.status!==200)return publicResponse(result);
   return publicResponse({status:200,body:await wrapTokens(result.body,target,codec,ports.now())});
  }catch(error){if(!(error instanceof GatewayFailure)&&!(error instanceof URIError))ports.onUnavailable?.(dependencyReason(error));return error instanceof GatewayFailure?failure(error.status,error.code,ports.now()):error instanceof URIError?failure(400,"INVALID_ARGUMENT",ports.now()):failure(503,"UNAVAILABLE",ports.now());}
 }

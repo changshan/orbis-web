@@ -17,11 +17,11 @@ export class QuotaCore {
   for(const {r} of values)this.sql.exec("INSERT INTO counters VALUES (?,1,?) ON CONFLICT(key) DO UPDATE SET used=used+1",r.key,now+r.ms);
   return true;
  }
- reserve(limits:OriginLimits,now:number):{status:number;lease?:string}{
+ reserve(limits:OriginLimits,now:number):{status:number;lease?:string;reason?:"concurrency"|"budget"|"breaker"}{
   this.prune(now);const b=this.sql.exec<{failures:number;until_at:number}>("SELECT failures,until_at FROM breaker WHERE id=1").toArray()[0]!;
-  if(b.until_at>now)return {status:503};
-  if(this.sql.exec<{n:number}>("SELECT COUNT(*) AS n FROM leases").toArray()[0]!.n>=limits.originConcurrent)return {status:429};
-  if(!this.take([{key:"origin-minute",limit:limits.originPerMinute,ms:60000},{key:"origin-day",limit:limits.originPerDay,ms:86400000}],now,8))return {status:429};
+  if(b.until_at>now)return {status:503,reason:"breaker"};
+  if(this.sql.exec<{n:number}>("SELECT COUNT(*) AS n FROM leases").toArray()[0]!.n>=limits.originConcurrent)return {status:429,reason:"concurrency"};
+  if(!this.take([{key:"origin-minute",limit:limits.originPerMinute,ms:60000},{key:"origin-day",limit:limits.originPerDay,ms:86400000}],now,8))return {status:429,reason:"budget"};
   const lease=crypto.randomUUID();this.sql.exec("INSERT INTO leases VALUES (?,?)",lease,now+60000);
   // Only one half-open probe may leave this durable coordination atom.
   if(b.failures>=limits.breakerFailures)this.sql.exec("UPDATE breaker SET until_at=? WHERE id=1",now+limits.breakerCooldownMs);

@@ -22,3 +22,12 @@ it('logs only bounded schema coordinates when rejecting a malformed city',async(
  try{await expect(fetchOrigin(config,target,async()=>Response.json(invalid))).rejects.toThrow();expect(warn).toHaveBeenCalledWith(JSON.stringify({area:'vision',status:503,outcome:'contract_city_text_minLength'}));}
  finally{warn.mockRestore();}
 });
+
+
+it('normalizes only the recognized FC capacity rejection without exposing its envelope',async()=>{
+ const response=await fetchOrigin(config,target,async()=>Response.json({Code:'ResourceExhausted',Message:'synthetic internal platform message',RequestId:'synthetic-request'}, {status:429,headers:{'x-fc-error-type':'FCCommonError'}}));
+ expect(response.status).toBe(429);const body=JSON.parse(response.body);expect(body.code).toBe('RATE_LIMITED');expect(body.retryAfterSeconds).toBe(1);expect(response.body).not.toContain('synthetic internal');expect(response.body).not.toContain('synthetic-request');
+});
+it('does not normalize arbitrary upstream errors or private fields as capacity rejections',async()=>{
+ for(const body of [{Code:'Unexpected',Message:'synthetic',RequestId:'synthetic'},{Code:'ResourceExhausted',Message:'synthetic',RequestId:'synthetic',privateValue:'must reject'}])await expect(fetchOrigin(config,target,async()=>Response.json(body,{status:429,headers:{'x-fc-error-type':'FCCommonError'}}))).rejects.toThrow();
+});

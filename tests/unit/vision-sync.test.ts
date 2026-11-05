@@ -1,4 +1,4 @@
-import {describe,it,expect} from 'vitest';
+import {describe,it,expect,vi} from 'vitest';
 import {readFileSync} from 'node:fs';
 // @ts-expect-error JavaScript view adapter, exercised at its public protocol boundary.
 import {VisionPipelineClient} from '../../src/vision/sync.mjs';
@@ -44,4 +44,50 @@ describe('serial pagination and recovery',()=>{
   const client=new VisionPipelineClient('en',feed(first,second));const view=await client.snapshot();
   expect(view.events.some((x:any)=>x.hazardType==='futureHazard')).toBe(true);expect(view.readStatus.isStale).toBe(true);
  });
+});
+
+
+describe('bounded transient page recovery',()=>{
+ it('retries the same page after Retry-After without restarting or committing a partial view',async()=>{
+  const first=fixture('snapshot.page1'),last=fixture('snapshot.page2');last.resumeCursor=first.resumeCursor+'x';const calls:string[]=[];let now=1000;
+  const pages=[Response.json(first),new Error('temporary'),Response.json(last)];Object.assign(pages[1]!,{code:'rate-limited',retryAt:3000});
+  const client=new VisionPipelineClient('en',async(url:string)=>{calls.push(url);const next=pages.shift();if(next instanceof Error)throw next;return next;},{now:()=>now,wait:async(ms:number)=>{expect(client.events.size).toBe(0);expect(ms).toBeGreaterThanOrEqual(2000);now+=ms;}});
+  await client.snapshot();expect(calls).toHaveLength(3);expect(calls[1]).toBe(calls[2]);expect(client.cursor).toBe(last.resumeCursor);
+ });
+ it('caps retries and keeps the previous complete snapshot intact',async()=>{
+  const seed=fixture('snapshot.ok'),first=fixture('snapshot.page1');const wait=vi.fn(async()=>{});let calls=0;
+  const client=new VisionPipelineClient('en',async()=>{calls++;if(calls===1)return Response.json(seed);if(calls===2)return Response.json(first);throw Object.assign(new Error('unavailable'),{code:'unavailable'});},{wait,now:()=>1000});
+  await client.snapshot();const cursor=client.cursor;await expect(client.snapshot()).rejects.toThrow('unavailable');expect(calls).toBe(5);expect(wait).toHaveBeenCalledTimes(2);expect(client.cursor).toBe(cursor);expect(client.events.size).toBe(seed.events.length);
+ });
+ it('never retries reset, invalid contract, closed access or long server backoff',async()=>{
+  for(const error of [Object.assign(new Error('reset'),{code:'reset'}),Object.assign(new Error('closed'),{code:'closed'}),Object.assign(new Error('rate-limited'),{code:'rate-limited',retryAt:100000})]){
+   const wait=vi.fn();const request=vi.fn(async()=>{throw error;});const client=new VisionPipelineClient('en',request,{wait,now:()=>1000});await expect(client.snapshot()).rejects.toThrow();expect(request).toHaveBeenCalledOnce();expect(wait).not.toHaveBeenCalled();
+  }
+ });
+});
+
+
+describe('snapshot recovery across polling cycles',()=>{
+ it('retains validated pages after bounded retries exhaust and resumes the interrupted page',async()=>{
+  const first=fixture('snapshot.page1'),last=fixture('snapshot.page2');const calls:string[]=[];let fail=true;
+  const client=new VisionPipelineClient('en',async(url:string)=>{calls.push(url);if(!url.includes('pageToken='))return Response.json(first);if(fail)throw Object.assign(new Error('unavailable'),{code:'unavailable'});return Response.json(last);},{wait:async()=>{},now:()=>1000});
+  await expect(client.snapshot()).rejects.toThrow('unavailable');expect(client.events.size).toBe(0);expect(client.cursor).toBeNull();
+  fail=false;const view=await client.snapshot();expect(calls.filter(url=>!url.includes('pageToken='))).toHaveLength(1);expect(calls.at(-1)).toBe(calls[1]);expect(view.events).toHaveLength(first.events.length+last.events.length);
+ });
+ it('discards partial pages after an invalid response and restarts cleanly',async()=>{
+  const first=fixture('snapshot.page1'),last=fixture('snapshot.page2'),invalid=fixture('snapshot.page2');invalid.privateBody='reject';let invalidNext=true;const calls:string[]=[];
+  const client=new VisionPipelineClient('en',async(url:string)=>{calls.push(url);return Response.json(!url.includes('pageToken=')?first:invalidNext?invalid:last);});
+  await expect(client.snapshot()).rejects.toThrow('Vision public contract rejected');invalidNext=false;await client.snapshot();expect(calls.filter(url=>!url.includes('pageToken='))).toHaveLength(2);
+ });
+});
+
+
+it('keeps the snapshot page budget across transient interruptions',async()=>{
+ const page=fixture('snapshot.page1');let delivered=0,interrupted=false;
+ const client=new VisionPipelineClient('en',async()=>{
+  if(delivered===999&&!interrupted){interrupted=true;throw Object.assign(new Error('backoff'),{code:'rate-limited',retryAt:100000});}
+  delivered++;return Response.json({...page,nextPageToken:'page-'+delivered});
+ },{now:()=>1000,wait:async()=>{}});
+ await expect(client.snapshot()).rejects.toThrow('backoff');expect(client.events.size).toBe(0);
+ await expect(client.snapshot()).rejects.toThrow('snapshot budget');expect(client.events.size).toBe(0);expect(client.cursor).toBeNull();
 });

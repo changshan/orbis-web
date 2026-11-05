@@ -24,7 +24,7 @@ export class VisionClient {
  private assertOpen(){if(this.lifetime.signal.aborted)throw new VisionClientError("closed");if(this.retryAt>this.now())throw new VisionClientError(this.current.kind,this.retryAt);}
  private async request(path:string,body?:object):Promise<{response:Response;value:Record<string,unknown>}>{
   const controller=new AbortController();const abort=()=>controller.abort();this.lifetime.signal.addEventListener("abort",abort,{once:true});
-  const timer=setTimeout(abort,this.options.timeoutMs??10000);
+  const timer=setTimeout(abort,this.options.timeoutMs??20000);
   try{
    const response=await this.send(new Request(new URL(path,this.options.origin),{method:body?"POST":"GET",credentials:"same-origin",cache:"no-store",redirect:"error",signal:controller.signal,...(body?{headers:{"content-type":"application/json"},body:JSON.stringify(body)}:{})}));
    const value=await json(response,body?4096:4194304);this.assertOpen();return {response,value};

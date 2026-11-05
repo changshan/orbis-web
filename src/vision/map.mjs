@@ -43,7 +43,7 @@ let toastTimer, mapTimeout,basemapControl;
 let basemapId='liberty';
 let previousAlerts=[];
 let feedSync={lastSuccessAt:0,requestStartedAt:0,refreshing:false,failed:false,changedCount:0,feedbackUntil:0};
-let feedStatusTimer=0,feedIconAnimation=null,feedPhase='';
+let feedStatusTimer=0,feedIconAnimation=null,feedPhase='',liveDegraded=false;
 const syncClock=new Intl.DateTimeFormat(locale==='zh'?'zh-CN':'en-GB',{
   hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false,timeZone:clockZone});
 let animationId = 0, animationStart = 0, lastPaint = 0, freshTimer = 0, hasAnimatedAlerts = false;
@@ -291,6 +291,9 @@ function renderFeedStatus() {
   const now=Date.now(),phase=syncStatus({...feedSync,now,hidden:document.hidden});
   const keys={connecting:'feedConnecting',refreshing:'feedRefreshing',live:'feedLive',updated:'feedUpdated',
     checked:'feedChecked',error:'feedError',background:'feedBackground'};
+  const connection=phase==='error'?'error':phase==='background'?'paused':phase==='connecting'||phase==='refreshing'?'connecting':liveDegraded?'degraded':'live';
+  const status=t(connection==='error'?'connectionLost':connection==='paused'?'feedBackground':connection==='connecting'?'connecting':connection==='degraded'?'degraded':'connected');
+  $('list-toggle').dataset.connection=connection;$('list-toggle').title=t('latest')+' · '+status;$('sync-label').textContent=status;
   $('feed-status').dataset.state=phase;
   $('feed-status-text').textContent=t(keys[phase],{count:feedSync.changedCount});
   const time=$('feed-sync-time');
@@ -335,8 +338,8 @@ function applyView(data,animate=false) {
  for(const event of state.values())for(const key of event.placeKeys){if(!cityIndex.has(key))cityIndex.set(key,[]);cityIndex.get(key).push(event);}
  cursor=data.cursor;renderList({animate});renderDetail();updateMap();
  const degraded=data.readStatus?.isStale||data.readStatus?.state==='degraded';
- $('sync-label').textContent=t(degraded?'degraded':'connected');document.querySelector('.connection').classList.toggle('failed',!!degraded);
- $('feed-status').dataset.degraded=String(!!degraded);$('feed-status').dataset.degradedLabel=t('degraded');$('retry-data').hidden=true;
+ liveDegraded=!!degraded;
+ $('feed-status').dataset.degraded=String(!!degraded);$('feed-status').dataset.degradedLabel=t('degraded');
 }
 async function snapshot(){applyView(await pipeline.snapshot());lastPoll=Date.now();}
 async function poll(){
@@ -347,7 +350,7 @@ async function poll(){
   applyView(data,true);finishFeedSync(count);failures=0;
  }catch(error){
   if(error.code==='reset'||error.resetRequired){pipeline.cursor=null;cursor='';}
-  failFeedSync();failures++;$('sync-label').textContent=t('connectionLost');document.querySelector('.connection').classList.add('failed');$('retry-data').hidden=false;
+  failFeedSync();failures++;
  }finally{lastPoll=Date.now();polling=false;}
 }
 function setMapFailed(message) {
@@ -469,7 +472,7 @@ function setListVisible(visible) {
     (visible?$('latest-panel'):$('list-toggle')).focus({preventScroll:true});
   });
 }
-$('list-toggle').addEventListener('click',()=>setListVisible(true));
+$('list-toggle').addEventListener('click',()=>{setListVisible(true);if(feedSync.failed)void poll();});
 $('panel-close').addEventListener('click',()=>setListVisible(false));
 $('detail').addEventListener('click', event => { if(event.target.closest('.detail-close')){selected='';renderDetail();renderList();updateMap();} });
 $('search').addEventListener('input', event => { query=event.target.value.trim().toLowerCase();renderList();updateMap(); });
@@ -502,7 +505,6 @@ document.addEventListener('visibilitychange',()=>{syncMotion();renderFeedStatus(
 window.addEventListener('pagehide',()=>{clearTimeout(freshTimer);clearTimeout(feedStatusTimer);feedIconAnimation?.cancel();feedPhase='';stopMotion();});
 window.addEventListener('pageshow',()=>{syncMotion();renderFeedStatus();if(mapReady)updateMap();});
 const interval=setInterval(()=>{if(!document.hidden&&Date.now()-lastPoll>=10000)void poll();},500);
-$('retry-data').addEventListener('click',()=>void poll());
 reduced.addEventListener('change',()=>{syncMotion();renderFeedStatus();});
 window.addEventListener('pagehide',event=>{if(!event.persisted){clearInterval(interval);access.dispose();clearTimeout(mapTimeout);clearTimeout(toastTimer);}});
 syncMotion();initMap();void poll();

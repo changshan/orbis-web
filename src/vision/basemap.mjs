@@ -1,6 +1,5 @@
 const base='https://tiles.openfreemap.org/styles/';
 export const BASEMAPS=Object.freeze({
-  positron:{url:base+'positron',pitch:0},
   liberty:{url:base+'liberty',pitch:0},
   fiord:{url:base+'fiord',pitch:0},
 });

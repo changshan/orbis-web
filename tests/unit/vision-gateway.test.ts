@@ -40,3 +40,13 @@ describe('gateway dependency failure privacy',()=>{
   expect(r.status).toBe(503);expect(await r.text()).not.toContain('SYNTHETIC_PRIVATE_CREDENTIAL');expect(onUnavailable).toHaveBeenCalledWith('storage');
  });
 });
+
+
+it('reports only fixed private quota categories at the gateway boundary without sending them to clients',async()=>{
+ const now=()=>1000,cookie=await new TokenCodec(config,now).sign({kind:'session',sid:'synthetic',expiresAt:2000});
+ for(const reason of ['concurrency','budget','breaker','SYNTHETIC_PRIVATE']){
+  const onQuota=vi.fn();const ports={now,onQuota,admit:async()=>true,issue:async()=>true,load:async()=>({status:429,body:'{"code":"RATE_LIMITED"}',quotaReason:reason as any})};
+  const r=await gateway(request('/api/vision/snapshot',{cookie:'__Host-vision='+cookie}),config,ports);expect(await r.text()).toBe('{"code":"RATE_LIMITED"}');
+  if(reason==='SYNTHETIC_PRIVATE')expect(onQuota).not.toHaveBeenCalled();else expect(onQuota).toHaveBeenCalledWith(reason,429);
+ }
+});
