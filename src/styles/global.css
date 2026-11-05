@@ -216,7 +216,9 @@ button.submit:hover{background:#15578F}
 @media(max-width:360px){.brand-mark{width:26px;height:26px}}
 @media(prefers-reduced-motion:reduce){.home-hero:before{animation:none}}
 
-.site-nav .vision-entry{font-weight:700;margin-right:auto}.site-nav{flex:1}.site-nav .vision-entry[aria-current="page"]{text-decoration:underline;text-underline-offset:6px}
+.site-nav .vision-entry{font-weight:700}.site-nav{flex:1}.site-nav .vision-entry[aria-current="page"]{text-decoration:underline;text-underline-offset:6px}
 .site-nav a.vision-entry{display:inline-block}
 
 .site-nav .brand-divider{font-size:18px;font-weight:400;line-height:1;color:var(--night-muted);opacity:.6;user-select:none}
+
+.header-inner{column-gap:10px}.site-nav .vision-lockup{display:flex;align-items:center;gap:10px;margin-right:auto}

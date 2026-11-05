@@ -80,7 +80,9 @@ buildSync({
 cpSync(join(root,"src/styles/vision.css"),join(dist,"assets/vision.css"));
 cpSync(join(root,"node_modules/maplibre-gl/dist/maplibre-gl.css"),join(dist,"assets/maplibre.css"));
 for(const [source,target] of [["src/vision/map.mjs","vision"],["node_modules/maplibre-gl/dist/maplibre-gl-worker.mjs","vision-worker"]]){
- buildSync({entryPoints:[join(root,source!)],outfile:join(dist,`assets/${target}.js`),bundle:true,minify:true,format:"iife",target:"es2022"});
+ // Worker response CSP is cached with the script, so policy changes must invalidate its immutable URL.
+ const banner=target==='vision-worker'?{js:`/* response-policy-sha256:${createHash('sha256').update(readFileSync(join(root,'public/_headers'))).digest('hex')} */`}:undefined;
+ buildSync({entryPoints:[join(root,source!)],outfile:join(dist,`assets/${target}.js`),bundle:true,minify:true,format:"iife",target:"es2022",banner});
 }
 const urls = SITE.locales.flatMap((locale) => [
   localizedPath(locale, "home"), localizedPath(locale, "privacy"), localizedPath(locale,"vision")

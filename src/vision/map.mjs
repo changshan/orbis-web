@@ -393,7 +393,11 @@ async function initMap() {
       center:[0,15],zoom:Math.max(0,Math.log2($('map').clientWidth/512)-0.15),
       minZoom:0,maxZoom:16,renderWorldCopies:false,
       locale:locale==='zh'?{'NavigationControl.ZoomIn':'放大','NavigationControl.ZoomOut':'缩小','AttributionControl.ToggleAttribution':'地图署名'}:{},
-      attributionControl:{customAttribution:[]}});
+      attributionControl:false});
+    const attribution=document.createElement('div');
+    attribution.className='map-attribution maplibregl-ctrl';
+    attribution.innerHTML='<a href="https://openmaptiles.org/" target="_blank" rel="noopener noreferrer">© OpenMapTiles</a> <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">© OpenStreetMap</a>';
+    map.addControl({onAdd:()=>attribution,onRemove:()=>attribution.remove()},'bottom-right');
     map.addControl(new maplibregl.NavigationControl({showCompass:false}),'top-right');
     map.addControl(new maplibregl.ScaleControl({maxWidth:90,unit:'metric'}),'bottom-left');
     map.on('error', event => {

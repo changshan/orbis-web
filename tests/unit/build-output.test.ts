@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { execFileSync, spawnSync } from "node:child_process";
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { basename, join } from "node:path";
@@ -27,6 +28,10 @@ beforeAll(() => {
 }, 120_000);
 
 describe("build output", () => {
+  it("changes immutable map worker content when its response policy changes", () => {
+    const policy=createHash("sha256").update(readFileSync("dist/_headers")).digest("hex");
+    expect(readFileSync(hashedAsset("dist/assets", "vision-worker", "js"),"utf8")).toContain(`response-policy-sha256:${policy}`);
+  });
   it("产出全部约定文件", () => {
     for (const f of [
       "dist/index.html", "dist/404.html",

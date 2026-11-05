@@ -1,9 +1,24 @@
 import {test,expect,type Page} from '@playwright/test';
 import{readFileSync}from'node:fs';
 const fixture=(name:string)=>JSON.parse(readFileSync(`tests/fixtures/vision/${name}.json`,'utf8'));
-async function setup(page:Page,{mapFailure=false,challenge=false,unknown=false,badLink=false}={}){
+
+function assetCsp(path:string){
+ let policy='';
+ for(const block of readFileSync('dist/_headers','utf8').trim().split(/\n\s*\n/)){
+  const [pattern='',...lines]=block.split('\n');
+  const match=new RegExp('^'+pattern.split('*').map(part=>part.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')).join('.*')+'$');
+  if(!match.test(path))continue;
+  for(const line of lines.map(x=>x.trim())){
+   if(line==='! Content-Security-Policy')policy='';
+   else if(line.startsWith('Content-Security-Policy:'))policy+=(policy?', ':'')+line.slice('Content-Security-Policy:'.length).trim();
+  }
+ }
+ return policy;
+}
+async function setup(page:Page,{mapFailure=false,challenge=false,unknown=false,badLink=false,vector=false}={}){
  const calls:string[]=[];let minted=0;
- await page.route('https://tiles.openfreemap.org/**',route=>mapFailure?route.abort():route.fulfill({json:{version:8,sources:{credits:{type:'geojson',data:{type:'FeatureCollection',features:[]},attribution:'<a href="https://openfreemap.org">OpenFreeMap</a> | © OpenMapTiles | <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'}},layers:[{id:'background',type:'background',paint:{'background-color':'#d9e9f5'}},{id:'credits',type:'circle',source:'credits'}]}}));
+ await page.route(/\/assets\/vision-worker\.[^/]+\.js$/,async route=>{const response=await route.fetch();await route.fulfill({response,headers:{...response.headers(),'content-security-policy':assetCsp(new URL(route.request().url()).pathname)}});});
+ await page.route('https://tiles.openfreemap.org/**',route=>vector?(route.request().url().endsWith('.pbf')?route.fulfill({body:Buffer.from('GjN4AQoEbGFuZCiAIBIYEgIAABgDIhAJnA7MJRoA8Q/IIwAA8g8PGgRraW5kIgYKBGxhbmQ=','base64'),contentType:'application/vnd.mapbox-vector-tile'}):route.fulfill({json:{version:8,sources:{land:{type:'vector',tiles:['https://tiles.openfreemap.org/synthetic/{z}/{x}/{y}.pbf'],maxzoom:0}},layers:[{id:'background',type:'background',paint:{'background-color':'#ffffff'}},{id:'land',type:'fill',source:'land','source-layer':'land',paint:{'fill-color':'#18a058'}}]}})):mapFailure?route.abort():route.fulfill({json:{version:8,sources:{credits:{type:'geojson',data:{type:'FeatureCollection',features:[]},attribution:'<a href="https://openfreemap.org">OpenFreeMap</a> | © OpenMapTiles | <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'}},layers:[{id:'background',type:'background',paint:{'background-color':'#d9e9f5'}},{id:'credits',type:'circle',source:'credits'}]}}));
  await page.route('https://challenges.cloudflare.com/**',route=>route.fulfill({contentType:'application/javascript',body:`window.turnstile={ready:()=>{throw new Error('ready cannot be used with async script');},render:(el,o)=>{el.textContent='TEST VERIFICATION';setTimeout(()=>o.callback('synthetic-once'),20);return 'synthetic';},remove:()=>{}};`}));
  await page.route('**/api/vision/**',async route=>{
   const url=new URL(route.request().url());calls.push(url.pathname);const lang=url.searchParams.get('lang')||'en';
@@ -75,13 +90,31 @@ test('shared header keeps ORBIS typography and a divider before Vision',async({p
   expect(workspace!.y).toBeCloseTo(header!.y+header!.height,0);
   await expect(page.locator('.brand-divider')).toBeVisible();await expect(page.locator('.brand-divider')).toHaveText('|');
   const brand=await page.locator('.brand').boundingBox(),divider=await page.locator('.brand-divider').boundingBox(),vision=await page.locator('.vision-entry').boundingBox();
-  expect(divider!.x).toBeGreaterThanOrEqual(brand!.x+brand!.width);expect(divider!.x+divider!.width).toBeLessThan(vision!.x);
+  expect(divider!.x).toBeGreaterThanOrEqual(brand!.x+brand!.width);expect(divider!.x-(brand!.x+brand!.width)).toBeLessThanOrEqual(12);expect(vision!.x-(divider!.x+divider!.width)).toBeLessThanOrEqual(12);
  }
 });
 test('map removes optional MapLibre credit while retaining data attribution across themes',async({page})=>{
  await setup(page);await page.goto('/en/vision/');await expect(page.locator('#map-loading')).toBeHidden({timeout:20000});
  for(const name of [null,'Dark','Simple','Standard']){
   if(name){await page.locator('#basemap-picker summary').click();await page.getByRole('button',{name,exact:true}).click();await expect(page.locator('#map-loading')).toBeHidden({timeout:20000});}
-  const credit=page.locator('.maplibregl-ctrl-attrib');await expect(credit).toContainText('OpenStreetMap');await expect(credit).toContainText('OpenFreeMap');await expect(credit).not.toContainText('MapLibre');
+  const credit=page.locator('.map-attribution');await expect(credit).toHaveText('© OpenMapTiles © OpenStreetMap');await expect(credit.locator('a')).toHaveCount(2);await expect(page.locator('.maplibregl-ctrl-attrib-button,.maplibregl-ctrl-attrib summary')).toHaveCount(0);
+ }
+});
+
+
+test('vector basemaps actually paint geography after each layer switch',async({page})=>{
+ await setup(page,{vector:true});await page.goto('/en/vision/');
+ const greenPixels=async()=>{
+  const image=(await page.locator('.maplibregl-canvas').screenshot()).toString('base64');
+  return page.evaluate(async base64=>{
+   const img=new Image();img.src='data:image/png;base64,'+base64;await img.decode();const canvas=document.createElement('canvas');canvas.width=img.width;canvas.height=img.height;
+   const context=canvas.getContext('2d')!;context.drawImage(img,0,0);const {data}=context.getImageData(0,0,canvas.width,canvas.height);let count=0;
+   for(let i=0;i<data.length;i+=4)if(data[i]!<40&&data[i+1]!>140&&data[i+1]!<185&&data[i+2]!>65&&data[i+2]!<110)count++;
+   return count;
+  },image);
+ };
+ for(const name of [null,'Dark','Simple','Standard']){
+  if(name){await page.locator('#basemap-picker summary').click();await page.getByRole('button',{name,exact:true}).click();}
+  await expect.poll(greenPixels,{timeout:12000}).toBeGreaterThan(500);
  }
 });

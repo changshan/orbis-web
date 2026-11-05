@@ -55,3 +55,15 @@ Cloudflare 在全部采集关闭时，`GET /settings` 省略 `observability`，`
 - 仅去除可选的 MapLibre 引擎署名；OpenFreeMap、OpenMapTiles 和 OpenStreetMap 底图/数据署名由原生控件继续展示，并随底图切换更新。[MapLibre 说明](https://maplibre.org/maplibre-gl-js/docs/API/type-aliases/MapOptions/)、[OSM 署名要求](https://www.openstreetmap.org/copyright)。
 - 按用户要求移除地图上方高亮提示条，地图紧接导航，桌面与手机高度重新匹配导航尺寸；连接、延迟及失败状态仍由原有状态控件展示。
 - 本轮类型检查、构建与资源验证、10 项渲染单测、8 项地图浏览器测试通过；新增检查已先在旧实现复现字距差异、可选引擎署名和顶部提示条问题。继续使用已授权的直接发布及 `[skip ci]` 流程。
+
+
+## 2026-11-05 图层与署名修复
+
+- `ORBIS | Vision` 分隔符两侧统一收紧为 10 px，保持首页与地图页字距一致。
+- 按用户确认格式，仅显示带来源链接的 `© OpenMapTiles © OpenStreetMap`，去掉可选供应商文字和署名展开按钮。固定三款 OpenFreeMap 底图保持不变。[OpenFreeMap 署名说明](https://openfreemap.org/#attribution)、[OpenMapTiles 署名要求](https://openmaptiles.org/docs/terminology/attribution/)。
+- 图层空白根因：专用地图 worker 脚本使用站点全局 `connect-src 'self'` 响应头，阻止后台线程访问向量瓦片；标准底图的栅格地形仍能显示，掩盖了该问题。本地原测试只约束页面 CSP，未复现 worker 自己的响应策略。
+- 仅为 `/assets/vision-worker.*` 设置专用 CSP，允许固定 `tiles.openfreemap.org` 域名；其他页面和资源保持原策略。worker 内容加入响应策略摘要，使一年不可变缓存的地址随策略改变，避免旧浏览器沿用旧 CSP。
+- 浏览器测试按构建产物的实际 worker 响应头运行，并使用合成 MVT 多边形检查渲染像素；旧策略下先失败，放行后在连续三款图层切换中通过。该测试不把背景色变化当成底图成功。
+- 本轮完整类型检查、构建与资源验证、113 项单测、36 项浏览器测试通过。仍按已授权方案直接部署并 `[skip ci]`，云端积压与容量边界不变。
+
+发布后已在正式域名核对：新的 worker 地址与专用 CSP 完全匹配；线上浏览器连续验证深色、简洁和标准底图均绘出实际地理图形。标题和两项无按钮署名已现场确认。日志、调用日志和跟踪继续关闭；此次不扩大后端容量验收结论。

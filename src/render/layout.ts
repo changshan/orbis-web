@@ -46,8 +46,8 @@ export function renderHeader(locale: Locale, page: LocalizedPage, content: Websi
 <div class="header-inner">
 <a class="brand" href="${localizedPath(locale, "home")}" aria-label="${esc(content.nav.homeAria)}"><img class="brand-mark" src="/assets/brand-mark-32.svg" width="32" height="32" alt="" aria-hidden="true" /><span>ORBIS</span></a>
 <nav class="site-nav" aria-label="${esc(content.nav.primaryAria)}">
-<span class="brand-divider" aria-hidden="true">|</span>
-<a class="vision-entry" href="${localizedPath(locale, "vision")}"${page === "vision" ? ' aria-current="page"' : ""}>Vision</a>
+<span class="vision-lockup"><span class="brand-divider" aria-hidden="true">|</span>
+<a class="vision-entry" href="${localizedPath(locale, "vision")}"${page === "vision" ? ' aria-current="page"' : ""}>Vision</a></span>
 <a href="${localizedPath(locale, "home")}"${page === "home" ? ' aria-current="page"' : ""}>${esc(content.nav.why)}</a>
 <a href="${sectionHref(locale, page, "how-it-works")}">${esc(content.nav.how)}</a>
 <a href="${sectionHref(locale, page, "principles")}">${esc(content.nav.principles)}</a>
