@@ -6,7 +6,7 @@
 
 ## 实现
 
-- 在共用导航中接入 Vision 和本语言路由，复用定稿地图布局；地图资源仅由地图页加载。MapLibre 固定 6.16.0，底图为 OpenFreeMap 的 Liberty、Positron、Fiord，保留全部署名。
+- 在共用导航中接入 Vision 和本语言路由，复用定稿地图布局；地图资源仅由地图页加载。MapLibre 固定 6.16.0，底图为 OpenFreeMap 的 Liberty、Positron、Fiord，保留底图与数据来源署名。
 - `src/vision/sync.mjs` 验证共享公开契约，串行读取一致快照及增量分页，按提交组和水位提交；城市详情不更新全局摘要或同步游标。数据只驻留内存。
 - 会话由现有签名网关签发，HttpOnly / Secure / SameSite=Strict，按需加载托管 Turnstile；不在浏览器交付阿里云凭据。
 - 首页/隐私页维持 10 KiB JavaScript gzip 总预算；地图页的主程序及独立 worker 合计限 1 MiB。CSP 仅为地图页增加必要的地图和挑战来源。
@@ -47,3 +47,11 @@ Cloudflare 控制台对北京时间 11:25–11:27 的完整窗口显示 1 条记
 参考：[Cloudflare 显式渲染文档](https://developers.cloudflare.com/turnstile/get-started/client-side-rendering/)。
 
 Cloudflare 在全部采集关闭时，`GET /settings` 省略 `observability`，`GET /script-settings` 返回 `observability: null`。本次发布后通过官方 `PATCH /settings` 显式关闭日志、调用日志、持久采集和跟踪，并保持 `redact_query_string=true`；成功响应完整确认这些设置，随后独立核对 GET 未启用采集、绑定和实际开关。未来发布须保留显式设置的成功响应及独立配置核对，不能仅凭缺字段判为通过。
+
+
+## 2026-11-05 界面细化
+
+- 共用标题增加 `ORBIS | Vision` 分隔符，移除地图样式对品牌字距、字重和尺寸的覆盖；首页与地图页在桌面、手机宽度保持一致。
+- 仅去除可选的 MapLibre 引擎署名；OpenFreeMap、OpenMapTiles 和 OpenStreetMap 底图/数据署名由原生控件继续展示，并随底图切换更新。[MapLibre 说明](https://maplibre.org/maplibre-gl-js/docs/API/type-aliases/MapOptions/)、[OSM 署名要求](https://www.openstreetmap.org/copyright)。
+- 按用户要求移除地图上方高亮提示条，地图紧接导航，桌面与手机高度重新匹配导航尺寸；连接、延迟及失败状态仍由原有状态控件展示。
+- 本轮类型检查、构建与资源验证、10 项渲染单测、8 项地图浏览器测试通过；新增检查已先在旧实现复现字距差异、可选引擎署名和顶部提示条问题。继续使用已授权的直接发布及 `[skip ci]` 流程。

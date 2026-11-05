@@ -393,7 +393,7 @@ async function initMap() {
       center:[0,15],zoom:Math.max(0,Math.log2($('map').clientWidth/512)-0.15),
       minZoom:0,maxZoom:16,renderWorldCopies:false,
       locale:locale==='zh'?{'NavigationControl.ZoomIn':'放大','NavigationControl.ZoomOut':'缩小','AttributionControl.ToggleAttribution':'地图署名'}:{},
-      attributionControl:true});
+      attributionControl:{customAttribution:[]}});
     map.addControl(new maplibregl.NavigationControl({showCompass:false}),'top-right');
     map.addControl(new maplibregl.ScaleControl({maxWidth:90,unit:'metric'}),'bottom-left');
     map.on('error', event => {

@@ -3,7 +3,7 @@ import{readFileSync}from'node:fs';
 const fixture=(name:string)=>JSON.parse(readFileSync(`tests/fixtures/vision/${name}.json`,'utf8'));
 async function setup(page:Page,{mapFailure=false,challenge=false,unknown=false,badLink=false}={}){
  const calls:string[]=[];let minted=0;
- await page.route('https://tiles.openfreemap.org/**',route=>mapFailure?route.abort():route.fulfill({json:{version:8,sources:{},layers:[{id:'background',type:'background',paint:{'background-color':'#d9e9f5'}}]}}));
+ await page.route('https://tiles.openfreemap.org/**',route=>mapFailure?route.abort():route.fulfill({json:{version:8,sources:{credits:{type:'geojson',data:{type:'FeatureCollection',features:[]},attribution:'<a href="https://openfreemap.org">OpenFreeMap</a> | © OpenMapTiles | <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'}},layers:[{id:'background',type:'background',paint:{'background-color':'#d9e9f5'}},{id:'credits',type:'circle',source:'credits'}]}}));
  await page.route('https://challenges.cloudflare.com/**',route=>route.fulfill({contentType:'application/javascript',body:`window.turnstile={ready:()=>{throw new Error('ready cannot be used with async script');},render:(el,o)=>{el.textContent='TEST VERIFICATION';setTimeout(()=>o.callback('synthetic-once'),20);return 'synthetic';},remove:()=>{}};`}));
  await page.route('**/api/vision/**',async route=>{
   const url=new URL(route.request().url());calls.push(url.pathname);const lang=url.searchParams.get('lang')||'en';
@@ -60,4 +60,28 @@ test('unsafe source URLs fail closed while summaries remain readable',async({pag
  await setup(page,{badLink:true});await page.goto('/en/vision/');await expect(page.locator('#sync-label')).toContainText('Updates are delayed');
  await page.locator('#list-toggle').click();await page.locator('.city-row').click();
  await expect(page.locator('#detail')).toContainText('Details unavailable');await expect(page.locator('#detail a')).toHaveCount(0);
+});
+
+
+test('shared header keeps ORBIS typography and a divider before Vision',async({page})=>{
+ await setup(page);
+ for(const width of [1280,390]){
+  await page.setViewportSize({width,height:844});await page.goto('/zh/');
+  const typography=()=>page.locator('.brand').evaluate(el=>{const s=getComputedStyle(el);return {font:s.fontFamily,size:s.fontSize,weight:s.fontWeight,spacing:s.letterSpacing};});
+  const home=await typography();await page.getByRole('link',{name:'Vision',exact:true}).click();
+  expect(await typography()).toEqual(home);
+  await expect(page.locator('.vision-notice')).toHaveCount(0);
+  const header=await page.locator('.site-header').boundingBox(),workspace=await page.locator('.workspace').boundingBox();
+  expect(workspace!.y).toBeCloseTo(header!.y+header!.height,0);
+  await expect(page.locator('.brand-divider')).toBeVisible();await expect(page.locator('.brand-divider')).toHaveText('|');
+  const brand=await page.locator('.brand').boundingBox(),divider=await page.locator('.brand-divider').boundingBox(),vision=await page.locator('.vision-entry').boundingBox();
+  expect(divider!.x).toBeGreaterThanOrEqual(brand!.x+brand!.width);expect(divider!.x+divider!.width).toBeLessThan(vision!.x);
+ }
+});
+test('map removes optional MapLibre credit while retaining data attribution across themes',async({page})=>{
+ await setup(page);await page.goto('/en/vision/');await expect(page.locator('#map-loading')).toBeHidden({timeout:20000});
+ for(const name of [null,'Dark','Simple','Standard']){
+  if(name){await page.locator('#basemap-picker summary').click();await page.getByRole('button',{name,exact:true}).click();await expect(page.locator('#map-loading')).toBeHidden({timeout:20000});}
+  const credit=page.locator('.maplibregl-ctrl-attrib');await expect(credit).toContainText('OpenStreetMap');await expect(credit).toContainText('OpenFreeMap');await expect(credit).not.toContainText('MapLibre');
+ }
 });
