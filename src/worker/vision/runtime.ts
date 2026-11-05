@@ -29,7 +29,7 @@ export async function handleVision(request:Request,env:VisionEnvironment):Promis
  if(String(env.VISION_ENABLED)!=="true")return failure(503,"UNAVAILABLE");
  try{
   const c=settings(env);new TokenCodec(c);if(!env.VISION_QUOTA||!env.VISION_CACHE)throw new Error("Vision bindings unavailable");
-  const response=await gateway(request,c,{now:Date.now,issue:r=>issue(r,c,env),admit:async(sid,r,kind)=>{
+  const response=await gateway(request,c,{now:Date.now,onUnavailable:reason=>console.warn(JSON.stringify({area:"vision",status:503,outcome:"dependency_"+reason})),issue:r=>issue(r,c,env),admit:async(sid,r,kind)=>{
    const ip=await ipKey(r,c);const session=await digest(c.epoch+sid);
    if(!await env.VISION_QUOTA!.getByName("ip:"+ip[0]).take([{key:ip+":all",limit:c.limits.ipPerMinute,ms:60000},{key:ip+":"+kind,limit:c.limits.ipPerMinute,ms:60000}]))return false;
    return env.VISION_QUOTA!.getByName("session:"+session[0]).take([{key:session+":life",limit:c.limits.sessionTotal,ms:c.sessionMs},{key:session+":"+kind,limit:c.limits.requestPerMinute,ms:60000}]);

@@ -60,7 +60,7 @@ npm run vision:acceptance -- plan scripts/vision/acceptance.example.json /privat
 ORBIS_VISION_ACCESS_ACCEPTANCE=read-only npm run vision:acceptance -- live /private/tmp/vision-access-manifest.json /private/tmp/vision-access-results.json
 ```
 
-对每个列出的 CN 入口分别检查匿名拒绝、允许角色 200 且符合公开快照 schema、错误角色拒绝、过期 STS 拒绝、缺 token 的签名请求拒绝；再验证允许角色无权访问其他函数/地域及私有 OSS 匿名拒绝。全部仅 GET，不跟随重定向、不重试，不记录响应正文、URL、签名或凭据。拒绝须同时有 401/403 和认证拒绝码，404、一般 WAF 错误页、意外 200、私有字段或敏感回显不能算通过；单响应最多 4MiB。
+对每个列出的 CN 入口分别检查匿名拒绝、允许角色 200 且符合公开快照 schema、错误角色拒绝、过期 STS 拒绝、缺 token 的签名请求拒绝；再验证允许角色无权访问其他函数/地域及私有 OSS 匿名拒绝。全部仅 GET，不跟随重定向、不重试，不记录响应正文、URL、签名或凭据。拒绝须同时有 401/403 和认证拒绝码（包含 FC 的 `RamCheckFail`）。FC 匿名请求仍携带 ACS3 日期/nonce 协议头；仅精确的 HTTP 400、`Code=InvalidArgument`、`Message=invalid authorization ''` 也计为匿名鉴权拒绝。缺少协议头、其他 400、404、一般 WAF 错误页、意外 200、私有字段或敏感回显不能算通过；单响应最多 4MiB。
 
 ## 合成日志 canary
 
@@ -76,3 +76,5 @@ canary 仅对网关发出一次含随机合成 query/Cookie/Authorization 标记
 未执行真实 live/canary，也没有把空日志视为平台隐私通过。生产日志当前状态、真实身份/网络与请求窗口归属仍需现场核验；自动脚本通过不能替代这三项证据。
 
 完整浏览器回归曾因默认 Python 静态服务器监听队列仅 5，对并发 JS 资源连接重置而失败；轨迹确认 ERR_CONNECTION_RESET 后，使用仅绑定 loopback、监听队列 128 的 `scripts/serve-tests.py`，27 项完整浏览器回归通过。产品轮播代码未改。
+
+正式地图已挂载访问组件的同一客户端与公开协议消费者；当前生产状态及真实验收边界见 [发布验收](vision-production-acceptance.md)。

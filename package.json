@@ -38,6 +38,7 @@
     "@alicloud/tea-typescript": "1.8.0",
     "@darabonba/typescript": "1.0.5",
     "ajv": "8.20.0",
-    "ajv-formats": "3.0.1"
+    "ajv-formats": "3.0.1",
+    "maplibre-gl": "6.16.0"
   }
 }

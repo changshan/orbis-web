@@ -1,10 +1,16 @@
 import { Buffer } from "node:buffer";
 import { PlaceKey, VisionError } from "./contract.generated.cjs";
 export interface GatewayConfig { publicOrigin:string; epoch:string; key:string; sessionMs:number; }
-export interface Envelope { status:number; body:string; }
+export type DependencyReason="storage"|"rpc"|"context"|"overloaded"|"resource"|"transport"|"dependency"|"credentials"|"origin_transport"|"origin_contract"|"origin_response"|"breaker"|"cache_busy";
+export interface Envelope { status:number; body:string; failureReason?:DependencyReason; }
+function dependencyReason(error:unknown):DependencyReason {
+ const message=error instanceof Error?error.message:"";
+ return /SQL|sqlite|storage/i.test(message)?"storage":/different request|I\/O.*context/i.test(message)?"context":/RPC|serializ|clone/i.test(message)?"rpc":/overload/i.test(message)?"overloaded":/CPU|memory|resource limit/i.test(message)?"resource":/timeout|connection|network/i.test(message)?"transport":"dependency";
+}
 export interface Target { kind:"snapshot"|"changes"|"city"; target:string; language:string; token?:string; tokenKind?:"page"|"cursor"; }
 export interface GatewayPorts {
  now():number;
+ onUnavailable?(reason:DependencyReason):void;
  admit(sid:string,request:Request,kind:string):Promise<boolean>;
  load(target:Target):Promise<Envelope>;
  issue(request:Request):Promise<boolean>;
@@ -99,7 +105,7 @@ export async function gateway(request:Request,config:GatewayConfig,ports:Gateway
   if(tokens.length!==1)return failure(401,"UNAUTHORIZED",ports.now());
   const session=await codec.verify(tokens[0]!.slice("__Host-vision=".length),"session");
   if(!await ports.admit(session.sid!,request,target.kind))return failure(429,"RATE_LIMITED",ports.now());
-  const result=await ports.load(target);if(result.status!==200)return publicResponse(result);
+  const result=await ports.load(target);if(result.status===503)ports.onUnavailable?.(result.failureReason??"dependency");if(result.status!==200)return publicResponse(result);
   return publicResponse({status:200,body:await wrapTokens(result.body,target,codec,ports.now())});
- }catch(error){return error instanceof GatewayFailure?failure(error.status,error.code,ports.now()):error instanceof URIError?failure(400,"INVALID_ARGUMENT",ports.now()):failure(503,"UNAVAILABLE",ports.now());}
+ }catch(error){if(!(error instanceof GatewayFailure)&&!(error instanceof URIError))ports.onUnavailable?.(dependencyReason(error));return error instanceof GatewayFailure?failure(error.status,error.code,ports.now()):error instanceof URIError?failure(400,"INVALID_ARGUMENT",ports.now()):failure(503,"UNAVAILABLE",ports.now());}
 }

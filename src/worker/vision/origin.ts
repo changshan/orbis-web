@@ -21,6 +21,16 @@ export async function fetchOrigin(config:Settings,target:Target,send:(request:Re
  if(![200,400,404,409,410,429,503].includes(response.status)){await response.body?.cancel();throw new Error("unexpected origin status");}
  const body=await boundedText(response,config.limits.maxResponseBytes);const parsed:unknown=JSON.parse(body);
  const validate=response.status===200?({snapshot:SnapshotResponse,changes:ChangesResponse,city:CityResponse}[target.kind]):VisionError;
- if(!validate(parsed))throw new Error("origin public contract rejected");
+ if(!validate(parsed)){
+  const error=(validate as typeof validate & {errors?:{instancePath?:unknown;keyword?:unknown}[]}).errors?.[0];
+  const path=typeof error?.instancePath==="string"?error.instancePath:"";
+  const kind=/^\/cit(?:ies|y)(?:\/|$)/.test(path)?"city":/^\/(events|changes)(?:\/|$)/.test(path)?"event":/^\/sourceHealth(?:\/|$)/.test(path)?"source_health":"response";
+  const fields=["text","name","language","point","latitude","longitude","placeKey","countryCode","recordVersion","eventId","headline","authority","sourceUpdatedAt","schemaVersion","isFallback","other"];
+  const keywords=["minLength","maxLength","pattern","enum","type","required","additionalProperties","anyOf","minimum","maximum","other"];
+  const leaf=path.split("/").at(-1)??"";const field=fields.includes(leaf)?leaf:"other";
+  const keyword=typeof error?.keyword==="string"&&keywords.includes(error.keyword)?error.keyword:"other";
+  console.warn(JSON.stringify({area:"vision",status:503,outcome:`contract_${kind}_${field}_${keyword}`}));
+  throw new Error("origin public contract rejected");
+ }
  return {status:response.status,body};
 }

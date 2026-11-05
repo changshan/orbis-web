@@ -16,3 +16,9 @@ describe("Vision signed origin boundary",()=>{
  });
  it("never sends an origin request with expired STS configuration",async()=>{const send=vi.fn();await expect(fetchOrigin({...config,credentialsExpireAt:0},target,send)).rejects.toThrow();expect(send).not.toHaveBeenCalled();});
 });
+
+it('logs only bounded schema coordinates when rejecting a malformed city',async()=>{
+ const warn=vi.spyOn(console,'warn').mockImplementation(()=>{});const invalid=structuredClone(fixture);invalid.cities[0].name.text='';
+ try{await expect(fetchOrigin(config,target,async()=>Response.json(invalid))).rejects.toThrow();expect(warn).toHaveBeenCalledWith(JSON.stringify({area:'vision',status:503,outcome:'contract_city_text_minLength'}));}
+ finally{warn.mockRestore();}
+});

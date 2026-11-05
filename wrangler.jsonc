@@ -1,10 +1,13 @@
 {
   "$schema": "./node_modules/wrangler/config-schema.json",
   "name": "orbis-web",
+  "account_id": "5e6bec21538f95afe4750a93670deee3",
+  "workers_dev": false,
+  "preview_urls": false,
   "main": "src/worker/entry.ts",
   "compatibility_date": "2026-07-20",
   "compatibility_flags": ["nodejs_compat"],
-  "vars": {"VISION_ENABLED":"false","VISION_PUBLIC_ORIGIN":"https://myorbis.xyz","VISION_CN_ORIGIN":"","VISION_LIMITS":"","VISION_SESSION_EPOCH":"", "VISION_CREDENTIAL_MODE":"assume-role", "VISION_FC_ROLE_ARN":""},
+  "vars": {"VISION_ENABLED":"true","VISION_PUBLIC_ORIGIN":"https://myorbis.xyz","VISION_CN_ORIGIN":"https://orbis-vion-read-zutzvhqfmw.cn-wulanchabu.fcapp.run","VISION_LIMITS":"{\"requestPerMinute\":300,\"sessionTotal\":3000,\"ipPerMinute\":600,\"mintPerMinute\":60,\"mintPerDay\":2000,\"mintIpPerMinute\":12,\"challengeAfter\":3,\"sessionMs\":900000,\"originPerMinute\":600,\"originPerDay\":30000,\"originConcurrent\":4,\"originTimeoutMs\":8000,\"breakerFailures\":5,\"breakerCooldownMs\":30000,\"cacheTtlMs\":10000,\"tailTtlMs\":2000,\"cacheEntries\":64,\"cacheBytes\":16777216,\"maxResponseBytes\":4194304,\"maxQuotaKeys\":10000}","VISION_SESSION_EPOCH":"vision-public-20261105","VISION_CREDENTIAL_MODE":"assume-role","VISION_FC_ROLE_ARN":"acs:ram::1827734837165594:role/orbis-vision-gateway"},
   "secrets": {"required":["FEEDBACK_SENDER","FEEDBACK_DESTINATION","VISION_GATEWAY_KEY","VISION_TURNSTILE_SECRET","VISION_STS_ACCESS_KEY_ID","VISION_STS_ACCESS_KEY_SECRET"]},
   "durable_objects": {"bindings":[{"name":"VISION_QUOTA","class_name":"VisionQuota"},{"name":"VISION_CACHE","class_name":"VisionCacheShard"}]},
   "migrations": [{"tag":"vision-gateway-v1","new_sqlite_classes":["VisionQuota","VisionCacheShard"]}],
@@ -16,7 +19,7 @@
     "not_found_handling": "404-page",
     "run_worker_first": ["/api/*"]
   },
-  "observability": { "enabled": true, "redact_query_string": true, "head_sampling_rate": 0.1, "logs": { "enabled": false, "invocation_logs": false }, "traces": { "enabled": false } },
+  "observability": { "enabled": false, "redact_query_string": true, "logs": { "enabled": false, "invocation_logs": false, "persist": false }, "traces": { "enabled": false, "persist": false } },
   "ratelimits": [{ "name": "FEEDBACK_RATE_LIMIT", "namespace_id": "1001", "simple": { "limit": 3, "period": 60 } }],
   "send_email": [{ "name": "EMAIL" }]
 }

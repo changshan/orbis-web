@@ -226,6 +226,9 @@ export const zh = {
         ]
       },
       {
+        "title": "Vision 全球预警地图", "body": "Vision 不收集你的位置。地图由 OpenFreeMap 提供，加载底图时浏览器会直接向 tiles.openfreemap.org 请求资源，该服务会接收 IP 等网络请求元数据。Cloudflare 处理提供网站和防滥用所需的请求元数据；需要验证时会加载 Turnstile。匿名会话使用安全的 HttpOnly Cookie，最长 15 分钟；不创建用户档案，也不将会话、游标、完整 IP 或请求正文写入 Orbis 应用日志。"
+      },
+      {
         "title": "政策更新",
         "body": "政策有变化时，我们会更新本页并修改生效日期；涉及 AI 数据处理方式的变化会在 App 内重新征求你的同意。"
       }

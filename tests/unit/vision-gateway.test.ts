@@ -31,3 +31,12 @@ describe("Vision gateway trust boundary", () => {
   expect((await gateway(new Request("https://preview.workers.dev/api/vision/snapshot"),config,ports)).status).toBe(503);expect(load).not.toHaveBeenCalled();
  });
 });
+
+describe('gateway dependency failure privacy',()=>{
+ it('reports a bounded failure category without returning private error details',async()=>{
+  const onUnavailable=vi.fn();const now=()=>1000;const cookie=await new TokenCodec(config,now).sign({kind:'session',sid:'synthetic',expiresAt:2000});
+  const ports={now,admit:async()=>true,issue:async()=>true,load:async()=>{throw new Error('SQL failure SYNTHETIC_PRIVATE_CREDENTIAL');},onUnavailable};
+  const r=await gateway(request('/api/vision/snapshot',{cookie:'__Host-vision='+cookie}),config,ports);
+  expect(r.status).toBe(503);expect(await r.text()).not.toContain('SYNTHETIC_PRIVATE_CREDENTIAL');expect(onUnavailable).toHaveBeenCalledWith('storage');
+ });
+});

@@ -4,7 +4,7 @@ import { escapeHtml as esc } from "./html";
 
 export function pageDocument(
   locale: Locale, page: LocalizedPage, content: WebsiteContent, main: string, scripts: readonly string[] = [],
-  pageMeta: { title: string; description: string } = content.meta
+  pageMeta: { title: string; description: string } = content.meta, styles: readonly string[] = []
 ): string {
   const origin = siteOrigin();
   const alt: Locale = locale === "zh" ? "en" : "zh";
@@ -21,6 +21,7 @@ export function pageDocument(
 <link rel="alternate" hreflang="${altLang}" href="${origin}${localizedPath(alt, page)}" />
 <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
 <link rel="stylesheet" href="/assets/global.css" />
+${styles.map(s => `<link rel="stylesheet" href="${s}" />`).join("\n")}
 <title>${esc(pageMeta.title)}</title>
 </head>
 <body class="page-${page}">
@@ -45,6 +46,7 @@ export function renderHeader(locale: Locale, page: LocalizedPage, content: Websi
 <div class="header-inner">
 <a class="brand" href="${localizedPath(locale, "home")}" aria-label="${esc(content.nav.homeAria)}"><img class="brand-mark" src="/assets/brand-mark-32.svg" width="32" height="32" alt="" aria-hidden="true" /><span>ORBIS</span></a>
 <nav class="site-nav" aria-label="${esc(content.nav.primaryAria)}">
+<a class="vision-entry" href="${localizedPath(locale, "vision")}"${page === "vision" ? ' aria-current="page"' : ""}>Vision</a>
 <a href="${localizedPath(locale, "home")}"${page === "home" ? ' aria-current="page"' : ""}>${esc(content.nav.why)}</a>
 <a href="${sectionHref(locale, page, "how-it-works")}">${esc(content.nav.how)}</a>
 <a href="${sectionHref(locale, page, "principles")}">${esc(content.nav.principles)}</a>

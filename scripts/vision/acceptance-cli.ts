@@ -14,7 +14,7 @@ async function main(){
   output({schemaVersion:1,passed,runId:expected.runId,scope:"operator-supplied complete platform and application log export"},process.argv[5]);if(!passed)process.exitCode=1;return;
  }
  const manifest=read(path);const plan=planAcceptance(manifest);
- if(mode==="plan"){output({schemaVersion:1,mode:"plan",networkRequests:0,cases:plan.map(c=>({id:c.id,method:c.method,auth:c.auth,expected:c.positive?"200 + public schema":c.gateway?"401 UNAUTHORIZED":"401/403 + authentication denial code"})),inventoryCompleteness:"operator must compare with actual FC triggers, aliases, versions and domains"},out);return;}
+ if(mode==="plan"){output({schemaVersion:1,mode:"plan",networkRequests:0,cases:plan.map(c=>({id:c.id,method:c.method,auth:c.auth,expected:c.positive?"200 + public schema":c.gateway?"401 UNAUTHORIZED":"native authentication denial code (strict 400 empty authorization or 401/403)"})),inventoryCompleteness:"operator must compare with actual FC triggers, aliases, versions and domains"},out);return;}
  if(!["live","canary"].includes(mode))throw Error();liveOptIn(manifest);
  if(mode==="canary"){
   const runId=crypto.randomUUID();const markers=[runId+"-query",runId+"-cookie",runId+"-auth"];const startedAt=Date.now();let passed=false,status=0;

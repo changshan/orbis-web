@@ -227,6 +227,10 @@ export const en = {
         ]
       },
       {
+        "title": "Vision global alert map",
+        "body": "Vision does not collect your location. Your browser requests basemap resources directly from tiles.openfreemap.org (OpenFreeMap), which receives network metadata such as your IP address. Cloudflare processes metadata to deliver and protect the website; Turnstile loads when verification is required. Anonymous sessions use secure HttpOnly cookies lasting at most 15 minutes. Orbis does not write sessions, cursors, full IP addresses, or request bodies to application logs."
+      },
+      {
         "title": "Changes to this policy",
         "body": "When this policy changes, we will update this page and the effective date. Changes to how AI data is handled will ask for your consent again in the app."
       }

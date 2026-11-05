@@ -38,6 +38,8 @@ function validateCredentials(c:Credentials,now:number){
 }
 function requestFor(c:Case,credentials:Credentials):Request{
  const url=new URL(c.url);const headers:Record<string,string>={};
+ // Native FC requires these protocol headers even when Authorization is deliberately absent.
+ if(!c.gateway&&!c.id.startsWith("oss-anonymous-"))Object.assign(headers,{host:url.host,"x-acs-date":new Date().toISOString(),"x-acs-signature-nonce":crypto.randomUUID()});
  if(c.auth!=="none"){
   const credential=credentials[c.auth==="missingToken"?"allowed":c.auth];
   Object.assign(headers,{host:url.host,"x-acs-date":new Date().toISOString(),"x-acs-signature-nonce":crypto.randomUUID()});if(c.auth!=="missingToken")headers["x-acs-security-token"]=credential.securityToken;
@@ -56,7 +58,12 @@ export async function runAcceptance(manifest:unknown,ports:{credentials:Credenti
   let passed=false;
   if(c.positive){const value:unknown=JSON.parse(text);passed=status===200&&SnapshotResponse(value);}
   else if(c.gateway){const value=JSON.parse(text) as {code?:string};passed=status===401&&value.code==="UNAUTHORIZED";}
-  else {const deniedCode=/(?:"(?:ErrorCode|Code|code)"\s*:\s*"|<Code>)(?:AccessDenied|Forbidden|Unauthorized|AuthenticationFailed|InvalidAccessKeyId|SignatureDoesNotMatch|SecurityTokenExpired|InvalidSecurityToken|MissingSecurityToken|InvalidAuthorizationHeader)(?:"|<\/Code>)/.test(text);passed=[401,403].includes(status)&&deniedCode;}
+  else {const deniedCode=/(?:"(?:ErrorCode|Code|code)"\s*:\s*"|<Code>)(?:AccessDenied|RamCheckFail|Forbidden|Unauthorized|AuthenticationFailed|InvalidAccessKeyId|SignatureDoesNotMatch|SecurityTokenExpired|InvalidSecurityToken|MissingSecurityToken|InvalidAuthorizationHeader)(?:"|<\/Code>)/.test(text);let nativeUnsignedDenial=false;
+   if(status===400&&c.auth==="none"&&!c.id.startsWith("oss-anonymous-")){
+    const value=JSON.parse(text) as {Code?:unknown;Message?:unknown};
+    nativeUnsignedDenial=value.Code==="InvalidArgument"&&value.Message==="invalid authorization ''";
+   }
+   passed=([401,403].includes(status)&&deniedCode)||nativeUnsignedDenial;}
   results.push({id:c.id,status,passed,reason:passed?"expected-contract":"unexpected-status-or-contract"});
  }catch{results.push({id:c.id,status,passed:false,reason:"unavailable-or-unsafe-response"});}}
  return {schemaVersion:1,passed:results.every(r=>r.passed),readOnly:true,inventoryCompleteness:"operator-supplied; independently verify against FC inventory",results,logCanaryVerified:false,realTurnstileVerified:false};
@@ -72,6 +79,6 @@ export function checkLogCanary(input:unknown,runId:string,markers:string[]):bool
   const value=input as {schemaVersion:number;runId:string;exportComplete:boolean;platformRecords:unknown[];records:Record<string,unknown>[]};
   if(/"[^"\\]*(?:cookie|authorization|clientIp|ip|ipAddress|remoteAddress|headers|body|deviceId|installationId|securityToken|accessKey|password|sessionId|cursor)"\s*:/i.test(raw)||/https?:[^"\s]+\?[^"\s]+/.test(raw))return false;
   if(value.schemaVersion!==1||value.runId!==runId||value.exportComplete!==true||!Array.isArray(value.records)||!value.records.length||!Array.isArray(value.platformRecords)||!value.platformRecords.length||value.platformRecords.some(r=>!r||typeof r!=="object")||!containsPositiveControl(value.platformRecords))return false;
-  return value.records.every(r=>r&&r.area==="vision"&&((Number.isInteger(r.status)&&Number(r.status)>=100&&Number(r.status)<=599)||(r.outcome==="coalesced"&&r.status===undefined))&&["gateway","origin","cache_hit","coalesced","origin_unavailable"].includes(String(r.outcome))&&Object.keys(r).every(k=>["area","status","outcome"].includes(k)))&&value.records.some(r=>r.status===400&&r.outcome==="gateway");
+  return value.records.every(r=>r&&r.area==="vision"&&((Number.isInteger(r.status)&&Number(r.status)>=100&&Number(r.status)<=599)||(r.outcome==="coalesced"&&r.status===undefined))&&(["gateway","origin","cache_hit","coalesced","origin_unavailable",...(["storage","rpc","context","overloaded","resource","transport","dependency","credentials","origin_transport","origin_contract","origin_response","breaker","cache_busy"].map(x=>"dependency_"+x))].includes(String(r.outcome))||/^contract_(?:city|event|source_health|response)_(?:text|name|language|point|latitude|longitude|placeKey|countryCode|recordVersion|eventId|headline|authority|sourceUpdatedAt|schemaVersion|isFallback|other)_(?:minLength|maxLength|pattern|enum|type|required|additionalProperties|anyOf|minimum|maximum|other)$/.test(String(r.outcome)))&&Object.keys(r).every(k=>["area","status","outcome"].includes(k)))&&value.records.some(r=>r.status===400&&r.outcome==="gateway");
  }catch{return false;}
 }

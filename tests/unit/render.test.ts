@@ -7,6 +7,10 @@ import { renderNotFound } from "../../src/render/notFound";
 const APP_URL = "https://apps.apple.com/us/app/myorbis/id6812221807";
 
 describe("renderHome", () => {
+  it("links the public Vision page beside the shared brand", () => {
+    expect(renderHome("zh")).toContain('class="vision-entry" href="/zh/vision/"');
+    expect(renderPrivacy("en")).toContain('class="vision-entry" href="/en/vision/"');
+  });
   const zh = renderHome("zh");
   const en = renderHome("en");
 

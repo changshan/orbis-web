@@ -24,6 +24,25 @@ describe("read-only cloud acceptance",()=>{
   const signed=requests.filter(r=>r.headers.has("authorization"));expect(signed).toHaveLength(7);for(const r of signed)expect(r.headers.get("authorization")).toMatch(/^ACS3-HMAC-SHA256 /);
   const text=JSON.stringify(report);expect(text).not.toContain("synthetic-secret");expect(text).not.toContain("synthetic-token");expect(text).not.toContain("Synthetic contract sample");
  });
+ it("recognizes native FC unsigned authorization rejection with protocol-valid headers",async()=>{
+  let anonymous:Request|undefined;
+  const report=await runAcceptance(manifest,{credentials,send:async r=>{
+   if(new URL(r.url).hostname==="synthetic.cn-wulanchabu.fcapp.run"&&!r.headers.has("authorization")){anonymous=r;return Response.json({Code:"InvalidArgument",Message:"invalid authorization ''"},{status:400});}
+   return validResponse(r);
+  }});
+  expect(anonymous?.headers.get("x-acs-date")).toBeTruthy();expect(anonymous?.headers.get("x-acs-signature-nonce")).toBeTruthy();expect(report.passed).toBe(true);
+ });
+ it("recognizes FC RamCheckFail for signed token denials",async()=>{
+  const report=await runAcceptance(manifest,{credentials,send:async r=>{
+   if(new URL(r.url).hostname==="synthetic.cn-wulanchabu.fcapp.run"&&r.headers.has("authorization")&&r.headers.get("x-acs-security-token")!==credentials.allowed.securityToken)return Response.json({Code:"RamCheckFail"},{status:403});
+   return validResponse(r);
+  }});expect(report.passed).toBe(true);
+ });
+ it("does not count generic protocol errors or unrelated 400s as authentication denial",async()=>{
+  for(const body of [{Code:"MissingRequiredHeader",Message:"missing x-acs-date"},{Code:"InvalidArgument",Message:"invalid path"},{Code:"OtherError",Message:"invalid authorization ''"}]){
+   const report=await runAcceptance(manifest,{credentials,send:async r=>new URL(r.url).hostname==="synthetic.cn-wulanchabu.fcapp.run"&&!r.headers.has("authorization")?Response.json(body,{status:400}):validResponse(r)});expect(report.passed).toBe(false);
+  }
+ });
  it("does not accept an invalid wrong-role credential merely because every negative request was denied",async()=>{
   const report=await runAcceptance(manifest,{credentials,send:async r=>new URL(r.url).hostname==="other.cn-wulanchabu.fcapp.run"&&r.headers.get("x-acs-security-token")===credentials.wrongRole.securityToken?deny():validResponse(r)});expect(report.passed).toBe(false);
  });
