@@ -147,3 +147,31 @@ test('an unloaded list does not claim zero alerts',async({page})=>{
  await expect(page.locator('#result-count')).toHaveText('Loading alerts…');await expect(page.locator('#city-list')).toContainText('Loading alerts…');
  release();await expect(page.locator('.city-row')).toHaveCount(1);
 });
+
+test('loading live-alert icon emits radar waves and respects reduced motion',async({page})=>{
+ await page.emulateMedia({reducedMotion:'no-preference'});await setup(page);
+ let release!:()=>void;const gate=new Promise<void>(resolve=>release=resolve);
+ await page.route('**/api/vision/map?**',async route=>{await gate;await route.fallback();});
+ await page.goto('/en/vision/');const toggle=page.locator('#list-toggle');await expect(toggle).toHaveAttribute('data-connection','connecting');
+ const loading=toggle.locator('.signal-loading');await expect(loading).toBeVisible();await expect(toggle.locator('.signal-waves')).toBeHidden();
+ const waves=loading.locator('.signal-wave');await expect(waves).toHaveCount(2);
+ const animations=await waves.evaluateAll(nodes=>nodes.map(node=>({name:getComputedStyle(node).animationName,delay:getComputedStyle(node).animationDelay,iterations:getComputedStyle(node).animationIterationCount})));
+ expect(animations.every(a=>a.name==='radar-wave'&&a.iterations==='infinite')).toBe(true);expect(animations[0]!.delay).not.toBe(animations[1]!.delay);
+ await page.emulateMedia({reducedMotion:'reduce'});expect(await waves.evaluateAll(nodes=>nodes.every(node=>getComputedStyle(node).animationName==='none'))).toBe(true);
+ await page.emulateMedia({reducedMotion:'no-preference'});release();await expect(toggle).toHaveAttribute('data-connection','degraded');await expect(loading).toBeHidden();await expect(toggle.locator('.signal-waves')).toBeVisible();
+});
+
+test('blue map clusters visibly pulse and stop under reduced motion',async({page})=>{
+ await page.emulateMedia({reducedMotion:'no-preference'});await setup(page);await page.goto('/en/vision/');
+ await expect(page.locator('#map-loading')).toBeHidden({timeout:20000});await expect(page.locator('#sync-label')).toContainText('Updates are delayed');
+ const canvas=page.locator('.maplibregl-canvas');
+ const capture=async()=> (await canvas.screenshot()).toString('base64');
+ const difference=async(first:string,second:string)=>page.evaluate(async({first,second})=>{
+  const pixels=async(base64:string)=>{const img=new Image();img.src='data:image/png;base64,'+base64;await img.decode();const canvas=document.createElement('canvas');canvas.width=img.width;canvas.height=img.height;const ctx=canvas.getContext('2d')!;ctx.drawImage(img,0,0);return ctx.getImageData(0,0,canvas.width,canvas.height).data;};
+  const a=await pixels(first),b=await pixels(second);let changed=0;for(let i=0;i<a.length;i+=4)if(Math.abs(a[i]!-b[i]!)+Math.abs(a[i+1]!-b[i+1]!)+Math.abs(a[i+2]!-b[i+2]!)>12)changed++;return changed;
+ },{first,second});
+ const first=await capture();await expect.poll(async()=>difference(first,await capture()),{timeout:3000}).toBeGreaterThan(40);
+ await page.emulateMedia({reducedMotion:'reduce'});
+ // Let the render of the final static frame finish before checking that it stays still.
+ await page.waitForTimeout(350);const still=await capture();await page.waitForTimeout(350);expect(await difference(still,await capture())).toBeLessThan(10);
+});

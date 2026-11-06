@@ -238,7 +238,11 @@ function paintMotion(frame) {
   map.setPaintProperty('vision-city-ripple','circle-radius',frame.pointRadius);
   map.setPaintProperty('vision-city-ripple','circle-stroke-opacity',frame.opacity);
   map.setPaintProperty('vision-cluster-ripple','circle-radius',['+',clusterRadius,frame.clusterExtra]);
-  map.setPaintProperty('vision-cluster-ripple','circle-stroke-opacity',frame.opacity);
+  map.setPaintProperty('vision-cluster-ripple','circle-stroke-opacity',frame.clusterWaveOpacity);
+  map.setPaintProperty('vision-cluster-ripple-secondary','circle-radius',['+',clusterRadius,frame.clusterSecondaryExtra]);
+  map.setPaintProperty('vision-cluster-ripple-secondary','circle-stroke-opacity',frame.secondaryOpacity);
+  map.setPaintProperty('vision-clusters','circle-radius',['+',clusterRadius,frame.clusterBreath]);
+  map.setPaintProperty('vision-clusters','circle-opacity',frame.clusterOpacity);
   map.setPaintProperty('vision-city-fresh','circle-radius',frame.freshRadius);
   map.setPaintProperty('vision-city-fresh','circle-stroke-opacity',frame.freshOpacity);
   map.setPaintProperty('vision-cluster-fresh','circle-radius',['+',clusterRadius,frame.freshRadius-10]);
@@ -246,7 +250,7 @@ function paintMotion(frame) {
 }
 function stopMotion() {
   cancelAnimationFrame(animationId); animationId=0;
-  paintMotion({...pulseFrame(0),opacity:0,freshOpacity:0});
+  paintMotion({...pulseFrame(0),opacity:0,clusterWaveOpacity:0,secondaryOpacity:0,freshOpacity:0,clusterBreath:0,clusterOpacity:1});
 }
 function motionTick(now) {
   animationId=0;
@@ -263,13 +267,15 @@ function syncMotion() {
 function addMotionLayers() {
   const pointFilter=['all',['!', ['has','point_count']],['>', ['get','count'],0]];
   const clusterFilter=['all',['has','point_count'],['>', ['get','activeCount'],0]];
-  const common={'circle-opacity':0,'circle-stroke-width':1.6,'circle-stroke-opacity':0};
+  const common={'circle-opacity':0,'circle-stroke-width':1.8,'circle-stroke-opacity':0,'circle-radius-transition':{duration:0,delay:0},'circle-stroke-opacity-transition':{duration:0,delay:0}};
   map.addLayer({id:'vision-city-ripple',type:'circle',source:'cities',filter:pointFilter,
     paint:{...common,'circle-radius':10,'circle-stroke-color':['get','color']}},'vision-cities');
   map.addLayer({id:'vision-city-fresh',type:'circle',source:'cities',filter:['all',pointFilter,['>', ['get','recentCount'],0]],
     paint:{...common,'circle-radius':16,'circle-stroke-width':2.2,'circle-stroke-color':['get','color']}},'vision-cities');
   map.addLayer({id:'vision-cluster-ripple',type:'circle',source:'cities',filter:clusterFilter,
     paint:{...common,'circle-radius':['+',clusterRadius,3],'circle-stroke-color':'#1C6BB0'}},'vision-clusters');
+  map.addLayer({id:'vision-cluster-ripple-secondary',type:'circle',source:'cities',filter:clusterFilter,
+    paint:{...common,'circle-radius':['+',clusterRadius,16],'circle-stroke-width':2,'circle-stroke-color':'#1C6BB0'}},'vision-clusters');
   map.addLayer({id:'vision-cluster-fresh',type:'circle',source:'cities',filter:['all',clusterFilter,['>', ['get','recentCount'],0]],
     paint:{...common,'circle-radius':['+',clusterRadius,6],'circle-stroke-width':2.2,'circle-stroke-color':'#1C6BB0'}},'vision-clusters');
 }
@@ -388,7 +394,7 @@ function applyLanguage() {
 function installVisionLayers() {
   map.addSource('cities',{type:'geojson',data:features(),cluster:false});
   map.addLayer({id:'vision-clusters',type:'circle',source:'cities',filter:['has','point_count'],paint:{
-    'circle-color':'#1C6BB0','circle-radius':clusterRadius,
+    'circle-color':'#1C6BB0','circle-radius':clusterRadius,'circle-radius-transition':{duration:0,delay:0},'circle-opacity-transition':{duration:0,delay:0},
     'circle-stroke-width':6,'circle-stroke-color':'rgba(28,107,176,0.16)'}});
   map.addLayer({id:'vision-cluster-count',type:'symbol',source:'cities',filter:['has','point_count'],layout:{
     'text-field':['get','point_count_abbreviated'],'text-size':12,'text-font':['Noto Sans Regular'],

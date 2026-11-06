@@ -73,3 +73,16 @@
 .page-vision .map-attribution{margin:0;padding:2px 6px;background:#ffffffe6;color:#435565;font:10px/1.5 var(--font-body)}.page-vision .map-attribution a{color:inherit;text-decoration:none}.page-vision .map-attribution a:hover{text-decoration:underline}
 
 .page-vision .map-toolbar{justify-content:flex-end}.page-vision .signal-status{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}.page-vision .signal-broken{display:none}.page-vision .live-entry[data-connection="error"] .signal-waves{display:none}.page-vision .live-entry[data-connection="error"] .signal-broken{display:inline;animation:radar-drop 2s ease-in-out infinite}.page-vision .live-entry[data-connection="error"] .alert-signal{color:#A95413}.page-vision .live-entry[data-connection="connecting"] .signal-waves{transform-origin:center;animation:radar-search 1.2s ease-in-out infinite}.page-vision .live-entry[data-connection="live"] .signal-waves{animation:radar-drop 2s ease-in-out infinite}.page-vision .live-entry[data-connection="degraded"] .signal-waves{stroke-dasharray:2 2}.page-vision .live-entry[data-connection="paused"] .alert-signal{opacity:.5}@keyframes radar-search{0%,100%{opacity:.4;transform:scale(.85)}50%{opacity:1;transform:scale(1)}}@keyframes radar-drop{0%,100%{opacity:1}50%{opacity:.5}}
+
+/* Loading radar: two expanding waves, with a steady center for a readable entry. */
+.page-vision .signal-loading{display:none}
+.page-vision .live-entry[data-connection="connecting"] .signal-waves{display:none;animation:none}
+.page-vision .live-entry[data-connection="connecting"] .signal-loading{display:inline}
+.page-vision .signal-wave{transform-box:view-box;transform-origin:12px 12px;stroke-width:1.7;fill:none}
+.page-vision .live-entry[data-connection="connecting"] .signal-wave{animation:radar-wave 1.6s cubic-bezier(.2,.6,.3,1) infinite}
+.page-vision .live-entry[data-connection="connecting"] .signal-wave-inner{animation-delay:-.8s}
+@keyframes radar-wave{0%{opacity:0;transform:scale(.5)}12%{opacity:.95}100%{opacity:0;transform:scale(3)}}
+@media(prefers-reduced-motion:reduce){
+ .page-vision .signal-wave-outer{transform:scale(2.7);opacity:.5}
+ .page-vision .signal-wave-inner{transform:scale(1.6);opacity:.85}
+}
