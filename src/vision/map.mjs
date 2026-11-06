@@ -505,7 +505,18 @@ $('list-toggle').addEventListener('click',()=>{setListVisible(true);if(feedSync.
 $('panel-close').addEventListener('click',()=>setListVisible(false));
 $('detail').addEventListener('click', event => { if(event.target.closest('.detail-close')){selected='';renderDetail();renderList();updateMap();} });
 $('search').maxLength=64;
-$('search').addEventListener('input', event => {query=event.target.value.trim().slice(0,64).toLowerCase();feedGeneration++;feedReady=false;renderList();clearTimeout(searchTimer);searchTimer=setTimeout(()=>void poll({changed:true}),250);});
+let searchComposing=false;
+function submitSearch(immediate=false){
+ if(searchComposing)return;
+ clearTimeout(searchTimer);
+ const next=$('search').value.trim().slice(0,64).toLowerCase();
+ if(next!==query){query=next;feedGeneration++;feedReady=false;renderList();}
+ if(immediate)void poll({changed:true});else searchTimer=setTimeout(()=>void poll({changed:true}),250);
+}
+$('search').addEventListener('compositionstart',()=>{searchComposing=true;clearTimeout(searchTimer);});
+$('search').addEventListener('compositionend',()=>{searchComposing=false;submitSearch();});
+$('search').addEventListener('input',event=>{if(!event.isComposing)submitSearch();});
+$('vision-search').addEventListener('submit',event=>{event.preventDefault();submitSearch(true);});
 $('hazard-controls').addEventListener('click',event=>{
   const button=event.target.closest('[data-hazard]');
   if(!button) return;

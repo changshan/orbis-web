@@ -87,3 +87,10 @@
 .page-vision .live-entry[data-connection="connecting"] .signal-target{animation:radar-target 1.6s linear infinite!important}
 @keyframes radar-sweep{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
 @keyframes radar-target{0%,10%{opacity:0}14%{opacity:1}35%{opacity:.65}75%,100%{opacity:0}}
+
+/* The search action stays inside the field, on its trailing edge. */
+.page-vision .sidebar .search{padding-right:3px;gap:4px}
+.page-vision .sidebar .search input{flex:1;width:0}
+.page-vision .sidebar .search-submit{display:grid;place-items:center;flex:0 0 28px;width:28px;height:28px;padding:0;border-radius:6px;color:var(--muted)}
+.page-vision .sidebar .search-submit:hover{background:var(--paper);color:var(--brand-blue)}
+.page-vision .sidebar[data-basemap] .search-submit svg{stroke:currentColor}

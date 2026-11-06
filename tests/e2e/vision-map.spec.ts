@@ -174,3 +174,23 @@ test('blue map clusters visibly pulse with either system motion preference',asyn
  await page.emulateMedia({reducedMotion:'reduce'});
  const reducedFrame=await capture();await expect.poll(async()=>difference(reducedFrame,await capture()),{timeout:3000}).toBeGreaterThan(40);
 });
+
+test('search action is on the right and supports clicking and Enter in both page languages',async({page})=>{
+ await setup(page);const searches:string[]=[];
+ await page.route('**/api/vision/feed?**',async route=>{searches.push(new URL(route.request().url()).searchParams.get('query')||'');await route.fallback();});
+ for(const language of ['en','zh']){
+  searches.length=0;await page.goto('/'+language+'/vision/');await page.locator('#list-toggle').click();await expect(page.locator('.city-row')).toHaveCount(1);
+  const input=page.locator('#search'),button=page.locator('#search-submit');await expect(button).toBeVisible();
+  const inputBox=await input.boundingBox(),buttonBox=await button.boundingBox();expect(buttonBox!.x).toBeGreaterThanOrEqual(inputBox!.x+inputBox!.width-1);
+  await input.fill('伦敦');await button.click();await expect.poll(()=>searches.includes('伦敦')).toBe(true);
+  await input.fill('LONDON');await input.press('Enter');await expect.poll(()=>searches.includes('london')).toBe(true);
+ }
+});
+
+test('Chinese input composition waits for complete text before searching',async({page})=>{
+ await setup(page);const searches:string[]=[];await page.route('**/api/vision/feed?**',async route=>{searches.push(new URL(route.request().url()).searchParams.get('query')||'');await route.fallback();});
+ await page.goto('/en/vision/');await page.locator('#list-toggle').click();await expect(page.locator('.city-row')).toHaveCount(1);
+ await page.locator('#search').evaluate(node=>{const input=node as HTMLInputElement;input.dispatchEvent(new CompositionEvent('compositionstart',{bubbles:true}));input.value='bei';input.dispatchEvent(new InputEvent('input',{bubbles:true,isComposing:true,data:'bei'}));});
+ await page.waitForTimeout(350);expect(searches).not.toContain('bei');
+ await page.locator('#search').evaluate(node=>{const input=node as HTMLInputElement;input.value='北京';input.dispatchEvent(new CompositionEvent('compositionend',{bubbles:true,data:'北京'}));});await expect.poll(()=>searches.includes('北京')).toBe(true);
+});
