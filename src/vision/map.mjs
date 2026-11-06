@@ -120,7 +120,7 @@ function renderList({animate=false}={}) {
   const alerts=feedReady?feedRows.filter(({event})=>event.displayUntil==null||Date.now()<event.displayUntil):[];
   const changes=diffAlerts(previousAlerts,alerts);
   previousAlerts=alerts;
-  $('result-count').textContent=feedReady?t('count',{count:alerts.length})+(feedHasMore?t('countLimit'):''):t(feedSync.failed?'detailFailure':'listLoading');
+  $('result-count').textContent=feedReady?t('count',{count:alerts.length})+(feedHasMore?t('countLimit'):''):t('listLoading');
   const list=$('city-list');
   const visible=animate&&!document.hidden&&!$('latest-panel').hidden&&!selected;
   // Reuse buttons by event identity so focus and a reader's scroll anchor survive polling.
@@ -155,7 +155,7 @@ function renderList({animate=false}={}) {
     if(list.children[index]!==row) list.insertBefore(row,list.children[index]||null);
     return row;
   });
-  if(!alerts.length) list.innerHTML=`<p class="empty">${feedReady?t('empty'):t(feedSync.failed?'detailFailure':'listLoading')}</p>`;
+  if(!alerts.length) list.innerHTML=`<p class="empty">${feedReady?t('empty'):t('listLoading')}</p>`;
   if(atTop) list.scrollTop=0;
   else if(anchor&&ids.has(anchor[0])) list.scrollTop+=before.get(anchor[0]).getBoundingClientRect().top-oldRects.get(anchor[0]).top;
   else list.scrollTop=oldScroll;
@@ -291,15 +291,13 @@ function toast(message) {
 function renderFeedStatus() {
   clearTimeout(feedStatusTimer);
   const now=Date.now(),phase=syncStatus({...feedSync,now,hidden:document.hidden});
-  const keys={connecting:'feedConnecting',refreshing:'feedRefreshing',live:'feedLive',updated:'feedUpdated',
-    checked:'feedChecked',error:'feedError',background:'feedBackground'};
   const connection=phase==='error'?'error':phase==='background'?'paused':phase==='connecting'||phase==='refreshing'?'connecting':liveDegraded?'degraded':'live';
   const status=t(connection==='error'?'connectionLost':connection==='paused'?'feedBackground':connection==='connecting'?'connecting':connection==='degraded'?'degraded':'connected');
   $('sync-label').textContent=status;
-  const autoRefresh=phase!=='error'&&phase!=='background';
-  $('feed-status').dataset.state=phase;
+  const autoRefresh=phase!=='background';
+  $('feed-status').dataset.state=autoRefresh?'refreshing':'background';
   $('feed-status').dataset.autoRefresh=String(autoRefresh);
-  $('feed-status-text').textContent=t(autoRefresh&&phase!=='connecting'?'feedRefreshing':keys[phase]);
+  $('feed-status-text').textContent=t(autoRefresh?'feedRefreshing':'feedBackground');
   const time=$('feed-sync-time');
   time.hidden=!feedSync.lastSuccessAt;
   if(feedSync.lastSuccessAt) {
@@ -311,7 +309,7 @@ function renderFeedStatus() {
   if(iconPhase!==feedPhase) {
     feedPhase=iconPhase;feedIconAnimation?.cancel();feedIconAnimation=null;
     const icon=$('feed-status-icon');
-    icon.textContent=autoRefresh?'↻':phase==='error'?'!':'●';
+    icon.textContent=autoRefresh?'↻':'●';
     if(autoRefresh) feedIconAnimation=icon.animate(
       [{transform:'rotate(0deg)'},{transform:'rotate(360deg)'}],{duration:1200,iterations:Infinity,easing:'linear'});
   }

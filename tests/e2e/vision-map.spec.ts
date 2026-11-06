@@ -211,7 +211,7 @@ test('feed status keeps a rotating live-refresh arrow, updated time, and no red 
   await expect(icon).toHaveText('↻');
   await expect.poll(()=>icon.evaluate(el=>el.getAnimations().filter(a=>a.playState==='running'&&a.effect?.getTiming().iterations===Infinity).length)).toBe(1);
   const before=await icon.evaluate(el=>getComputedStyle(el).transform);await page.waitForTimeout(160);expect(await icon.evaluate(el=>getComputedStyle(el).transform)).not.toBe(before);
-  await expect(status).toHaveAttribute('data-state','live',{timeout:10000});
+  await page.waitForTimeout(3000);await expect(status).toHaveAttribute('data-state','refreshing');
   await expect(page.locator('#feed-status-text')).toHaveText(lang==='zh'?'实时刷新':'Live refresh');
   expect(await icon.evaluate(el=>el.getAnimations().some(a=>a.playState==='running'&&a.effect?.getTiming().iterations===Infinity))).toBe(true);
  }
@@ -226,5 +226,25 @@ test('orbiting dot follows the ring centerline at every sampled angle',async({pa
    return{distance,radius:ring.width/2};
   });
   expect(Math.abs(position.distance-position.radius)).toBeLessThan(.3);await page.waitForTimeout(120);
+ }
+});
+
+test('refresh failures never replace the feed with disconnect or city-detail errors',async({page})=>{
+ await setup(page);let fail=true;
+ await page.route('**/api/vision/map?**',async route=>{if(fail){await route.fulfill({status:503,json:{code:'UNAVAILABLE',retryAfterSeconds:1}});return;}await route.fallback();});
+ for(const lang of ['en','zh']){
+  fail=true;await page.goto('/'+lang+'/vision/');const lost=lang==='en'?'Connection lost':'连接中断';
+  await expect(page.locator('#sync-label')).toContainText(lost,{timeout:10000});await page.locator('#list-toggle').click();await expect(page.locator('#sync-label')).toContainText(lost,{timeout:10000});
+  await expect(page.locator('#feed-status-text')).toHaveText(lang==='en'?'Live refresh':'实时刷新');
+  await expect(page.locator('#feed-status')).toHaveAttribute('data-state','refreshing');
+  await expect(page.locator('#result-count')).toHaveText(lang==='en'?'Loading alerts…':'正在加载预警…');
+  await expect(page.locator('#city-list')).toHaveText(lang==='en'?'Loading alerts…':'正在加载预警…');
+  await expect(page.locator('#feed-sync-time')).toBeHidden();
+  fail=false;await page.locator('#search-submit').click();await expect(page.locator('.city-row')).toHaveCount(1,{timeout:10000});
+  const previousTime=await page.locator('#feed-sync-time').textContent();fail=true;await page.getByRole('button',{name:lang==='en'?'Zoom in':'放大',exact:true}).click();
+  await expect(page.locator('#sync-label')).toContainText(lost,{timeout:10000});
+  await expect(page.locator('.city-row')).toHaveCount(1);await expect(page.locator('#feed-sync-time')).toHaveText(previousTime!);
+  await expect(page.locator('#feed-status-text')).toHaveText(lang==='en'?'Live refresh':'实时刷新');
+  expect(await page.locator('#alert-feed').innerText()).not.toMatch(/Disconnected|Details unavailable|连接中断|详情加载失败/);
  }
 });
