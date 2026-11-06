@@ -1,5 +1,5 @@
-export function shouldAnimate({hidden=false,paused=false,hasAlerts=false} = {}) {
-  return !hidden && !paused && hasAlerts;
+export function shouldAnimate({hidden=false,paused=false,hasAlerts=false,hasClusters=false,reducedMotion=false} = {}) {
+  return !hidden && !paused && hasAlerts && (!reducedMotion || hasClusters);
 }
 export function pulseFrame(elapsed) {
   const time = Number.isFinite(elapsed) ? Math.max(0,elapsed) : 0;

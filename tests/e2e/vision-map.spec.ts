@@ -148,7 +148,7 @@ test('an unloaded list does not claim zero alerts',async({page})=>{
  release();await expect(page.locator('.city-row')).toHaveCount(1);
 });
 
-test('loading live-alert icon emits radar waves and respects reduced motion',async({page})=>{
+test('loading live-alert icon keeps emitting radar waves with system reduced motion',async({page})=>{
  await page.emulateMedia({reducedMotion:'no-preference'});await setup(page);
  let release!:()=>void;const gate=new Promise<void>(resolve=>release=resolve);
  await page.route('**/api/vision/map?**',async route=>{await gate;await route.fallback();});
@@ -157,11 +157,11 @@ test('loading live-alert icon emits radar waves and respects reduced motion',asy
  const waves=loading.locator('.signal-wave');await expect(waves).toHaveCount(2);
  const animations=await waves.evaluateAll(nodes=>nodes.map(node=>({name:getComputedStyle(node).animationName,delay:getComputedStyle(node).animationDelay,iterations:getComputedStyle(node).animationIterationCount})));
  expect(animations.every(a=>a.name==='radar-wave'&&a.iterations==='infinite')).toBe(true);expect(animations[0]!.delay).not.toBe(animations[1]!.delay);
- await page.emulateMedia({reducedMotion:'reduce'});expect(await waves.evaluateAll(nodes=>nodes.every(node=>getComputedStyle(node).animationName==='none'))).toBe(true);
+ await page.emulateMedia({reducedMotion:'reduce'});expect(await waves.evaluateAll(nodes=>nodes.every(node=>getComputedStyle(node).animationName==='radar-wave'))).toBe(true);
  await page.emulateMedia({reducedMotion:'no-preference'});release();await expect(toggle).toHaveAttribute('data-connection','degraded');await expect(loading).toBeHidden();await expect(toggle.locator('.signal-waves')).toBeVisible();
 });
 
-test('blue map clusters visibly pulse and stop under reduced motion',async({page})=>{
+test('blue map clusters visibly pulse with either system motion preference',async({page})=>{
  await page.emulateMedia({reducedMotion:'no-preference'});await setup(page);await page.goto('/en/vision/');
  await expect(page.locator('#map-loading')).toBeHidden({timeout:20000});await expect(page.locator('#sync-label')).toContainText('Updates are delayed');
  const canvas=page.locator('.maplibregl-canvas');
@@ -172,6 +172,5 @@ test('blue map clusters visibly pulse and stop under reduced motion',async({page
  },{first,second});
  const first=await capture();await expect.poll(async()=>difference(first,await capture()),{timeout:3000}).toBeGreaterThan(40);
  await page.emulateMedia({reducedMotion:'reduce'});
- // Let the render of the final static frame finish before checking that it stays still.
- await page.waitForTimeout(350);const still=await capture();await page.waitForTimeout(350);expect(await difference(still,await capture())).toBeLessThan(10);
+ const reducedFrame=await capture();await expect.poll(async()=>difference(reducedFrame,await capture()),{timeout:3000}).toBeGreaterThan(40);
 });

@@ -52,7 +52,7 @@ let feedSync={lastSuccessAt:0,requestStartedAt:0,refreshing:false,failed:false,c
 let feedStatusTimer=0,feedIconAnimation=null,feedPhase='',liveDegraded=false;
 const syncClock=new Intl.DateTimeFormat(locale==='zh'?'zh-CN':'en-GB',{
   hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false,timeZone:clockZone});
-let animationId = 0, animationStart = 0, lastPaint = 0, freshTimer = 0, hasAnimatedAlerts = false;
+let animationId = 0, animationStart = 0, lastPaint = 0, freshTimer = 0, hasAnimatedAlerts = false, hasAnimatedClusters = false;
 const clusterRadius = ['step',['get','point_count'],18,5,22,10,27];
 const mapStats = { startedAt: performance.now(), tileLoads: 0, loadedAt: null };
 const date = (value, zone = 'UTC') => new Intl.DateTimeFormat(locale==='zh'?'zh-CN':'en-GB', { month:'2-digit', day:'2-digit',
@@ -227,16 +227,17 @@ function updateMap() {
   if (!mapReady) return;
   const data = features();
   hasAnimatedAlerts = data.features.some(feature=>feature.properties.count>0);
+  hasAnimatedClusters = data.features.some(feature=>Object.hasOwn(feature.properties,'point_count'));
   map.getSource('cities')?.setData(data);
   syncMotion();
 }
 function motionAllowed() {
-  return mapReady && shouldAnimate({hidden:document.hidden||simulatedFailure||reduced.matches,hasAlerts:hasAnimatedAlerts});
+  return mapReady && shouldAnimate({hidden:document.hidden||simulatedFailure,hasAlerts:hasAnimatedAlerts,hasClusters:hasAnimatedClusters,reducedMotion:reduced.matches});
 }
 function paintMotion(frame) {
   if (!mapReady || !map.getLayer('vision-city-ripple')) return;
   map.setPaintProperty('vision-city-ripple','circle-radius',frame.pointRadius);
-  map.setPaintProperty('vision-city-ripple','circle-stroke-opacity',frame.opacity);
+  map.setPaintProperty('vision-city-ripple','circle-stroke-opacity',reduced.matches?0:frame.opacity);
   map.setPaintProperty('vision-cluster-ripple','circle-radius',['+',clusterRadius,frame.clusterExtra]);
   map.setPaintProperty('vision-cluster-ripple','circle-stroke-opacity',frame.clusterWaveOpacity);
   map.setPaintProperty('vision-cluster-ripple-secondary','circle-radius',['+',clusterRadius,frame.clusterSecondaryExtra]);
@@ -244,7 +245,7 @@ function paintMotion(frame) {
   map.setPaintProperty('vision-clusters','circle-radius',['+',clusterRadius,frame.clusterBreath]);
   map.setPaintProperty('vision-clusters','circle-opacity',frame.clusterOpacity);
   map.setPaintProperty('vision-city-fresh','circle-radius',frame.freshRadius);
-  map.setPaintProperty('vision-city-fresh','circle-stroke-opacity',frame.freshOpacity);
+  map.setPaintProperty('vision-city-fresh','circle-stroke-opacity',reduced.matches?0:frame.freshOpacity);
   map.setPaintProperty('vision-cluster-fresh','circle-radius',['+',clusterRadius,frame.freshRadius-10]);
   map.setPaintProperty('vision-cluster-fresh','circle-stroke-opacity',frame.freshOpacity);
 }

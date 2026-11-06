@@ -21,4 +21,10 @@ describe('map cluster radar motion',()=>{
  it('stops expensive frame updates in the background or without visible alerts',()=>{
   expect(shouldAnimate({hidden:true,hasAlerts:true})).toBe(false);expect(shouldAnimate({paused:true,hasAlerts:true})).toBe(false);expect(shouldAnimate({hasAlerts:false})).toBe(false);expect(shouldAnimate({hasAlerts:true})).toBe(true);
  });
+ it('keeps requested blue clusters moving even when the system requests reduced motion',()=>{
+  expect(shouldAnimate({hasAlerts:true,hasClusters:true,reducedMotion:true})).toBe(true);
+  expect(shouldAnimate({hasAlerts:true,hasClusters:false,reducedMotion:true})).toBe(false);
+  expect(shouldAnimate({hidden:true,hasAlerts:true,hasClusters:true,reducedMotion:true})).toBe(false);
+ });
+
 });
