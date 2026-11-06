@@ -123,12 +123,12 @@ test('vector basemaps actually paint geography after each layer switch',async({p
 });
 
 
-test('connection failures use the live-alert radar instead of a left status and retry button',async({page})=>{
+test('connection failures keep the same Orbis orbit and preserve retry behavior',async({page})=>{
  await setup(page);let recover=false;
  await page.route('**/api/vision/map?**',async route=>{if(!recover){await route.fulfill({status:503,json:{code:'UNAVAILABLE',retryAfterSeconds:1}});return;}const data=fixture('map.ok');data.view=new URL(route.request().url()).searchParams.get('view')||'0/0/0/1/1';data.expiresAt=Date.now()+60000;await route.fulfill({json:data});});
- await page.goto('/en/vision/');const toggle=page.locator('#list-toggle');await expect(toggle).toHaveAttribute('data-connection','error',{timeout:10000});
- await expect(page.locator('.map-status,.connection,#retry-data')).toHaveCount(0);await expect(toggle.locator('.signal-broken')).toBeVisible();await expect(toggle).toHaveAttribute('title',/connection|retry|interrupted/i);
- recover=true;await toggle.click();await expect(page.locator('.city-row')).toHaveCount(1,{timeout:10000});await page.locator('#panel-close').click();await expect(toggle).not.toHaveAttribute('data-connection','error');
+ await page.goto('/en/vision/');const toggle=page.locator('#list-toggle');await expect(page.locator('#sync-label')).toContainText('Connection lost',{timeout:10000});
+ await expect(page.locator('.map-status,.connection,#retry-data')).toHaveCount(0);await expect(toggle.locator('.orbis-dot')).toBeVisible();await expect(toggle).not.toHaveAttribute('data-connection');expect(await toggle.locator('.orbis-orbit').evaluate(el=>getComputedStyle(el).animationName)).toBe('orbis-orbit');
+ recover=true;await toggle.click();await expect(page.locator('.city-row')).toHaveCount(1,{timeout:10000});await page.locator('#panel-close').click();await expect(page.locator('#sync-label')).toHaveText('Connected');await expect(toggle).not.toHaveAttribute('data-connection');
  await page.locator('#basemap-picker summary').click();await expect(page.locator('#basemap-picker button')).toHaveCount(2);await expect(page.getByRole('button',{name:'Simple',exact:true})).toHaveCount(0);
 });
 
@@ -148,17 +148,19 @@ test('an unloaded list does not claim zero alerts',async({page})=>{
  release();await expect(page.locator('.city-row')).toHaveCount(1);
 });
 
-test('loading live-alert icon keeps emitting radar waves with system reduced motion',async({page})=>{
- await page.emulateMedia({reducedMotion:'no-preference'});await setup(page);
- let release!:()=>void;const gate=new Promise<void>(resolve=>release=resolve);
+test('Orbis ring stays fixed while its dot orbits continuously through loading and success',async({page})=>{
+ await setup(page);let release!:()=>void;const gate=new Promise<void>(resolve=>release=resolve);
  await page.route('**/api/vision/map?**',async route=>{await gate;await route.fallback();});
- await page.goto('/en/vision/');const toggle=page.locator('#list-toggle');await expect(toggle).toHaveAttribute('data-connection','connecting');
- const loading=toggle.locator('.signal-loading');await expect(loading).toBeVisible();await expect(toggle.locator('.signal-waves')).toBeHidden();
- const sweep=loading.locator('.signal-sweep');await expect(sweep).toBeVisible();await expect(loading.locator('.signal-grid circle')).toHaveCount(2);await expect(loading.locator('.signal-target')).toBeVisible();
- expect(await sweep.evaluate(node=>getComputedStyle(node).animationName)).toBe('radar-sweep');
- const before=await sweep.evaluate(node=>getComputedStyle(node).transform);await expect.poll(()=>sweep.evaluate(node=>getComputedStyle(node).transform)).not.toBe(before);
- await page.emulateMedia({reducedMotion:'reduce'});expect(await sweep.evaluate(node=>getComputedStyle(node).animationName)).toBe('radar-sweep');
- await page.emulateMedia({reducedMotion:'no-preference'});release();await expect(toggle).toHaveAttribute('data-connection','degraded');await expect(loading).toBeHidden();await expect(toggle.locator('.signal-waves')).toBeVisible();
+ await page.goto('/en/vision/');const toggle=page.locator('#list-toggle'),ring=toggle.locator('.orbis-ring'),orbit=toggle.locator('.orbis-orbit');
+ await expect(ring).toBeVisible();await expect(orbit.locator('.orbis-dot')).toBeVisible();await expect(toggle).not.toHaveAttribute('data-connection');
+ await expect(toggle.locator('.signal-waves,.signal-loading,.signal-broken')).toHaveCount(0);
+ for(const motion of ['no-preference','reduce']as const){
+  await page.emulateMedia({reducedMotion:motion});expect(await orbit.evaluate(el=>getComputedStyle(el).animationName)).toBe('orbis-orbit');
+  expect(await ring.evaluate(el=>getComputedStyle(el).transform)).toBe('none');
+  const before=await orbit.evaluate(el=>getComputedStyle(el).transform);await expect.poll(()=>orbit.evaluate(el=>getComputedStyle(el).transform)).not.toBe(before);
+ }
+ release();await expect(page.locator('#sync-label')).toContainText('Updates are delayed');
+ expect(await orbit.evaluate(el=>getComputedStyle(el).animationName)).toBe('orbis-orbit');
 });
 
 test('blue map clusters visibly pulse with either system motion preference',async({page})=>{
@@ -175,24 +177,25 @@ test('blue map clusters visibly pulse with either system motion preference',asyn
  const reducedFrame=await capture();await expect.poll(async()=>difference(reducedFrame,await capture()),{timeout:3000}).toBeGreaterThan(40);
 });
 
-test('search action is on the right and supports clicking and Enter in both page languages',async({page})=>{
+test('search only submits with the right button in both page languages',async({page})=>{
  await setup(page);const searches:string[]=[];
  await page.route('**/api/vision/feed?**',async route=>{searches.push(new URL(route.request().url()).searchParams.get('query')||'');await route.fallback();});
  for(const language of ['en','zh']){
   searches.length=0;await page.goto('/'+language+'/vision/');await page.locator('#list-toggle').click();await expect(page.locator('.city-row')).toHaveCount(1);
   const input=page.locator('#search'),button=page.locator('#search-submit');await expect(button).toBeVisible();
   const inputBox=await input.boundingBox(),buttonBox=await button.boundingBox();expect(buttonBox!.x).toBeGreaterThanOrEqual(inputBox!.x+inputBox!.width-1);
-  await input.fill('伦敦');await button.click();await expect.poll(()=>searches.includes('伦敦')).toBe(true);
-  await input.fill('LONDON');await input.press('Enter');await expect.poll(()=>searches.includes('london')).toBe(true);
+  await input.fill('伦敦');await page.waitForTimeout(400);expect(searches).not.toContain('伦敦');await input.press('Enter');await page.waitForTimeout(300);expect(searches).not.toContain('伦敦');await button.click();await expect.poll(()=>searches.includes('伦敦')).toBe(true);
+  await input.fill('LONDON');await page.waitForTimeout(400);expect(searches).not.toContain('london');await button.click();await expect.poll(()=>searches.includes('london')).toBe(true);
  }
 });
 
-test('Chinese input composition waits for complete text before searching',async({page})=>{
+test('Chinese composition and clearing the input wait for the search button',async({page})=>{
  await setup(page);const searches:string[]=[];await page.route('**/api/vision/feed?**',async route=>{searches.push(new URL(route.request().url()).searchParams.get('query')||'');await route.fallback();});
  await page.goto('/en/vision/');await page.locator('#list-toggle').click();await expect(page.locator('.city-row')).toHaveCount(1);
  await page.locator('#search').evaluate(node=>{const input=node as HTMLInputElement;input.dispatchEvent(new CompositionEvent('compositionstart',{bubbles:true}));input.value='bei';input.dispatchEvent(new InputEvent('input',{bubbles:true,isComposing:true,data:'bei'}));});
  await page.waitForTimeout(350);expect(searches).not.toContain('bei');
- await page.locator('#search').evaluate(node=>{const input=node as HTMLInputElement;input.value='北京';input.dispatchEvent(new CompositionEvent('compositionend',{bubbles:true,data:'北京'}));});await expect.poll(()=>searches.includes('北京')).toBe(true);
+ await page.locator('#search').evaluate(node=>{const input=node as HTMLInputElement;input.value='北京';input.dispatchEvent(new CompositionEvent('compositionend',{bubbles:true,data:'北京'}));});await page.waitForTimeout(400);expect(searches).not.toContain('北京');await page.locator('#search-submit').click();await expect.poll(()=>searches.includes('北京')).toBe(true);
+ searches.length=0;await page.locator('#search').fill('');await page.waitForTimeout(400);expect(searches).not.toContain('');await page.locator('#search-submit').click();await expect.poll(()=>searches.includes('')).toBe(true);
 });
 
 test('feed status keeps a rotating live-refresh arrow, updated time, and no red stale copy',async({page})=>{

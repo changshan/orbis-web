@@ -14,7 +14,7 @@ const challengeRoot=document.getElementById('vision-challenge');
 const access=new VisionClient({origin:location.origin,challenge:turnstileChallenge(challengeRoot,document.querySelector('[data-vision-root]').dataset.siteKey,locale)});
 const legacy=new VisionPipelineClient(locale);
 const pipeline=new VisionViewportClient(locale,async(url)=>Response.json(await access.read(url)));
-let mapPoints=[],mapView=null,feedReady=false,feedHasMore=false,feedRows=[],feedGeneration=0,viewGeneration=0,viewportTimer,searchTimer;
+let mapPoints=[],mapView=null,feedReady=false,feedHasMore=false,feedRows=[],feedGeneration=0,viewGeneration=0,viewportTimer;
 let feedIdentity='',feedLoadedAt=0;
 let detailEvents=new Map(),detailStatus='loading',detailGeneration=0;
 const reduced=matchMedia('(prefers-reduced-motion: reduce)');
@@ -295,7 +295,7 @@ function renderFeedStatus() {
     checked:'feedChecked',error:'feedError',background:'feedBackground'};
   const connection=phase==='error'?'error':phase==='background'?'paused':phase==='connecting'||phase==='refreshing'?'connecting':liveDegraded?'degraded':'live';
   const status=t(connection==='error'?'connectionLost':connection==='paused'?'feedBackground':connection==='connecting'?'connecting':connection==='degraded'?'degraded':'connected');
-  $('list-toggle').dataset.connection=connection;$('list-toggle').title=t('latest')+' · '+status;$('sync-label').textContent=status;
+  $('sync-label').textContent=status;
   const autoRefresh=phase!=='error'&&phase!=='background';
   $('feed-status').dataset.state=phase;
   $('feed-status').dataset.autoRefresh=String(autoRefresh);
@@ -504,18 +504,12 @@ $('list-toggle').addEventListener('click',()=>{setListVisible(true);if(feedSync.
 $('panel-close').addEventListener('click',()=>setListVisible(false));
 $('detail').addEventListener('click', event => { if(event.target.closest('.detail-close')){selected='';renderDetail();renderList();updateMap();} });
 $('search').maxLength=64;
-let searchComposing=false;
-function submitSearch(immediate=false){
- if(searchComposing)return;
- clearTimeout(searchTimer);
+$('vision-search').addEventListener('submit',event=>event.preventDefault());
+$('search-submit').addEventListener('click',()=>{
  const next=$('search').value.trim().slice(0,64).toLowerCase();
  if(next!==query){query=next;feedGeneration++;feedReady=false;renderList();}
- if(immediate)void poll({changed:true});else searchTimer=setTimeout(()=>void poll({changed:true}),250);
-}
-$('search').addEventListener('compositionstart',()=>{searchComposing=true;clearTimeout(searchTimer);});
-$('search').addEventListener('compositionend',()=>{searchComposing=false;submitSearch();});
-$('search').addEventListener('input',event=>{if(!event.isComposing)submitSearch();});
-$('vision-search').addEventListener('submit',event=>{event.preventDefault();submitSearch(true);});
+ void poll({changed:true});
+});
 $('hazard-controls').addEventListener('click',event=>{
   const button=event.target.closest('[data-hazard]');
   if(!button) return;
@@ -542,7 +536,7 @@ $('hazard-controls').addEventListener('focusout',event=>{
 $('retry-map').addEventListener('click',()=>{clearTimeout(mapTimeout);stopMotion();mapReady=false;map?.remove();$('map-loading').hidden=false;$('map-error').hidden=true;syncMotion();initMap();});
 document.addEventListener('keydown',event=>{if(event.key==='Escape'){if(!$('other-hazard-menu').hidden){showOtherHazards(false,true);return;}selected='';renderDetail();renderList();updateMap();}});
 document.addEventListener('visibilitychange',()=>{syncMotion();renderFeedStatus();if(!document.hidden){updateMap();poll();}});
-window.addEventListener('pagehide',()=>{clearTimeout(freshTimer);clearTimeout(viewportTimer);clearTimeout(searchTimer);clearTimeout(feedStatusTimer);feedIconAnimation?.cancel();feedPhase='';stopMotion();});
+window.addEventListener('pagehide',()=>{clearTimeout(freshTimer);clearTimeout(viewportTimer);clearTimeout(feedStatusTimer);feedIconAnimation?.cancel();feedPhase='';stopMotion();});
 window.addEventListener('pageshow',()=>{syncMotion();renderFeedStatus();if(mapReady)updateMap();});
 const interval=setInterval(()=>{if(!document.hidden&&Date.now()-lastPoll>=10000)void poll();},500);
 reduced.addEventListener('change',()=>{syncMotion();renderFeedStatus();});

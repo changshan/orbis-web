@@ -70,23 +70,15 @@
 
 .page-vision .map-attribution{margin:0;padding:2px 6px;background:#ffffffe6;color:#435565;font:10px/1.5 var(--font-body)}.page-vision .map-attribution a{color:inherit;text-decoration:none}.page-vision .map-attribution a:hover{text-decoration:underline}
 
-.page-vision .map-toolbar{justify-content:flex-end}.page-vision .signal-status{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}.page-vision .signal-broken{display:none}.page-vision .live-entry[data-connection="error"] .signal-waves{display:none}.page-vision .live-entry[data-connection="error"] .signal-broken{display:inline;animation:radar-drop 2s ease-in-out infinite}.page-vision .live-entry[data-connection="error"] .alert-signal{color:#A95413}.page-vision .live-entry[data-connection="connecting"] .signal-waves{transform-origin:center;animation:radar-search 1.2s ease-in-out infinite}.page-vision .live-entry[data-connection="live"] .signal-waves{animation:radar-drop 2s ease-in-out infinite}.page-vision .live-entry[data-connection="degraded"] .signal-waves{stroke-dasharray:2 2}.page-vision .live-entry[data-connection="paused"] .alert-signal{opacity:.5}@keyframes radar-search{0%,100%{opacity:.4;transform:scale(.85)}50%{opacity:1;transform:scale(1)}}@keyframes radar-drop{0%,100%{opacity:1}50%{opacity:.5}}
+.page-vision .map-toolbar{justify-content:flex-end}
+.page-vision .signal-status{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+/* A fixed Orbis ring and a single orbiting amber dot, independent of network state. */
+.page-vision .live-entry .alert-signal{width:20px;height:20px;flex:none;color:var(--brand-blue-dark)}
+.page-vision .orbis-ring{stroke:currentColor;stroke-width:3.5;fill:none}
+.page-vision .orbis-dot{fill:#FFB23E;stroke:#F4F8FC;stroke-width:.8}
+.page-vision .orbis-orbit{transform-box:view-box;transform-origin:50% 50%;animation:orbis-orbit 1.8s linear infinite!important}
+@keyframes orbis-orbit{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
 
-/* A real radar sweep: a fixed grid, fading trail, moving scan line and target echo. */
-.page-vision .live-entry .alert-signal{width:20px;height:20px;flex:none}
-.page-vision .signal-loading{display:none}
-.page-vision .live-entry[data-connection="connecting"] .signal-waves{display:none;animation:none}
-.page-vision .live-entry[data-connection="connecting"] .signal-loading{display:inline}
-.page-vision .live-entry[data-connection="connecting"] .alert-signal{color:#1C6BB0}
-.page-vision .signal-grid{stroke-width:.85;opacity:.42}
-.page-vision .signal-grid path{opacity:.45}
-.page-vision .signal-sweep{transform-box:view-box;transform-origin:12px 12px;stroke-width:1.7}
-.page-vision .live-entry[data-connection="connecting"] .signal-sweep{animation:radar-sweep 1.6s linear infinite!important}
-.page-vision .live-entry[data-connection="connecting"] .signal-target{animation:radar-target 1.6s linear infinite!important}
-@keyframes radar-sweep{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
-@keyframes radar-target{0%,10%{opacity:0}14%{opacity:1}35%{opacity:.65}75%,100%{opacity:0}}
-
-/* The search action stays inside the field, on its trailing edge. */
 .page-vision .sidebar .search{padding-right:3px;gap:4px}
 .page-vision .sidebar .search input{flex:1;width:0}
 .page-vision .sidebar .search-submit{display:grid;place-items:center;flex:0 0 28px;width:28px;height:28px;padding:0;border-radius:6px;color:var(--muted)}
