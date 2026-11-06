@@ -6,12 +6,20 @@ export function pulseFrame(elapsed) {
   const phase = (time % 2800) / 2800;
   const freshPhase = (time % 1800) / 1800;
   const spread = 1 - (1-phase) ** 2;
-  const clusterPhase=(time%2400)/2400,secondPhase=(clusterPhase+0.5)%1;
-  const breath=(1-Math.cos(clusterPhase*Math.PI*2))/2;
-  return {clusterSecondaryExtra:3+26*secondPhase,secondaryOpacity:0.48*(1-secondPhase)**1.4,
-    clusterWaveOpacity:0.48*(1-clusterPhase)**1.4,clusterBreath:2.4*breath,clusterOpacity:0.9+0.1*breath,pointRadius:10+20*spread, clusterExtra:3+26*clusterPhase,
-    opacity:0.42*(1-phase), freshRadius:16+18*freshPhase, freshOpacity:0.65*(1-freshPhase) };
+  return {clusterPhase:(time%3000)/3000,clusterActive:true,clusterBreath:0,clusterOpacity:1,
+    pointRadius:10+20*spread,opacity:0.42*(1-phase),freshRadius:16+18*freshPhase,freshOpacity:0.65*(1-freshPhase)};
 }
+// These expressions stagger each published point without rebuilding its geometry per frame.
+function localPhase(phase,offset=0){return ['%', ['+',phase,offset,['coalesce',['get','radarPhase'],0]],1];}
+export function clusterWavePaint(phase,offset=0){
+  const progress=localPhase(phase,offset);
+  return {extra:['+',4,['*',34,progress]],opacity:['*',0.82,['sin',['*',Math.PI,progress]]],width:['-',2.8,['*',1.2,progress]]};
+}
+export function clusterGlowPaint(phase){
+  const breath=['*',0.5,['-',1,['cos',['*',Math.PI*2,localPhase(phase)]]]];
+  return {extra:['+',6,['*',10,breath]],opacity:['+',0.07,['*',0.18,breath]]};
+}
+
 export function isRecentEvent(event, now, windowMs=30000) {
   const age = now-event.recordedAt;
   return !event.removed && event.lifecycleStatus==='active'

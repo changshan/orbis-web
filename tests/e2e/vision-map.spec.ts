@@ -154,10 +154,10 @@ test('loading live-alert icon keeps emitting radar waves with system reduced mot
  await page.route('**/api/vision/map?**',async route=>{await gate;await route.fallback();});
  await page.goto('/en/vision/');const toggle=page.locator('#list-toggle');await expect(toggle).toHaveAttribute('data-connection','connecting');
  const loading=toggle.locator('.signal-loading');await expect(loading).toBeVisible();await expect(toggle.locator('.signal-waves')).toBeHidden();
- const waves=loading.locator('.signal-wave');await expect(waves).toHaveCount(2);
- const animations=await waves.evaluateAll(nodes=>nodes.map(node=>({name:getComputedStyle(node).animationName,delay:getComputedStyle(node).animationDelay,iterations:getComputedStyle(node).animationIterationCount})));
- expect(animations.every(a=>a.name==='radar-wave'&&a.iterations==='infinite')).toBe(true);expect(animations[0]!.delay).not.toBe(animations[1]!.delay);
- await page.emulateMedia({reducedMotion:'reduce'});expect(await waves.evaluateAll(nodes=>nodes.every(node=>getComputedStyle(node).animationName==='radar-wave'))).toBe(true);
+ const sweep=loading.locator('.signal-sweep');await expect(sweep).toBeVisible();await expect(loading.locator('.signal-grid circle')).toHaveCount(2);await expect(loading.locator('.signal-target')).toBeVisible();
+ expect(await sweep.evaluate(node=>getComputedStyle(node).animationName)).toBe('radar-sweep');
+ const before=await sweep.evaluate(node=>getComputedStyle(node).transform);await expect.poll(()=>sweep.evaluate(node=>getComputedStyle(node).transform)).not.toBe(before);
+ await page.emulateMedia({reducedMotion:'reduce'});expect(await sweep.evaluate(node=>getComputedStyle(node).animationName)).toBe('radar-sweep');
  await page.emulateMedia({reducedMotion:'no-preference'});release();await expect(toggle).toHaveAttribute('data-connection','degraded');await expect(loading).toBeHidden();await expect(toggle.locator('.signal-waves')).toBeVisible();
 });
 

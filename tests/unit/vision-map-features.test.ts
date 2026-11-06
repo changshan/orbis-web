@@ -13,4 +13,9 @@ describe('server map points retain rendering semantics',()=>{
   const feature=mapFeatures([point],point.city.placeKey,1000,()=> '#123456').features[0];expect(feature.properties).toMatchObject({placeKey:point.city.placeKey,selected:1,name:'London'});expect(feature.properties).not.toHaveProperty('point_count');
  });
  it('does not render an expired cached point as current',()=>{const point=fixture();point.validUntil=1000;expect(mapFeatures([point],'',1000,()=> '#123456').features).toHaveLength(0);});
+ it('assigns stable distinct radar phases so clusters do not all pulse in unison',()=>{
+  const point=fixture(),second={...point,id:'g:2:3:1'};const phases=mapFeatures([point,second],'',1000,()=> '#123456').features.map((feature:any)=>feature.properties.radarPhase);
+  expect(phases[0]).toBeGreaterThanOrEqual(0);expect(phases[0]).toBeLessThan(1);expect(phases[0]).not.toBe(phases[1]);expect(mapFeatures([point],'',2000,()=> '#123456').features[0].properties.radarPhase).toBe(phases[0]);
+ });
+
 });
