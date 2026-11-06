@@ -304,7 +304,7 @@ function renderFeedStatus() {
   time.hidden=!feedSync.lastSuccessAt;
   if(feedSync.lastSuccessAt) {
     time.dateTime=new Date(feedSync.lastSuccessAt).toISOString();
-    time.textContent=t('syncedAt',{time:syncClock.format(feedSync.lastSuccessAt)});
+    time.textContent=t('syncedAt',{time:syncClock.format(feedSync.lastSuccessAt),count:feedSync.changedCount});
     time.title=date(feedSync.lastSuccessAt,clockZone)+' '+t('clockZone');
   }
   const iconPhase=autoRefresh?'refreshing':phase;
@@ -319,7 +319,7 @@ function renderFeedStatus() {
   if(next.length&&!feedSync.refreshing&&!document.hidden&&!feedSync.failed) feedStatusTimer=setTimeout(renderFeedStatus,Math.min(...next)-now+1);
 }
 function beginFeedSync() {
-  feedSync={...feedSync,refreshing:true,requestStartedAt:Date.now(),changedCount:0,feedbackUntil:0};
+  feedSync={...feedSync,refreshing:true,requestStartedAt:Date.now(),feedbackUntil:0};
   renderFeedStatus();
 }
 function finishFeedSync(changedCount=0) {

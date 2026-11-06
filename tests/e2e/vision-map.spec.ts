@@ -202,6 +202,7 @@ test('feed status keeps a rotating live-refresh arrow, updated time, and no red 
   const status=page.locator('#feed-status'),icon=page.locator('#feed-status-icon');
   await expect(page.locator('#feed-status-text')).toHaveText(lang==='zh'?'实时刷新':'Live refresh');
   await expect(page.locator('#feed-sync-time')).toContainText(lang==='zh'?'更新于':'Updated');
+  await expect(page.locator('#feed-sync-time')).toHaveText(lang==='zh'?/^更新于 \d{2}:\d{2}:\d{2} · 更新 \d+ 条$/:/^Updated \d{2}:\d{2}:\d{2} · \d+ records updated$/);
   await expect(status).toHaveAttribute('data-degraded','true');
   expect(await status.evaluate(el=>getComputedStyle(el,'::after').content)).toMatch(/^(none|normal|"")$/);
   await expect(icon).toHaveText('↻');
