@@ -15,6 +15,7 @@ import { SITE, localizedPath, siteOrigin } from "../src/config/site";
 import { renderEntry } from "../src/render/entry";
 import { renderHome } from "../src/render/home";
 import { renderNotFound } from "../src/render/notFound";
+import { renderVision } from "../src/render/vision";
 import { renderPrivacy } from "../src/render/privacy";
 
 const root = fileURLToPath(new URL("..", import.meta.url));
@@ -66,6 +67,7 @@ writeFileSync(join(dist, "404.html"), renderNotFound());
 for (const locale of SITE.locales) {
   writePage(locale, renderHome(locale));
   writePage(join(locale, "privacy"), renderPrivacy(locale));
+  writePage(join(locale,"vision"),renderVision(locale));
 }
 
 cpSync(join(root, "src/styles/global.css"), join(dist, "assets/global.css"));
@@ -75,8 +77,15 @@ buildSync({
   bundle: true, minify: true, format: "iife", target: "es2020"
 });
 
+cpSync(join(root,"src/styles/vision.css"),join(dist,"assets/vision.css"));
+cpSync(join(root,"node_modules/maplibre-gl/dist/maplibre-gl.css"),join(dist,"assets/maplibre.css"));
+for(const [source,target] of [["src/vision/map.mjs","vision"],["node_modules/maplibre-gl/dist/maplibre-gl-worker.mjs","vision-worker"]]){
+ // Worker response CSP is cached with the script, so policy changes must invalidate its immutable URL.
+ const banner=target==='vision-worker'?{js:`/* response-policy-sha256:${createHash('sha256').update(readFileSync(join(root,'public/_headers'))).digest('hex')} */`}:undefined;
+ buildSync({entryPoints:[join(root,source!)],outfile:join(dist,`assets/${target}.js`),bundle:true,minify:true,format:"iife",target:"es2022",banner});
+}
 const urls = SITE.locales.flatMap((locale) => [
-  localizedPath(locale, "home"), localizedPath(locale, "privacy")
+  localizedPath(locale, "home"), localizedPath(locale, "privacy"), localizedPath(locale,"vision")
 ]);
 writeFileSync(join(dist, "sitemap.xml"),
   `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${urls.map((u) => `<url><loc>${origin}${u}</loc></url>`).join("")}</urlset>`);

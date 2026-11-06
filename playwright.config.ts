@@ -8,7 +8,7 @@ export default defineConfig({
   retries: process.env.CI ? 2 : 0,
   use: { baseURL: "http://127.0.0.1:8788", trace: "retain-on-failure", contextOptions: { reducedMotion: "reduce" } },
   webServer: {
-    command: "python3 -m http.server 8788 --directory dist",
+    command: "python3 scripts/serve-tests.py",
     url: "http://127.0.0.1:8788/en/",
     reuseExistingServer: !process.env.CI
   },

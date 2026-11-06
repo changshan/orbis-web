@@ -32,4 +32,8 @@ python3 -m http.server 8788 --bind 127.0.0.1 --directory dist
 
 本地构建默认 origin 为 `http://localhost:8788`。需要覆盖时，为构建命令设置 `PUBLIC_SITE_ORIGIN`；构建脚本不会自动加载 `.env`。
 
-CI 会依次执行类型检查、单元测试、构建和 E2E。同仓库 PR 可发布外部预览，main 分支 push 可部署生产，具体权限和操作边界见 [AGENTS.md](AGENTS.md) 与 [部署 runbook](docs/deployment.md)。
+CI 会依次执行类型检查、单元测试、构建、E2E 和本地 workerd 验证；预览上传前只读检查现有平台日志隐私设置，失败则不上传。同仓库 PR 可发布外部预览，main 分支 push 可部署生产，具体权限和操作边界见 [AGENTS.md](AGENTS.md) 与 [部署 runbook](docs/deployment.md)。
+
+## Vision 服务端网关
+
+默认关闭的网关、会话/预算/缓存及本地运行时验收见 [实现说明](docs/vision-gateway.md)。未部署或开启公共访问；发布前仍须按现有授权边界核验预览/生产副作用。

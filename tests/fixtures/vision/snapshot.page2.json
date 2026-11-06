@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "streamEpoch": "synthetic-epoch-1",
+  "catalogVersion": "2026-10.3",
+  "language": "en",
+  "serverTime": 1793491200000,
+  "viewSequence": 40,
+  "readStatus": {
+    "state": "ready",
+    "isStale": false,
+    "generatedAt": 1793491200000,
+    "reason": null
+  },
+  "sourceHealth": [
+    {
+      "sourceId": "usgs",
+      "feedId": "all-day",
+      "isStale": false,
+      "status": "ok",
+      "lastSuccessAt": 1793491200000,
+      "contentUpdatedAt": 1793491200000
+    }
+  ],
+  "snapshotId": "synthetic-snapshot-40",
+  "events": [],
+  "cities": [],
+  "hasMore": false,
+  "nextPageToken": null,
+  "resumeCursor": "SYNTHETIC_CURSOR_40"
+}

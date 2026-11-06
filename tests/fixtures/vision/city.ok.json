@@ -1,0 +1,114 @@
+{
+  "schemaVersion": 1,
+  "streamEpoch": "synthetic-epoch-1",
+  "catalogVersion": "2026-10.3",
+  "language": "en",
+  "serverTime": 1793491200000,
+  "viewSequence": 40,
+  "readStatus": {
+    "state": "ready",
+    "isStale": false,
+    "generatedAt": 1793491200000,
+    "reason": null
+  },
+  "sourceHealth": [
+    {
+      "sourceId": "usgs",
+      "feedId": "all-day",
+      "isStale": false,
+      "status": "ok",
+      "lastSuccessAt": 1793491200000,
+      "contentUpdatedAt": 1793491200000
+    }
+  ],
+  "city": {
+    "placeKey": "GB:geonames:2643743",
+    "catalogVersion": "2026-10.3",
+    "countryCode": "GB",
+    "name": {
+      "language": "en",
+      "text": "London",
+      "isFallback": false
+    },
+    "point": {
+      "latitude": 51.5085,
+      "longitude": -0.1257
+    },
+    "events": [
+      {
+        "eventId": "usgs:SYNTHETIC-EVENT-001",
+        "recordVersion": 1
+      }
+    ]
+  },
+  "events": [
+    {
+      "schemaVersion": 1,
+      "eventId": "usgs:SYNTHETIC-EVENT-001",
+      "recordVersion": 1,
+      "sourceId": "usgs",
+      "hazardType": "earthquake",
+      "productKind": "earthquakeReport",
+      "sourceHazardCode": "earthquake",
+      "sourceEventName": "Synthetic event",
+      "sourceSeverity": "M 2.5",
+      "sourceUrgency": null,
+      "sourceCertainty": null,
+      "authority": {
+        "name": "Synthetic Authority"
+      },
+      "sourceUrl": "https://example.com/synthetic-event",
+      "attribution": {
+        "text": "Synthetic contract sample"
+      },
+      "displayRules": {
+        "verbatim": false,
+        "showUpdatedAt": true
+      },
+      "texts": [
+        {
+          "language": "en",
+          "headline": "Synthetic contract sample",
+          "description": "Synthetic body; no real incident or safety instruction.",
+          "instruction": null,
+          "isOriginal": true
+        }
+      ],
+      "summary": {
+        "language": "en",
+        "text": "Synthetic contract sample",
+        "method": "sourceHeadline"
+      },
+      "measurements": {
+        "magnitude": 2.5,
+        "depthKm": 8
+      },
+      "countryCodes": [
+        "GB"
+      ],
+      "areaDescription": "Synthetic impact area",
+      "displayPoint": {
+        "longitude": -0.12,
+        "latitude": 51.5
+      },
+      "displayPointMethod": "sourcePoint",
+      "locationQuality": "sourceProvided",
+      "publishedAt": null,
+      "sourceUpdatedAt": 1793491200000,
+      "sourceRetrievedAt": 1793491200000,
+      "occurredAt": 1793491140000,
+      "onsetAt": null,
+      "expiresAt": null,
+      "lifecycleStatus": "active",
+      "statusReason": "sourceReported",
+      "statusChangedAt": 1793491200000,
+      "displayUntil": 1793577540000,
+      "qualityFlags": [],
+      "headline": {
+        "language": "en",
+        "text": "Synthetic contract sample",
+        "isFallback": false
+      }
+    }
+  ]
+}

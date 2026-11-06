@@ -4,7 +4,7 @@ export const CONTACT_EMAIL = "support@myorbis.xyz";
 
 export const SITE = { name: "Orbis", defaultLocale: "en", locales: ["zh", "en"] } as const;
 export type Locale = (typeof SITE.locales)[number];
-export type LocalizedPage = "home" | "privacy";
+export type LocalizedPage = "home" | "privacy" | "vision";
 
 export function localizedPath(locale: Locale, page: LocalizedPage): string {
   return page === "home" ? `/${locale}/` : `/${locale}/${page}/`;

@@ -18,7 +18,7 @@ const fail = (msg: string): never => { throw new Error(`verify failed: ${msg}`);
 
 const required = [
   "index.html", "404.html", "zh/index.html", "en/index.html",
-  "zh/privacy/index.html", "en/privacy/index.html",
+  "zh/privacy/index.html", "en/privacy/index.html", "zh/vision/index.html", "en/vision/index.html",
   "sitemap.xml", "robots.txt", "_headers", "favicon.svg"
 ];
 for (const r of required) if (!files.some((f) => rel(f) === r)) fail(`missing ${r}`);
@@ -37,6 +37,7 @@ for (const removed of ["zh/product/index.html", "en/product/index.html"]) {
 }
 
 let jsGzip = 0;
+let visionJsGzip=0;
 const referencedAssets = new Set<string>();
 for (const file of files) {
   const ext = extname(file);
@@ -44,9 +45,10 @@ for (const file of files) {
     fail(`unfingerprinted asset present: ${rel(file)}`);
   }
   if ([".woff", ".woff2", ".ttf", ".otf"].includes(ext)) fail(`font file present: ${rel(file)}`);
-  if (ext === ".js") jsGzip += gzipSync(readFileSync(file)).byteLength;
+  if(ext === ".js"){const size=gzipSync(readFileSync(file)).byteLength;if(/^assets\/vision(?:-worker)?\./.test(rel(file)))visionJsGzip+=size;else jsGzip+=size;}
   if (ext === ".html") {
     const html = readFileSync(file, "utf8");
+    if(!/^(zh|en)\/vision\//.test(rel(file))&&/\/assets\/(?:vision|maplibre)[.-]/.test(html))fail(`map assets on non-map page: ${rel(file)}`);
     // `\ssrc=` (whitespace before src) avoids matching `data-src=`, whose `-src` a `\b` would wrongly accept.
     if (/<script(?![^>]*\ssrc=)/i.test(html)) fail(`inline script in ${rel(file)}`);
     // Both an inline <style> element and a style="…" attribute violate style-src 'self'.
@@ -67,4 +69,5 @@ for (const file of files.filter((candidate) => rel(candidate).startsWith("assets
   if (!referencedAssets.has(rel(file))) fail(`unreferenced asset: ${rel(file)}`);
 }
 if (jsGzip > 10 * 1024) fail(`JS gzip budget exceeded: ${jsGzip}`);
-console.log(JSON.stringify({ jsGzip, files: files.length }));
+if(visionJsGzip>1024*1024)fail(`Vision JS gzip budget exceeded: ${visionJsGzip}`);
+console.log(JSON.stringify({ visionJsGzip, jsGzip, files: files.length }));

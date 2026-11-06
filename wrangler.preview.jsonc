@@ -1,0 +1,68 @@
+// Isolated local preview: never bind the production domain, mail or namespaces.
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "orbis-web-preview-vision",
+  "main": "src/worker/entry.ts",
+  "compatibility_date": "2026-07-20",
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
+  "workers_dev": true,
+  "preview_urls": true,
+  "routes": [],
+  "vars": {
+    "ORBIS_PREVIEW": "true",
+    "VISION_ENABLED": "false",
+    "VISION_PUBLIC_ORIGIN": "https://myorbis.xyz",
+    "VISION_CN_ORIGIN": "",
+    "VISION_LIMITS": "",
+    "VISION_SESSION_EPOCH": "",
+    "VISION_CREDENTIAL_MODE": "assume-role",
+    "VISION_FC_ROLE_ARN": ""
+  },
+  "secrets": {
+    "required": []
+  },
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "VISION_QUOTA",
+        "class_name": "VisionQuota"
+      },
+      {
+        "name": "VISION_CACHE",
+        "class_name": "VisionCacheShard"
+      }
+    ]
+  },
+  "migrations": [
+    {
+      "tag": "vision-gateway-v1",
+      "new_sqlite_classes": [
+        "VisionQuota",
+        "VisionCacheShard"
+      ]
+    }
+  ],
+  "assets": {
+    "directory": "./dist",
+    "not_found_handling": "404-page",
+    "run_worker_first": [
+      "/api/*"
+    ]
+  },
+  "observability": {
+    "enabled": false,
+    "redact_query_string": true,
+    "head_sampling_rate": 0.1,
+    "logs": {
+      "enabled": false,
+      "invocation_logs": false
+    },
+    "traces": {
+      "enabled": false
+    }
+  },
+  "ratelimits": [],
+  "send_email": []
+}
