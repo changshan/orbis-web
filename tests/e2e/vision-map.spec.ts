@@ -216,3 +216,15 @@ test('feed status keeps a rotating live-refresh arrow, updated time, and no red 
   expect(await icon.evaluate(el=>el.getAnimations().some(a=>a.playState==='running'&&a.effect?.getTiming().iterations===Infinity))).toBe(true);
  }
 });
+
+test('orbiting dot follows the ring centerline at every sampled angle',async({page})=>{
+ await setup(page);await page.goto('/en/vision/');const icon=page.locator('#list-toggle .alert-signal');
+ for(let sample=0;sample<8;sample++){
+  const position=await icon.evaluate(el=>{
+   const ring=el.querySelector('.orbis-ring')!.getBoundingClientRect(),dot=el.querySelector('.orbis-dot')!.getBoundingClientRect();
+   const distance=Math.hypot((dot.x+dot.width/2)-(ring.x+ring.width/2),(dot.y+dot.height/2)-(ring.y+ring.height/2));
+   return{distance,radius:ring.width/2};
+  });
+  expect(Math.abs(position.distance-position.radius)).toBeLessThan(.3);await page.waitForTimeout(120);
+ }
+});
