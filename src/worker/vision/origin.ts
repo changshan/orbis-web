@@ -1,6 +1,6 @@
 import { getAuthorization } from "./aliyun-sign.cjs";
 import { Request as TeaRequest } from "@alicloud/tea-typescript";
-import { SnapshotResponse,ChangesResponse,CityResponse,VisionError } from "./contract.generated.cjs";
+import { SnapshotResponse,ChangesResponse,CityResponse,MapResponse,FeedResponse,VisionError } from "./contract.generated.cjs";
 import { failure } from "./gateway";
 import type { Envelope,Target } from "./gateway";
 import type { Settings } from "./config";
@@ -26,7 +26,7 @@ export async function fetchOrigin(config:Settings,target:Target,send:(request:Re
   const value=parsed as Record<string,unknown>;
   if(Object.keys(value).length===3 && Object.keys(value).every(k=>["Code","Message","RequestId"].includes(k)) && value.Code==="ResourceExhausted" && typeof value.Message==="string" && typeof value.RequestId==="string")return {status:429,body:await failure(429,"RATE_LIMITED").text()};
  }
- const validate=response.status===200?({snapshot:SnapshotResponse,changes:ChangesResponse,city:CityResponse}[target.kind]):VisionError;
+ const validate=response.status===200?({snapshot:SnapshotResponse,changes:ChangesResponse,city:CityResponse,map:MapResponse,feed:FeedResponse}[target.kind]):VisionError;
  if(!validate(parsed)){
   const error=(validate as typeof validate & {errors?:{instancePath?:unknown;keyword?:unknown}[]}).errors?.[0];
   const path=typeof error?.instancePath==="string"?error.instancePath:"";
@@ -39,4 +39,9 @@ export async function fetchOrigin(config:Settings,target:Target,send:(request:Re
   throw new Error("origin public contract rejected");
  }
  return {status:response.status,body};
+}
+
+export function responseCacheTtl(kind:string,parsed:Record<string,unknown>,cacheMs:number,tailMs:number,now:number):number {
+ const ttl=kind==="changes"&&!parsed.hasMore?tailMs:cacheMs;
+ return kind==="map"?Math.max(0,Math.min(ttl,Number(parsed.expiresAt)-now)):ttl;
 }

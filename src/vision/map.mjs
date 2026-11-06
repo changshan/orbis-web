@@ -1,15 +1,21 @@
 import {VisionClient} from './client';
 import {turnstileChallenge} from './turnstile';
 import * as maplibregl from 'maplibre-gl';
-import { applyChanges, visibleEvents, latestAlerts, diffAlerts, syncStatus, PRIMARY_HAZARDS, otherHazardTypes } from './model.mjs';
+import { applyChanges, diffAlerts, syncStatus, PRIMARY_HAZARDS, otherHazardTypes } from './model.mjs';
 import { shouldAnimate, pulseFrame, isRecentEvent } from './motion.mjs';
 import { localeFromPath,translate,eventText } from './i18n.mjs';
 import { VisionPipelineClient } from './sync.mjs';
+import { VisionViewportClient } from './viewport-sync.mjs';
+import { viewportFromBounds } from './viewport';
+import {mapFeatures} from './point-features.mjs';
 import { BASEMAPS,createBasemapController } from './basemap.mjs';
 const locale=localeFromPath(location.pathname),t=(key,values)=>translate(locale,key,values);
 const challengeRoot=document.getElementById('vision-challenge');
 const access=new VisionClient({origin:location.origin,challenge:turnstileChallenge(challengeRoot,document.querySelector('[data-vision-root]').dataset.siteKey,locale)});
-const pipeline=new VisionPipelineClient(locale,async(url)=>Response.json(await access.read(url)));
+const legacy=new VisionPipelineClient(locale);
+const pipeline=new VisionViewportClient(locale,async(url)=>Response.json(await access.read(url)));
+let mapPoints=[],mapView=null,feedReady=false,feedHasMore=false,feedRows=[],feedGeneration=0,viewGeneration=0,viewportTimer,searchTimer;
+let feedIdentity='',feedLoadedAt=0;
 let detailEvents=new Map(),detailStatus='loading',detailGeneration=0;
 const reduced=matchMedia('(prefers-reduced-motion: reduce)');
 const eventLabel=(event,field)=>eventText(event,field,locale);
@@ -37,7 +43,7 @@ function hazardMeta(type) {
   return (Object.hasOwn(hazards,type)?hazards[type]:null)||{name:t('unknownHazard',{code:type||'unknown'}),color:'#6C899B',icon:icon('M12 3 2 21h20L12 3Zm0 6v5m0 3v1')};
 }
 const hazardFilterName=type=>type==='avalanche'?t('avalancheFilter'):hazardMeta(type).name;
-let state = new Map(), cityIndex = new Map(), cities = [], cursor = '', selected = '', hazard = '', query = '';
+let state = new Map(), cityIndex = new Map(), cities = [], selected = '', hazard = '', query = '';
 let lastPoll = 0, failures = 0, polling = false, mapReady = false, map = null, simulatedFailure = false;
 let toastTimer, mapTimeout,basemapControl;
 let basemapId='liberty';
@@ -51,13 +57,8 @@ const clusterRadius = ['step',['get','point_count'],18,5,22,10,27];
 const mapStats = { startedAt: performance.now(), tileLoads: 0, loadedAt: null };
 const date = (value, zone = 'UTC') => new Intl.DateTimeFormat(locale==='zh'?'zh-CN':'en-GB', { month:'2-digit', day:'2-digit',
   hour:'2-digit', minute:'2-digit', hour12:false, timeZone:zone }).format(value);
-const allVisible = () => visibleEvents(state, { hazardType:hazard || undefined });
 function cityEvents(city, filtered = false) {
   return (cityIndex.get(city.placeKey)||[]).filter(event=>!event.removed&&event.lifecycleStatus==='active'&&(event.displayUntil==null||Date.now()<event.displayUntil)&&(!filtered||!hazard||event.hazardType===hazard||(hazard==='flooding'&&['flooding','riverFlood','flashFlood'].includes(event.hazardType))));
-}
-function currentCities() {
-  return cities.filter(city => (!query || `${city.name} ${city.nameEn} ${city.countryName} ${city.countryNameEn} ${city.countryCode}`.toLowerCase().includes(query))
-    && (!hazard || cityEvents(city,true).length));
 }
 function renderHazardControls() {
   document.querySelectorAll('.filters [data-hazard]').forEach(button=>{
@@ -79,7 +80,8 @@ function renderHazardControls() {
   $('other-hazard-label').textContent=label;
   const selectedIcon=specific?hazardMeta(hazard).icon:allHazardsIcon;
   if($('other-hazard-icon').innerHTML!==selectedIcon) $('other-hazard-icon').innerHTML=selectedIcon;
-  const options=['',...otherHazardTypes(state,Object.keys(hazards))];
+  const observed=new Map([...state,...(mapView?.hazardTypes||[]).map(type=>[type,{hazardType:type}])]);
+  const options=['',...otherHazardTypes(observed,Object.keys(hazards))];
   const markup=options.map(type=>{
     const name=type?hazardFilterName(type):t('all');
     const color=type?hazardMeta(type).color:'#6C899B';
@@ -105,7 +107,7 @@ function showOtherHazards(open,returnFocus=false) {
   if(returnFocus) $('other-hazard-toggle').focus({preventScroll:true});
 }
 function setHazardFilter(type) {
-  hazard=type;renderList();renderDetail();updateMap();
+  hazard=type;feedReady=false;renderList();renderDetail();void poll({changed:true});
 }
 function openOtherHazards(focusOption=false) {
   if(PRIMARY_HAZARDS.includes(hazard)) setHazardFilter('');
@@ -115,10 +117,10 @@ function openOtherHazards(focusOption=false) {
 function renderList({animate=false}={}) {
   if($('alert-feed').hidden) return;
   renderHazardControls();
-  const alerts=latestAlerts(state,cities,{hazardType:hazard||undefined,query});
+  const alerts=feedReady?feedRows.filter(({event})=>event.displayUntil==null||Date.now()<event.displayUntil):[];
   const changes=diffAlerts(previousAlerts,alerts);
   previousAlerts=alerts;
-  $('result-count').textContent=t('count',{count:alerts.length})+(alerts.length===100?t('countLimit'):'');
+  $('result-count').textContent=feedReady?t('count',{count:alerts.length})+(feedHasMore?t('countLimit'):''):t(feedSync.failed?'detailFailure':'listLoading');
   const list=$('city-list');
   const visible=animate&&!document.hidden&&!$('latest-panel').hidden&&!selected;
   // Reuse buttons by event identity so focus and a reader's scroll anchor survive polling.
@@ -145,7 +147,7 @@ function renderList({animate=false}={}) {
     const headline=eventLabel(event,'headline'),name=cityLabel(city);
     const row=before.get(event.eventId+'|'+city.placeKey)||document.createElement('button');
     row.className=`city-row ${selected===city.placeKey?'selected':''}`;
-    row.dataset.eventId=event.eventId+'|'+city.placeKey;row.dataset.place=city.placeKey;
+    row.dataset.eventId=event.eventId+'|'+city.placeKey;row.dataset.place=city.placeKey;row.disabled=!city.placeKey;
     row.setAttribute('aria-label',t('viewCity',{city:name,headline}));
     const markup=`<span class="hazard-icon">${h.icon}</span><span class="city-copy"><span class="city-name">${escape(name)}<span class="city-country">${escape(city.countryCode)} · ${escape(h.name)}</span>${fresh?`<span class="new-tag">${t('updated')}</span>`:''}</span><span class="city-subtitle">${escape(headline)}</span><span class="alert-time"><time datetime="${new Date(time).toISOString()}">${date(time,clockZone)}</time> ${t('clockZone')} · ${event.sourceUpdatedAt!=null?t('updated'):t('published')}</span></span><span class="row-arrow" aria-hidden="true">›</span>`;
     if(row.innerHTML!==markup) row.innerHTML=markup;
@@ -153,7 +155,7 @@ function renderList({animate=false}={}) {
     if(list.children[index]!==row) list.insertBefore(row,list.children[index]||null);
     return row;
   });
-  if(!alerts.length) list.innerHTML=`<p class="empty">${t('empty')}</p>`;
+  if(!alerts.length) list.innerHTML=`<p class="empty">${feedReady?t('empty'):t(feedSync.failed?'detailFailure':'listLoading')}</p>`;
   if(atTop) list.scrollTop=0;
   else if(anchor&&ids.has(anchor[0])) list.scrollTop+=before.get(anchor[0]).getBoundingClientRect().top-oldRects.get(anchor[0]).top;
   else list.scrollTop=oldScroll;
@@ -197,15 +199,15 @@ function selectCity(placeKey, fly = true) {
   if($('latest-panel').hidden){$('latest-panel').hidden=false;$('list-toggle').hidden=true;$('list-toggle').setAttribute('aria-expanded','true');requestAnimationFrame(()=>map?.resize());}
   renderList(); renderDetail();
   if (mapReady && fly) {
-    map.flyTo({ center:[city.longitude,city.latitude],zoom:5.3,
+    map.flyTo({ center:[city.longitude,city.latitude],zoom:Math.max(6,map.getZoom()),
       padding:{right:0,left:0,top:0,bottom:0},
       duration:matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 950 });
   }
   updateMap();
   detailEvents=new Map();detailStatus='loading';renderDetail();const generation=++detailGeneration;
-  pipeline.detail(placeKey).then(data=>{
+  pipeline.detail(placeKey,mapView).then(data=>{
     if(selected!==placeKey||generation!==detailGeneration)return;
-    detailEvents=new Map(data.events.map(event=>[event.eventId,pipeline.legacy(event)]));detailStatus='ready';renderDetail();
+    detailEvents=new Map(data.events.map(event=>[event.eventId,legacy.legacy(event)]));cityIndex.set(placeKey,[...detailEvents.values()]);detailStatus='ready';renderDetail();
   }).catch(()=>{if(selected===placeKey&&generation===detailGeneration){detailStatus='failed';renderDetail();}});
 }
 function renderDetail() {
@@ -220,23 +222,12 @@ function renderDetail() {
   }).join(''):`<p class="empty">${t('detailEmpty')}</p>`}</div>`;
   $('detail').querySelectorAll('.event-type').forEach((el,i)=>el.style.setProperty('--hazard',hazardMeta(events[i].hazardType).color));
 }
-function features() {
-  return { type:'FeatureCollection', features:currentCities().map(city => {
-    const events = cityEvents(city,true), first = events[0];
-    return { type:'Feature', geometry:{type:'Point',coordinates:[city.longitude,city.latitude]},
-      properties:{placeKey:city.placeKey,name:cityLabel(city),count:events.length,
-        recentCount:events.filter(event=>isRecentEvent(event,Date.now())).length,
-        color:first?hazardMeta(first.hazardType).color:'#91a4af',selected:city.placeKey === selected ? 1 : 0} };
-  }) };
-}
+function features() {return mapFeatures(mapPoints,selected,Date.now(),type=>hazardMeta(type).color);}
 function updateMap() {
   if (!mapReady) return;
   const data = features();
   hasAnimatedAlerts = data.features.some(feature=>feature.properties.count>0);
   map.getSource('cities')?.setData(data);
-  clearTimeout(freshTimer);
-  const expiries = allVisible().filter(event=>isRecentEvent(event,Date.now())).map(event=>event.recordedAt+30000);
-  if (expiries.length) freshTimer = setTimeout(()=>{renderList();updateMap();},Math.max(1,Math.min(...expiries)-Date.now()));
   syncMotion();
 }
 function motionAllowed() {
@@ -331,27 +322,54 @@ function failFeedSync() {
   feedSync={...feedSync,refreshing:false,failed:true,feedbackUntil:0};
   renderFeedStatus();
 }
-function applyView(data,animate=false) {
+function cityPresentation(city) {
  const names=new Intl.DisplayNames(['en'],{type:'region'});
- cities=data.cities.map(city=>({...city,countryNameEn:names.of(city.countryCode)}));
- state=applyChanges(new Map(),data.events.map(event=>({operation:'upsert',event})));cityIndex=new Map();
- for(const event of state.values())for(const key of event.placeKeys){if(!cityIndex.has(key))cityIndex.set(key,[]);cityIndex.get(key).push(event);}
- cursor=data.cursor;renderList({animate});renderDetail();updateMap();
- const degraded=data.readStatus?.isStale||data.readStatus?.state==='degraded';
- liveDegraded=!!degraded;
- $('feed-status').dataset.degraded=String(!!degraded);$('feed-status').dataset.degradedLabel=t('degraded');
+ return {...city,name:city.name.text,nameEn:city.name.text,latitude:city.point.latitude,longitude:city.point.longitude,
+  timeZone:'UTC',countryName:city.countryCode,countryNameEn:names.of(city.countryCode)};
 }
-async function snapshot(){applyView(await pipeline.snapshot());lastPoll=Date.now();}
-async function poll(){
- if(polling||document.hidden)return;polling=true;beginFeedSync();
+function mergeCities(incoming) {
+ const next=new Map(cities.filter(city=>city.placeKey===selected).map(city=>[city.placeKey,city]));
+ for(const city of incoming)next.set(city.placeKey,cityPresentation(city));
+ for(const point of mapPoints)if(point.city&&!next.has(point.city.placeKey))next.set(point.city.placeKey,cityPresentation({...point.city,point:point.point,events:[]}));
+ cities=[...next.values()];
+}
+function applyMap(data) {
+ mapView=data;mapPoints=data.points;mergeCities([...legacy.cities.values()]);updateMap();renderHazardControls();
+ liveDegraded=!!(data.readStatus?.isStale||data.readStatus?.state==='degraded');
+ $('feed-status').dataset.degraded=String(liveDegraded);$('feed-status').dataset.degradedLabel=t('degraded');
+ clearTimeout(freshTimer);const delay=Math.max(1,data.expiresAt-Date.now());
+ freshTimer=setTimeout(()=>{updateMap();void poll({changed:true});},Math.min(delay,2147483647));
+}
+async function loadFeed(pin=mapView) {
+ if(!pin||$('latest-panel').hidden||selected)return 0;
+ const generation=++feedGeneration,term=query,filter=hazard,identity=pin.snapshotId+'|'+term+'|'+filter;
+ if(feedReady&&identity===feedIdentity&&Date.now()-feedLoadedAt<10000)return 0;
+ const data=await pipeline.feed(term,filter,pin);
+ if(generation!==feedGeneration||term!==query||filter!==hazard||mapView!==pin)return 0;
+ legacy.events=new Map(data.events.map(event=>[event.eventId,event]));legacy.cities=new Map(data.cities.map(city=>[city.placeKey,city]));
+ const presentation=legacy.result();
+ const before=state;state=applyChanges(new Map(),presentation.events.map(event=>({operation:'upsert',event})));cityIndex=new Map();
+ for(const event of state.values())for(const key of event.placeKeys){if(!cityIndex.has(key))cityIndex.set(key,[]);cityIndex.get(key).push(event);}
+ mergeCities(data.cities);feedHasMore=data.hasMore;feedReady=true;feedIdentity=identity;feedLoadedAt=Date.now();
+ const byKey=new Map(cities.map(city=>[city.placeKey,city]));
+ feedRows=[...state.values()].map(event=>({event,city:byKey.get(event.placeKeys[0])||{placeKey:'',name:t('noAssociatedCity'),nameEn:t('noAssociatedCity'),countryCode:event.countryCodes?.join(', ')||''},time:event.sourceUpdatedAt??event.publishedAt??event.recordedAt??0}));
+ renderList({animate:true});return presentation.events.filter(event=>!before.has(event.eventId)||before.get(event.eventId).recordVersion<event.recordVersion).length;
+}
+function visibleWindow() {
+ if(!mapReady)return '0/0/0/1/1';const bounds=map.getBounds();
+ return viewportFromBounds({west:bounds.getWest(),south:bounds.getSouth(),east:bounds.getEast(),north:bounds.getNorth()},map.getZoom()).key;
+}
+async function poll({changed=false}={}){
+ if((polling&&!changed)||document.hidden)return;polling=true;const generation=++viewGeneration,view=visibleWindow(),filter=hazard;beginFeedSync();
  try{
-  const data=cursor?await pipeline.poll():await pipeline.snapshot();
-  const count=data.events.filter(event=>!state.has(event.eventId)||state.get(event.eventId).recordVersion<event.recordVersion).length;
-  applyView(data,true);finishFeedSync(count);failures=0;
- }catch(error){
-  if(error.code==='reset'||error.resetRequired){pipeline.cursor=null;cursor='';}
-  failFeedSync();failures++;
- }finally{lastPoll=Date.now();polling=false;}
+  const data=await pipeline.load(view,filter);
+  if(generation!==viewGeneration)return;
+  const oldSequence=mapView?.viewSequence;applyMap(data);
+  if(selected&&(oldSequence!==data.viewSequence||detailStatus==='failed'))selectCity(selected,false);
+  const count=await loadFeed(data);if(generation!==viewGeneration)return;
+  finishFeedSync(count);failures=0;
+ }catch(error){if(generation===viewGeneration){failFeedSync();failures++;renderList();}}
+ finally{if(generation===viewGeneration){lastPoll=Date.now();polling=false;}}
 }
 function setMapFailed(message) {
   $('map-loading').hidden = true; $('map-error').hidden = false;
@@ -368,8 +386,7 @@ function applyLanguage() {
   updateMap();
 }
 function installVisionLayers() {
-  map.addSource('cities',{type:'geojson',data:features(),cluster:true,clusterMaxZoom:5,clusterRadius:42,
-    clusterProperties:{activeCount:['+',['get','count']],recentCount:['+',['get','recentCount']]}});
+  map.addSource('cities',{type:'geojson',data:features(),cluster:false});
   map.addLayer({id:'vision-clusters',type:'circle',source:'cities',filter:['has','point_count'],paint:{
     'circle-color':'#1C6BB0','circle-radius':clusterRadius,
     'circle-stroke-width':6,'circle-stroke-color':'rgba(28,107,176,0.16)'}});
@@ -425,19 +442,20 @@ async function initMap() {
         mapReady=true;clearTimeout(mapTimeout);
         mapStats.loadedAt=Math.round(performance.now()-begin);
         $('map-loading').hidden=true;$('map-error').hidden=true;
-        installVisionLayers();
+        installVisionLayers();void poll({changed:true});
       }
     });
       for (const layer of ['vision-cities','vision-city-labels']) map.on('click',layer,event => selectCity(event.features[0].properties.placeKey));
       map.on('click','vision-clusters',async event => {
         const cluster = event.features[0];
-        const zoom = await map.getSource('cities').getClusterExpansionZoom(cluster.properties.cluster_id);
-        map.easeTo({center:cluster.geometry.coordinates,zoom,duration:reduced.matches?0:500});
+        const bounds=JSON.parse(cluster.properties.bounds);
+        map.fitBounds([[bounds.west,bounds.south],[bounds.east,bounds.north]],{padding:55,maxZoom:Math.min(16,map.getZoom()+3),duration:reduced.matches?0:500});
       });
       for (const layer of ['vision-clusters','vision-cities','vision-city-labels']) {
         map.on('mouseenter',layer,() => map.getCanvas().style.cursor='pointer');
         map.on('mouseleave',layer,() => map.getCanvas().style.cursor='');
       }
+    map.on('moveend',()=>{clearTimeout(viewportTimer);viewportTimer=setTimeout(()=>void poll({changed:true}),180);});
     mapTimeout = setTimeout(() => { if (!mapReady) setMapFailed(t('mapTimeout')); },20000);
   } catch (error) { setMapFailed(String(error.message)); }
 }
@@ -465,7 +483,7 @@ function setListVisible(visible) {
   $('list-toggle').hidden=visible;
   if(!visible) showOtherHazards(false);
   $('list-toggle').setAttribute('aria-expanded',String(visible));
-  if(visible) renderList();
+  if(visible){renderList();void poll({changed:true});}
   updateMap();
   requestAnimationFrame(()=>{
     map?.resize();
@@ -475,7 +493,8 @@ function setListVisible(visible) {
 $('list-toggle').addEventListener('click',()=>{setListVisible(true);if(feedSync.failed)void poll();});
 $('panel-close').addEventListener('click',()=>setListVisible(false));
 $('detail').addEventListener('click', event => { if(event.target.closest('.detail-close')){selected='';renderDetail();renderList();updateMap();} });
-$('search').addEventListener('input', event => { query=event.target.value.trim().toLowerCase();renderList();updateMap(); });
+$('search').maxLength=64;
+$('search').addEventListener('input', event => {query=event.target.value.trim().slice(0,64).toLowerCase();feedGeneration++;feedReady=false;renderList();clearTimeout(searchTimer);searchTimer=setTimeout(()=>void poll({changed:true}),250);});
 $('hazard-controls').addEventListener('click',event=>{
   const button=event.target.closest('[data-hazard]');
   if(!button) return;
@@ -502,7 +521,7 @@ $('hazard-controls').addEventListener('focusout',event=>{
 $('retry-map').addEventListener('click',()=>{clearTimeout(mapTimeout);stopMotion();mapReady=false;map?.remove();$('map-loading').hidden=false;$('map-error').hidden=true;syncMotion();initMap();});
 document.addEventListener('keydown',event=>{if(event.key==='Escape'){if(!$('other-hazard-menu').hidden){showOtherHazards(false,true);return;}selected='';renderDetail();renderList();updateMap();}});
 document.addEventListener('visibilitychange',()=>{syncMotion();renderFeedStatus();if(!document.hidden){updateMap();poll();}});
-window.addEventListener('pagehide',()=>{clearTimeout(freshTimer);clearTimeout(feedStatusTimer);feedIconAnimation?.cancel();feedPhase='';stopMotion();});
+window.addEventListener('pagehide',()=>{clearTimeout(freshTimer);clearTimeout(viewportTimer);clearTimeout(searchTimer);clearTimeout(feedStatusTimer);feedIconAnimation?.cancel();feedPhase='';stopMotion();});
 window.addEventListener('pageshow',()=>{syncMotion();renderFeedStatus();if(mapReady)updateMap();});
 const interval=setInterval(()=>{if(!document.hidden&&Date.now()-lastPoll>=10000)void poll();},500);
 reduced.addEventListener('change',()=>{syncMotion();renderFeedStatus();});

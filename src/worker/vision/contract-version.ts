@@ -1,2 +1,2 @@
 // Generated canonical contract identity.
-export const contractHash = "6eaac9b996eb3204919dc54d5dac67f9a926e2ae00114fb272bc62370faaa0be";
+export const contractHash = "7d6021f3fe28fcb0a2e08fa36112cc688090d16b7c55e17a8404f0f15e3f825d";

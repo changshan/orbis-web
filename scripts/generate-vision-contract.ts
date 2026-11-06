@@ -9,7 +9,7 @@ const input = process.argv[2];
 if (!input) throw new Error("Pass canonical shared/vision/openapi.yaml");
 const bytes = readFileSync(input);
 const document = parse(bytes.toString(), { maxAliasCount: 100000 });
-const names = ["SnapshotResponse", "ChangesResponse", "CityResponse", "VisionError", "PlaceKey"];
+const names = ["SnapshotResponse", "ChangesResponse", "CityResponse", "MapResponse", "FeedResponse", "VisionError", "PlaceKey"];
 const defs: Record<string, unknown> = {};
 function visit(name: string) {
   if (name in defs) return;

@@ -59,7 +59,7 @@ export class VisionClient {
  async read(path:string):Promise<Record<string,unknown>>{
   try{
    this.assertOpen();const u=new URL(path,this.options.origin);
-   if(!path.startsWith("/api/vision/")||u.origin!==this.options.origin||u.hash||!/^\/api\/vision\/(snapshot|changes|cities\/[^/]+)$/.test(u.pathname))throw new VisionClientError("invalid");
+   if(!path.startsWith("/api/vision/")||u.origin!==this.options.origin||u.hash||!/^\/api\/vision\/(snapshot|changes|map|feed|cities\/[^/]+)$/.test(u.pathname))throw new VisionClientError("invalid");
    await this.ensureSession();const generation=this.generation;let result=await this.request(path);
    if(result.response.status===401){if(generation===this.generation)this.renewAt=0;await this.ensureSession();result=await this.request(path);}
    if(result.response.status!==200)this.reject(result.response,result.value);

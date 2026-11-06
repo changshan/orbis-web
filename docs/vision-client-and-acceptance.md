@@ -1,5 +1,7 @@
 # Vision 会话组件、本地恢复与只读云验收
 
+当前公开地图已改为按需 map/feed/固定水位城市读取；见[2026-11-06 生产交付](vision-production-acceptance.md)。下文前半部分保留 2026-11-03 阶段工具交付的历史边界。
+
 2026-11-03。依据最新[开发方案](https://my.feishu.cn/wiki/CwNzwK6OniVwYgksUDbc2fqKnbh) rev 12 和[技术方案](https://my.feishu.cn/wiki/ULPIw8U0ziYE4ckZiwacHynGnff) rev 21 的相关章节。这里交付访问组件和联调工具；地图/列表的正式挂载仍随 W12/W13 复用定稿页面，不另设计地图。生产 Vision 保持关闭。
 
 ## 会话与挑战组件

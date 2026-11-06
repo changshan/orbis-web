@@ -23,10 +23,13 @@ async function setup(page:Page,{mapFailure=false,challenge=false,unknown=false,b
  await page.route('**/api/vision/**',async route=>{
   const url=new URL(route.request().url());calls.push(url.pathname);const lang=url.searchParams.get('lang')||'en';
   if(url.pathname.endsWith('/session')){minted++;await route.fulfill({status:challenge&&minted===1?403:200,json:challenge&&minted===1?{code:'FORBIDDEN'}:{expiresAt:Date.now()+900000}});return;}
-  let data=fixture(url.pathname.includes('/cities/')?'city.ok':url.pathname.endsWith('/changes')?'changes.ok':'snapshot.ok');
-  data.language=lang;data.readStatus={...data.readStatus,state:'degraded',isStale:true};
+  let data=fixture(url.pathname.includes('/cities/')?'city.ok':url.pathname.endsWith('/map')?'map.ok':url.pathname.endsWith('/feed')?'feed.ok':url.pathname.endsWith('/changes')?'changes.ok':'snapshot.ok');
+  data.language=lang;
+  if(url.pathname.endsWith('/map')){data.view=url.searchParams.get('view')||'0/0/0/1/1';data.hazard=url.searchParams.get('hazard')||'';data.expiresAt=Date.now()+60000;if(unknown)data.hazardTypes=['futureHazard'];}
+  if(url.pathname.endsWith('/feed')){data.hazard=url.searchParams.get('hazard')||'';data.queryHash=(await import('node:crypto')).createHash('sha256').update(url.searchParams.get('query')||'').digest('hex');}
+  data.readStatus={...data.readStatus,state:'degraded',isStale:true};
   if(data.events)for(const event of data.events){event.displayUntil=Date.now()+600000;event.sourceRetrievedAt=Date.now();if(unknown)event.hazardType='futureHazard';}
-  if(url.pathname.includes('/cities/')){data.events[0].headline.text='<img src=x onerror=alert(1)>';data.events[0].sourceUrl=badLink?'javascript:alert(1)':'https://example.com/synthetic-event';data.events[0].recordVersion+=1;}
+  if(url.pathname.includes('/cities/')){data.events[0].headline.text='<img src=x onerror=alert(1)>';data.events[0].sourceUrl=badLink?'javascript:alert(1)':'https://example.com/synthetic-event';}
   await route.fulfill({json:data});
  });
  // Exercise the actual generated page under its restrictive CSP, not only the static test server.
@@ -121,10 +124,26 @@ test('vector basemaps actually paint geography after each layer switch',async({p
 
 
 test('connection failures use the live-alert radar instead of a left status and retry button',async({page})=>{
- await setup(page);let reads=0;
- await page.route('**/api/vision/snapshot?**',async route=>{reads++;if(reads<=3){await route.fulfill({status:503,json:{code:'UNAVAILABLE',retryAfterSeconds:1}});return;}const data=fixture('snapshot.ok');data.events.forEach((event:any)=>event.displayUntil=Date.now()+600000);await route.fulfill({json:data});});
+ await setup(page);let recover=false;
+ await page.route('**/api/vision/map?**',async route=>{if(!recover){await route.fulfill({status:503,json:{code:'UNAVAILABLE',retryAfterSeconds:1}});return;}const data=fixture('map.ok');data.view=new URL(route.request().url()).searchParams.get('view')||'0/0/0/1/1';data.expiresAt=Date.now()+60000;await route.fulfill({json:data});});
  await page.goto('/en/vision/');const toggle=page.locator('#list-toggle');await expect(toggle).toHaveAttribute('data-connection','error',{timeout:10000});
  await expect(page.locator('.map-status,.connection,#retry-data')).toHaveCount(0);await expect(toggle.locator('.signal-broken')).toBeVisible();await expect(toggle).toHaveAttribute('title',/connection|retry|interrupted/i);
- await toggle.click();await expect(page.locator('.city-row')).toHaveCount(1,{timeout:10000});await page.locator('#panel-close').click();await expect(toggle).not.toHaveAttribute('data-connection','error');
+ recover=true;await toggle.click();await expect(page.locator('.city-row')).toHaveCount(1,{timeout:10000});await page.locator('#panel-close').click();await expect(toggle).not.toHaveAttribute('data-connection','error');
  await page.locator('#basemap-picker summary').click();await expect(page.locator('#basemap-picker button')).toHaveCount(2);await expect(page.getByRole('button',{name:'Simple',exact:true})).toHaveCount(0);
+});
+
+test('initial map uses one bounded response and defers lists and city details',async({page})=>{
+ const f=await setup(page);await page.goto('/en/vision/');await expect(page.locator('#sync-label')).toContainText('Updates are delayed');
+ expect(f.calls.some(path=>path.endsWith('/map'))).toBe(true);expect(f.calls.some(path=>/snapshot|changes|feed|cities/.test(path))).toBe(false);
+ await page.locator('#list-toggle').click();await expect(page.locator('.city-row')).toHaveCount(1);
+ expect(f.calls.some(path=>path.endsWith('/feed'))).toBe(true);expect(f.calls.some(path=>path.includes('/cities/'))).toBe(false);
+ await page.locator('.city-row').click();await expect(page.locator('#detail h3')).toBeVisible();expect(f.calls.some(path=>path.includes('/cities/'))).toBe(true);
+});
+
+test('an unloaded list does not claim zero alerts',async({page})=>{
+ await setup(page);let release!:()=>void;const gate=new Promise<void>(resolve=>release=resolve);
+ await page.route('**/api/vision/feed?**',async route=>{await gate;await route.fallback();});
+ await page.goto('/en/vision/');await expect(page.locator('#sync-label')).toContainText('Updates are delayed');await page.locator('#list-toggle').click();
+ await expect(page.locator('#result-count')).toHaveText('Loading alerts…');await expect(page.locator('#city-list')).toContainText('Loading alerts…');
+ release();await expect(page.locator('.city-row')).toHaveCount(1);
 });

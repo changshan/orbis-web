@@ -1,3 +1,4 @@
+import {parseViewport} from "../../vision/viewport";
 import { Buffer } from "node:buffer";
 import { PlaceKey, VisionError } from "./contract.generated.cjs";
 export interface GatewayConfig { publicOrigin:string; epoch:string; key:string; sessionMs:number; }
@@ -8,7 +9,7 @@ function dependencyReason(error:unknown):DependencyReason {
  const message=error instanceof Error?error.message:"";
  return /SQL|sqlite|storage/i.test(message)?"storage":/different request|I\/O.*context/i.test(message)?"context":/RPC|serializ|clone/i.test(message)?"rpc":/overload/i.test(message)?"overloaded":/CPU|memory|resource limit/i.test(message)?"resource":/timeout|connection|network/i.test(message)?"transport":"dependency";
 }
-export interface Target { kind:"snapshot"|"changes"|"city"; target:string; language:string; token?:string; tokenKind?:"page"|"cursor"; }
+export interface Target { kind:"snapshot"|"changes"|"city"|"map"|"feed"; target:string; language:string; token?:string; tokenKind?:"page"|"cursor"|"map"; }
 export interface GatewayPorts {
  now():number;
  onUnavailable?(reason:DependencyReason):void;
@@ -37,18 +38,22 @@ export function normalizeTarget(raw:string):Target {
   if(values.has(key)||/[\x00-\x1f\x7f]/.test(value))throw new GatewayFailure(400,"INVALID_ARGUMENT");values.set(key,value);
  }
  const language=values.get("lang")??"en";if(!["en","zh"].includes(language))throw new GatewayFailure(400,"INVALID_ARGUMENT");
- let kind:Target["kind"],tokenName:string|undefined,canonical=path;
- if(path==="/api/vision/snapshot"){kind="snapshot";tokenName="pageToken";}
- else if(path==="/api/vision/changes"){kind="changes";tokenName="cursor";if(!values.has(tokenName))throw new GatewayFailure(400,"INVALID_ARGUMENT");}
- else if(path.startsWith("/api/vision/cities/")){
-  kind="city";const city=path.slice("/api/vision/cities/".length);
-  if(city.length>256 || /[/\\%\x00-\x20\x7f]/.test(city)||!PlaceKey(city))throw new GatewayFailure(400,"INVALID_ARGUMENT");canonical="/api/vision/cities/"+encodeURIComponent(city);
+ let kind:Target["kind"],tokenName:string|undefined,canonical=path;let tokenKind:Target["tokenKind"];const allowed=new Set(["lang"]);
+ if(path==="/api/vision/snapshot"){kind="snapshot";tokenName="pageToken";tokenKind="page";}
+ else if(path==="/api/vision/changes"){kind="changes";tokenName="cursor";tokenKind="cursor";if(!values.has(tokenName))throw new GatewayFailure(400,"INVALID_ARGUMENT");}
+ else if(path==="/api/vision/map"||path==="/api/vision/feed"){
+  kind=path.endsWith("/map")?"map":"feed";tokenName="cursor";tokenKind="map";allowed.add("hazard");allowed.add(kind==="map"?"view":"query");
+  const hazard=values.get("hazard")??"";if(hazard&&!/^[A-Za-z][A-Za-z0-9_-]{0,63}$/.test(hazard))throw new GatewayFailure(400,"INVALID_ARGUMENT");
+  if(kind==="map"){try{values.set("view",parseViewport(values.get("view")).key);}catch{throw new GatewayFailure(400,"INVALID_ARGUMENT");}}
+  else if((values.get("query")??"").length>64)throw new GatewayFailure(400,"INVALID_ARGUMENT");
+ }else if(path.startsWith("/api/vision/cities/")){
+  kind="city";tokenName="cursor";tokenKind="map";const city=path.slice("/api/vision/cities/".length);
+  if(city.length>256||/[/\\%\x00-\x20\x7f]/.test(city)||!PlaceKey(city))throw new GatewayFailure(400,"INVALID_ARGUMENT");canonical="/api/vision/cities/"+encodeURIComponent(city);
  }else throw new GatewayFailure(404,"INVALID_ARGUMENT");
- for(const key of values.keys())if(key!=="lang"&&key!==tokenName)throw new GatewayFailure(400,"INVALID_ARGUMENT");
- const token=tokenName?values.get(tokenName):undefined;
- if(token!==undefined && (token.length>2048||!/^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/.test(token)))throw new GatewayFailure(400,"INVALID_CURSOR");
- const params=new URLSearchParams({lang:language});if(token!==undefined)params.set(tokenName!,token);
- return {kind,target:canonical+"?"+params,language,...(token!==undefined?{token,tokenKind:kind==="snapshot"?"page" as const:"cursor" as const}:{})};
+ if(tokenName)allowed.add(tokenName);for(const key of values.keys())if(!allowed.has(key))throw new GatewayFailure(400,"INVALID_ARGUMENT");
+ const token=tokenName?values.get(tokenName):undefined;if(token!==undefined&&(token.length>2048||!/^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/.test(token)))throw new GatewayFailure(400,"INVALID_CURSOR");
+ const params=new URLSearchParams({lang:language});for(const key of ["view","hazard","query"])if(values.has(key))params.set(key,values.get(key)!);if(token!==undefined)params.set(tokenName!,token);
+ return {kind,target:canonical+"?"+params,language,...(token!==undefined?{token,tokenKind}:{})};
 }
 interface Claims { kind:string; expiresAt:number; language?:string; originToken?:string; sid?:string; }
 export class TokenCodec {
@@ -79,13 +84,13 @@ export class TokenCodec {
 }
 export async function wrapTokens(body:string,target:Target,codec:TokenCodec,now:number):Promise<string>{
  const value=JSON.parse(body);
- for(const field of ["resumeCursor","nextCursor","nextPageToken"]){
+ for(const field of ["resumeCursor","nextCursor","nextPageToken","mapCursor"]){
   if(typeof value[field]!=="string")continue;
   // Only called after validating a trusted origin response. Preserve the origin's absolute lifetime.
   const original=value[field] as string;let expiresAt:number;
   try{expiresAt=JSON.parse(Buffer.from(original.split(".")[0]!,"base64url").toString()).expiresAt;}catch{throw new Error("invalid origin token");}
   if(!Number.isSafeInteger(expiresAt)||expiresAt<=now)throw new Error("expired origin token");
-  value[field]=await codec.sign({kind:field==="nextPageToken"?"page":"cursor",language:target.language,originToken:original,expiresAt:Math.min(expiresAt,now+300000)});
+  value[field]=await codec.sign({kind:field==="nextPageToken"?"page":field==="mapCursor"?"map":"cursor",language:target.language,originToken:original,expiresAt:Math.min(expiresAt,now+300000)});
  }
  return JSON.stringify(value);
 }

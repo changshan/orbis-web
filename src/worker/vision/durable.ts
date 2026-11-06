@@ -3,7 +3,7 @@ import { settings,type Settings } from "./config";
 import { failure,type Envelope,type Target,type DependencyReason } from "./gateway";
 import { CredentialCache } from "./credentials";
 import { assumeGatewayRole } from "./sts";
-import { fetchOrigin } from "./origin";
+import { fetchOrigin,responseCacheTtl } from "./origin";
 import { QuotaCore,SqlCache,type Rule } from "./state";
 import { contractHash } from "./contract-version";
 import { digest } from "./runtime";
@@ -42,7 +42,7 @@ export class VisionCacheShard extends DurableObject<VisionBindings>{
    const signed=c.credentialMode==="assume-role"?{...c,...await global.credentialsFor(permit.lease)}:c;
    stage="origin_transport";const result=await fetchOrigin(signed,target,async request=>{const response=await fetch(request);received=true;return response;});
    await global.finish(permit.lease,result.status<500,false);
-   stage="storage";if(result.status===200){const parsed=JSON.parse(result.body);const ttl=target.kind==="changes"&&!parsed.hasMore?c.limits.tailTtlMs:c.limits.cacheTtlMs;this.cache.put(key,result.body,ttl,Date.now(),c.limits.cacheEntries,c.limits.cacheBytes);await this.ctx.storage.setAlarm(Date.now()+c.limits.cacheTtlMs);}
+   stage="storage";if(result.status===200){const parsed=JSON.parse(result.body);const ttl=responseCacheTtl(target.kind,parsed,c.limits.cacheTtlMs,c.limits.tailTtlMs,Date.now());if(ttl>0)this.cache.put(key,result.body,ttl,Date.now(),c.limits.cacheEntries,c.limits.cacheBytes);await this.ctx.storage.setAlarm(Date.now()+c.limits.cacheTtlMs);}
    console.log(JSON.stringify({area:"vision",status:result.status,outcome:"origin"}));return result.status===503?{...result,failureReason:"origin_response"}:result;
   }catch(error){
    if(error instanceof Error&&error.message==="origin public contract rejected")stage="origin_contract";
