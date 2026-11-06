@@ -194,3 +194,21 @@ test('Chinese input composition waits for complete text before searching',async(
  await page.waitForTimeout(350);expect(searches).not.toContain('bei');
  await page.locator('#search').evaluate(node=>{const input=node as HTMLInputElement;input.value='北京';input.dispatchEvent(new CompositionEvent('compositionend',{bubbles:true,data:'北京'}));});await expect.poll(()=>searches.includes('北京')).toBe(true);
 });
+
+test('feed status keeps a rotating live-refresh arrow, updated time, and no red stale copy',async({page})=>{
+ await setup(page);
+ for(const lang of ['zh','en']){
+  await page.goto('/'+lang+'/vision/');await page.locator('#list-toggle').click();await expect(page.locator('.city-row')).toHaveCount(1);
+  const status=page.locator('#feed-status'),icon=page.locator('#feed-status-icon');
+  await expect(page.locator('#feed-status-text')).toHaveText(lang==='zh'?'实时刷新':'Live refresh');
+  await expect(page.locator('#feed-sync-time')).toContainText(lang==='zh'?'更新于':'Updated');
+  await expect(status).toHaveAttribute('data-degraded','true');
+  expect(await status.evaluate(el=>getComputedStyle(el,'::after').content)).toMatch(/^(none|normal|"")$/);
+  await expect(icon).toHaveText('↻');
+  await expect.poll(()=>icon.evaluate(el=>el.getAnimations().filter(a=>a.playState==='running'&&a.effect?.getTiming().iterations===Infinity).length)).toBe(1);
+  const before=await icon.evaluate(el=>getComputedStyle(el).transform);await page.waitForTimeout(160);expect(await icon.evaluate(el=>getComputedStyle(el).transform)).not.toBe(before);
+  await expect(status).toHaveAttribute('data-state','live',{timeout:10000});
+  await expect(page.locator('#feed-status-text')).toHaveText(lang==='zh'?'实时刷新':'Live refresh');
+  expect(await icon.evaluate(el=>el.getAnimations().some(a=>a.playState==='running'&&a.effect?.getTiming().iterations===Infinity))).toBe(true);
+ }
+});

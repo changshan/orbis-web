@@ -296,8 +296,10 @@ function renderFeedStatus() {
   const connection=phase==='error'?'error':phase==='background'?'paused':phase==='connecting'||phase==='refreshing'?'connecting':liveDegraded?'degraded':'live';
   const status=t(connection==='error'?'connectionLost':connection==='paused'?'feedBackground':connection==='connecting'?'connecting':connection==='degraded'?'degraded':'connected');
   $('list-toggle').dataset.connection=connection;$('list-toggle').title=t('latest')+' · '+status;$('sync-label').textContent=status;
+  const autoRefresh=phase!=='error'&&phase!=='background';
   $('feed-status').dataset.state=phase;
-  $('feed-status-text').textContent=t(keys[phase],{count:feedSync.changedCount});
+  $('feed-status').dataset.autoRefresh=String(autoRefresh);
+  $('feed-status-text').textContent=t(autoRefresh&&phase!=='connecting'?'feedRefreshing':keys[phase]);
   const time=$('feed-sync-time');
   time.hidden=!feedSync.lastSuccessAt;
   if(feedSync.lastSuccessAt) {
@@ -305,16 +307,13 @@ function renderFeedStatus() {
     time.textContent=t('syncedAt',{time:syncClock.format(feedSync.lastSuccessAt)});
     time.title=date(feedSync.lastSuccessAt,clockZone)+' '+t('clockZone');
   }
-  if(phase!==feedPhase) {
-    feedPhase=phase;feedIconAnimation?.cancel();feedIconAnimation=null;
+  const iconPhase=autoRefresh?'refreshing':phase;
+  if(iconPhase!==feedPhase) {
+    feedPhase=iconPhase;feedIconAnimation?.cancel();feedIconAnimation=null;
     const icon=$('feed-status-icon');
-    icon.textContent=phase==='refreshing'||phase==='connecting'?'↻':phase==='updated'||phase==='checked'?'✓':phase==='error'?'!':'●';
-    if(!reduced.matches&&(phase==='refreshing'||phase==='connecting')) feedIconAnimation=icon.animate(
-      [{transform:'rotate(0deg)'},{transform:'rotate(360deg)'}],{duration:900,iterations:Infinity});
-    if(!reduced.matches&&phase==='live') feedIconAnimation=icon.animate(
-      [{opacity:1,transform:'scale(1)'},{opacity:0.4,transform:'scale(0.75)'},{opacity:1,transform:'scale(1)'}],{duration:1700,iterations:Infinity});
-    if(!reduced.matches&&phase==='updated') $('feed-status').animate(
-      [{boxShadow:'0 0 0 0 #1C6BB055'},{boxShadow:'0 0 0 5px #1C6BB000'}],{duration:1000,iterations:2});
+    icon.textContent=autoRefresh?'↻':phase==='error'?'!':'●';
+    if(autoRefresh) feedIconAnimation=icon.animate(
+      [{transform:'rotate(0deg)'},{transform:'rotate(360deg)'}],{duration:1200,iterations:Infinity,easing:'linear'});
   }
   const next=[feedSync.requestStartedAt+650,feedSync.feedbackUntil].filter(time=>time>now);
   if(next.length&&!feedSync.refreshing&&!document.hidden&&!feedSync.failed) feedStatusTimer=setTimeout(renderFeedStatus,Math.min(...next)-now+1);
@@ -347,7 +346,7 @@ function mergeCities(incoming) {
 function applyMap(data) {
  mapView=data;mapPoints=data.points;mergeCities([...legacy.cities.values()]);updateMap();renderHazardControls();
  liveDegraded=!!(data.readStatus?.isStale||data.readStatus?.state==='degraded');
- $('feed-status').dataset.degraded=String(liveDegraded);$('feed-status').dataset.degradedLabel=t('degraded');
+ $('feed-status').dataset.degraded=String(liveDegraded);
  clearTimeout(freshTimer);const delay=Math.max(1,data.expiresAt-Date.now());
  freshTimer=setTimeout(()=>{updateMap();void poll({changed:true});},Math.min(delay,2147483647));
 }
